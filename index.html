@@ -1,138 +1,693 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
-  <meta charset="utf-8">
-  <title>Check-in System</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Badge Collection</title>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+  /* ====== ROOT & RESET ====== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  :root {
+    --c-bg:      #0A0E1A;
+    --c-surface: #111827;
+    --c-card:    #1A2235;
+    --c-border:  #243050;
+    --c-gold:    #F5C842;
+    --c-gold2:   #E8A820;
+    --c-cyan:    #22D3EE;
+    --c-green:   #34D399;
+    --c-red:     #F87171;
+    --c-text:    #E2E8F0;
+    --c-muted:   #64748B;
+    --radius:    14px;
+  }
 
-  <style>
-    body {
-      font-family: Arial;
-      text-align: center;
-      padding: 30px;
-      background: #f5f6fa;
-    }
+  html, body {
+    background: var(--c-bg);
+    color: var(--c-text);
+    font-family: 'Kanit', sans-serif;
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
 
-    button {
-      padding: 12px 20px;
-      font-size: 16px;
-      background: #00c300;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
+  /* ====== LOADING SCREEN ====== */
+  #loading-screen {
+    position: fixed; inset: 0;
+    background: var(--c-bg);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 20px; z-index: 100;
+    transition: opacity .5s ease;
+  }
+  .loader-logo {
+    font-size: 48px;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  .loader-bar {
+    width: 160px; height: 4px;
+    background: var(--c-border);
+    border-radius: 99px; overflow: hidden;
+  }
+  .loader-fill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--c-cyan), var(--c-gold));
+    border-radius: 99px;
+    animation: load 1.8s ease forwards;
+  }
+  @keyframes load { to { width: 100%; } }
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.12)} }
 
-    #status {
-      margin-top: 20px;
-      padding: 10px;
-      background: white;
-      border-radius: 10px;
-      display: inline-block;
-    }
-  </style>
+  /* ====== APP ====== */
+  #app { display: none; flex-direction: column; min-height: 100dvh; }
+  #app.visible { display: flex; }
+
+  /* ====== HEADER ====== */
+  header {
+    padding: 20px 20px 0;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .avatar {
+    width: 48px; height: 48px; border-radius: 50%;
+    border: 2px solid var(--c-gold);
+    object-fit: cover; flex-shrink: 0;
+    background: var(--c-card);
+  }
+  .user-info { flex: 1; min-width: 0; }
+  .user-name {
+    font-size: 16px; font-weight: 600;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .user-sub { font-size: 12px; color: var(--c-muted); }
+
+  /* ====== HERO ====== */
+  .hero {
+    margin: 20px 20px 0;
+    background: linear-gradient(135deg, #1E3A5F 0%, #0A1628 100%);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    padding: 24px 20px;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; top: -30px; right: -30px;
+    width: 130px; height: 130px;
+    background: radial-gradient(circle, rgba(245,200,66,.18) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .hero-label { font-size: 12px; color: var(--c-cyan); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+  .hero-total {
+    font-size: 52px; font-weight: 900; line-height: 1;
+    font-family: 'Space Mono', monospace;
+    background: linear-gradient(135deg, var(--c-gold), var(--c-gold2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .hero-total span { font-size: 24px; color: var(--c-muted); -webkit-text-fill-color: var(--c-muted); }
+  .hero-sub { margin-top: 6px; font-size: 14px; color: var(--c-muted); }
+  .progress-bar {
+    margin-top: 16px;
+    height: 8px; background: var(--c-border);
+    border-radius: 99px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--c-cyan), var(--c-gold));
+    border-radius: 99px;
+    transition: width .8s cubic-bezier(.4,0,.2,1);
+  }
+  .progress-label { margin-top: 8px; font-size: 11px; color: var(--c-muted); display: flex; justify-content: space-between; }
+
+  /* ====== BADGES GRID ====== */
+  .section-title {
+    font-size: 13px; color: var(--c-muted);
+    letter-spacing: 1.5px; text-transform: uppercase;
+    padding: 20px 20px 12px;
+  }
+
+  .badges-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    padding: 0 20px;
+  }
+
+  .badge-item {
+    display: flex; flex-direction: column;
+    align-items: center; gap: 6px;
+    padding: 14px 6px;
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    transition: all .3s ease;
+    position: relative; overflow: hidden;
+  }
+  .badge-item.earned {
+    border-color: var(--c-gold);
+    background: linear-gradient(135deg, #1A2235 0%, #1E2D1A 100%);
+    box-shadow: 0 0 20px rgba(245,200,66,.15);
+  }
+  .badge-item.earned::after {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--c-cyan), var(--c-gold));
+  }
+  .badge-icon { font-size: 26px; transition: transform .3s ease; }
+  .badge-item.earned .badge-icon { transform: scale(1.1); }
+  .badge-name { font-size: 9px; text-align: center; color: var(--c-muted); line-height: 1.3; font-weight: 600; }
+  .badge-item.earned .badge-name { color: var(--c-gold); }
+  .badge-check {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--c-border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; color: transparent;
+    transition: all .3s ease;
+  }
+  .badge-item.earned .badge-check {
+    background: var(--c-green);
+    color: #fff;
+  }
+
+  /* ====== SCAN BUTTON ====== */
+  .scan-wrap { padding: 24px 20px 12px; }
+  .btn-scan {
+    width: 100%;
+    padding: 18px;
+    border: none; border-radius: var(--radius);
+    background: linear-gradient(135deg, var(--c-cyan) 0%, #0EA5E9 100%);
+    color: #0A0E1A;
+    font-family: 'Kanit', sans-serif;
+    font-size: 18px; font-weight: 700;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    transition: all .2s ease;
+    box-shadow: 0 6px 24px rgba(34,211,238,.3);
+    letter-spacing: .5px;
+  }
+  .btn-scan:active { transform: scale(.97); box-shadow: none; }
+  .btn-scan:disabled { opacity: .5; cursor: not-allowed; }
+
+  /* ====== LEADERBOARD ====== */
+  .leaderboard { padding: 0 20px 20px; }
+  .lb-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px;
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    margin-bottom: 8px;
+  }
+  .lb-item.me { border-color: var(--c-cyan); background: rgba(34,211,238,.05); }
+  .lb-rank {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px; font-weight: 700;
+    color: var(--c-muted); min-width: 24px; text-align: center;
+  }
+  .lb-rank.gold   { color: #F5C842; }
+  .lb-rank.silver { color: #94A3B8; }
+  .lb-rank.bronze { color: #CD7C3A; }
+  .lb-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    object-fit: cover; background: var(--c-border); flex-shrink: 0;
+  }
+  .lb-name { flex: 1; font-size: 14px; font-weight: 600;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .lb-badges { display: flex; gap: 3px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+  .lb-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--c-border);
+  }
+  .lb-dot.earned { background: var(--c-gold); }
+  .lb-total {
+    font-family: 'Space Mono', monospace;
+    font-size: 14px; font-weight: 700;
+    color: var(--c-gold); min-width: 20px; text-align: right;
+  }
+
+  /* ====== TAB NAV ====== */
+  .tab-nav {
+    display: flex; background: var(--c-surface);
+    border-bottom: 1px solid var(--c-border);
+    padding: 0 20px; gap: 24px; margin-bottom: 4px;
+    position: sticky; top: 0; z-index: 10;
+  }
+  .tab-btn {
+    padding: 14px 0;
+    background: none; border: none;
+    font-family: 'Kanit', sans-serif;
+    font-size: 14px; font-weight: 600;
+    color: var(--c-muted); cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all .2s ease;
+    white-space: nowrap;
+  }
+  .tab-btn.active { color: var(--c-cyan); border-bottom-color: var(--c-cyan); }
+
+  /* ====== MODAL ====== */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.75);
+    display: flex; align-items: flex-end; justify-content: center;
+    z-index: 50;
+    opacity: 0; pointer-events: none;
+    transition: opacity .3s ease;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: 20px 20px 0 0;
+    padding: 24px 20px 40px;
+    width: 100%; max-width: 480px;
+    transform: translateY(100%);
+    transition: transform .4s cubic-bezier(.4,0,.2,1);
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+  .modal-handle {
+    width: 40px; height: 4px;
+    background: var(--c-border);
+    border-radius: 99px; margin: 0 auto 20px;
+  }
+  .modal-title { font-size: 20px; font-weight: 700; margin-bottom: 20px; }
+
+  .input-group { margin-bottom: 16px; }
+  .input-label { font-size: 13px; color: var(--c-muted); margin-bottom: 6px; display: block; }
+  .input-field {
+    width: 100%; padding: 14px 16px;
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    color: var(--c-text);
+    font-family: 'Kanit', sans-serif; font-size: 15px;
+    outline: none; transition: border-color .2s;
+  }
+  .input-field:focus { border-color: var(--c-cyan); }
+
+  .btn-confirm {
+    width: 100%; padding: 16px;
+    border: none; border-radius: 10px;
+    background: var(--c-cyan);
+    color: #0A0E1A;
+    font-family: 'Kanit', sans-serif; font-size: 17px; font-weight: 700;
+    cursor: pointer; transition: all .2s;
+    margin-top: 4px;
+  }
+  .btn-confirm:active { transform: scale(.97); }
+
+  /* ====== TOAST ====== */
+  .toast {
+    position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-80px);
+    background: var(--c-card); border: 1px solid var(--c-border);
+    border-radius: 12px; padding: 14px 20px;
+    font-size: 14px; font-weight: 600;
+    max-width: 300px; text-align: center;
+    z-index: 200;
+    transition: transform .4s cubic-bezier(.4,0,.2,1), opacity .4s ease;
+    opacity: 0;
+    box-shadow: 0 8px 32px rgba(0,0,0,.4);
+    white-space: pre-line;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  .toast.success { border-color: var(--c-green); color: var(--c-green); }
+  .toast.error   { border-color: var(--c-red);   color: var(--c-red); }
+  .toast.info    { border-color: var(--c-cyan);  color: var(--c-cyan); }
+
+  /* ====== COMPLETE BANNER ====== */
+  .complete-banner {
+    margin: 0 20px 4px;
+    background: linear-gradient(135deg, #1A3A1A, #0A1A0A);
+    border: 1px solid var(--c-green);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .complete-banner-icon { font-size: 32px; }
+  .complete-banner-text strong { color: var(--c-green); display: block; font-size: 16px; }
+  .complete-banner-text span { font-size: 13px; color: var(--c-muted); }
+</style>
 </head>
-
 <body>
 
-  <h2>🎯 Check-in System</h2>
+<!-- Loading Screen -->
+<div id="loading-screen">
+  <div class="loader-logo">🏆</div>
+  <div style="font-size:18px;font-weight:700;color:#E2E8F0">กำลังโหลด...</div>
+  <div class="loader-bar"><div class="loader-fill"></div></div>
+</div>
 
-  <button onclick="checkin()">รับแต้ม</button>
+<!-- Main App -->
+<div id="app">
+  <!-- Header -->
+  <header>
+    <img id="user-avatar" class="avatar" src="" alt="avatar"/>
+    <div class="user-info">
+      <div class="user-name" id="user-name">กำลังโหลด...</div>
+      <div class="user-sub">Badge Collector</div>
+    </div>
+  </header>
 
-  <div id="status">กำลังโหลด...</div>
+  <!-- Tab Nav -->
+  <nav class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('my')">ของฉัน</button>
+    <button class="tab-btn" onclick="switchTab('board')">Leaderboard</button>
+  </nav>
+
+  <!-- TAB: MY BADGES -->
+  <div id="tab-my">
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-label">คะแนนสะสม</div>
+      <div class="hero-total" id="total-count">0 <span>/ 5</span></div>
+      <div class="hero-sub" id="hero-sub">เริ่มสะสม Badge เลย!</div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+      <div class="progress-label">
+        <span>0 Badge</span>
+        <span id="progress-pct">0%</span>
+      </div>
+    </div>
+
+    <!-- Complete banner (hidden by default) -->
+    <div class="complete-banner" id="complete-banner" style="display:none">
+      <div class="complete-banner-icon">🎉</div>
+      <div class="complete-banner-text">
+        <strong>ครบทุก Badge แล้ว!</strong>
+        <span>ยินดีด้วย คุณสะสมครบทั้ง 5 กิจกรรม</span>
+      </div>
+    </div>
+
+    <!-- Badges -->
+    <div class="section-title">Badge ทั้งหมด</div>
+    <div class="badges-grid" id="badges-grid"></div>
+
+    <!-- Scan Button -->
+    <div class="scan-wrap">
+      <button class="btn-scan" onclick="openScanModal()">
+        <span>📷</span>
+        <span>สแกน QR รับ Badge</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- TAB: LEADERBOARD -->
+  <div id="tab-board" style="display:none">
+    <div class="section-title">อันดับผู้สะสม Badge</div>
+    <div class="leaderboard" id="leaderboard-list">
+      <div style="text-align:center;padding:40px 0;color:var(--c-muted)">กำลังโหลด...</div>
+    </div>
+  </div>
+</div>
+
+<!-- Scan Modal -->
+<div class="modal-overlay" id="scan-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🎯 กรอกรหัส QR</div>
+    <div class="input-group">
+      <label class="input-label">เลือกกิจกรรม</label>
+      <select class="input-field" id="event-select">
+        <option value="">-- เลือกกิจกรรม --</option>
+        <option value="FXC">FXC</option>
+        <option value="FXCXO">FXCXO</option>
+        <option value="FXCXU">FXCXU</option>
+        <option value="FXCXS">FXCXS</option>
+        <option value="SinghawaxyFOCUS">Singhawayx FOCUS</option>
+      </select>
+    </div>
+    <div class="input-group">
+      <label class="input-label">รหัส QR (Token)</label>
+      <input type="text" class="input-field" id="qr-token-input" placeholder="กรอกรหัสจาก QR Code..."/>
+    </div>
+    <button class="btn-confirm" id="confirm-btn" onclick="submitCheckin()">✅ ยืนยันรับ Badge</button>
+    <button class="btn-confirm" style="background:transparent;color:var(--c-muted);margin-top:8px" onclick="closeScanModal()">ยกเลิก</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
 
 <script>
+// ====== CONFIG ======
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbxIgPjj0aLV3pRjOJEaqrqYcgc4ozReVVxbTFO2c04Ik5tBbS3Url0_iz4VBSWrUicp8Q/exec'; // ← ใส่ URL จาก Deploy
+const LIFF_ID = '2009815147-aGgIrfPv'; // ← ใส่ LIFF ID
 
-const LIFF_ID = "2009815147-aGgIrfPv";
-const API_URL = "https://script.google.com/macros/s/AKfycbwNru0l-_x-vc19dEf-uHmVL-T_VM-YT27ubhpyUybu_WnKS09Q0z8URKZeLaaAwywu/exec";
+const EVENTS = [
+  { code: 'FXC',             icon: '⚡', name: 'FXC' },
+  { code: 'FXCXO',           icon: '🔥', name: 'FXCXO' },
+  { code: 'FXCXU',           icon: '💎', name: 'FXCXU' },
+  { code: 'FXCXS',           icon: '🌟', name: 'FXCXS' },
+  { code: 'SinghawaxyFOCUS', icon: '🦁', name: 'FOCUS' },
+];
 
-let userId = "";
-let eventId = "";
-let token = "";
+let currentUser = null;
+let userProfile = null;
+let urlEvent = null;   // event จาก URL param
+let urlToken = null;   // token จาก URL param
 
-// ---------------- INIT ----------------
-async function init() {
+// ====== READ URL PARAMS ======
+// รองรับทั้ง ?event=FXC&token=xxx และ LIFF queryString
+function getUrlParams() {
+  // LIFF จะต่อ query string ไว้หลัง liff.state หรือ URL ตรงๆ
+  const search = window.location.search || '';
+  const hash   = window.location.hash   || '';
+  // ลอง parse จาก search ก่อน ถ้าไม่เจอลอง hash
+  let params = new URLSearchParams(search);
+  if (!params.get('event') && hash.includes('?')) {
+    params = new URLSearchParams(hash.split('?')[1]);
+  }
+  // LIFF บางครั้งใส่ใน liff.state
+  const liffState = params.get('liff.state') || '';
+  if (liffState) {
+    try {
+      const stateParams = new URLSearchParams(decodeURIComponent(liffState).replace(/^\?/, ''));
+      if (stateParams.get('event')) return stateParams;
+    } catch(e) {}
+  }
+  return params;
+}
+
+// ====== INIT ======
+window.addEventListener('DOMContentLoaded', async () => {
+  renderBadgesGrid({});
+
+  // อ่าน URL params ก่อน init LIFF
+  const params = getUrlParams();
+  urlEvent = params.get('event') || '';
+  urlToken = params.get('token') || '';
+
   try {
     await liff.init({ liffId: LIFF_ID });
-
     if (!liff.isLoggedIn()) {
-      liff.login();
+      liff.login({ redirectUri: window.location.href });
       return;
     }
-
     const profile = await liff.getProfile();
-    userId = profile.userId;
+    currentUser = profile;
 
-    // รับค่าจาก QR
-    const params = new URLSearchParams(window.location.search);
-    eventId = params.get("eventId");
-    token = params.get("token");
+    document.getElementById('user-name').textContent = profile.displayName;
+    document.getElementById('user-avatar').src = profile.pictureUrl || '';
 
-    console.log("INIT OK", { userId, eventId, token });
+    // Register user
+    await apiCall({ action: 'register', lineUserId: profile.userId, displayName: profile.displayName, pictureUrl: profile.pictureUrl });
 
-    document.getElementById("status").innerText =
-      "พร้อมใช้งาน ✔";
+    // Load profile
+    await loadProfile();
+
+    // ถ้ามี event+token จาก QR → auto checkin ทันที
+    if (urlEvent && urlToken) {
+      await autoCheckin(urlEvent, urlToken);
+    }
 
   } catch (err) {
-    console.error("INIT ERROR:", err);
-    document.getElementById("status").innerText =
-      "INIT ERROR: " + err.message;
+    console.error('LIFF init error:', err);
+    showToast('เกิดข้อผิดพลาด: ' + (err.message || err), 'error');
+  } finally {
+    hideLoading();
+  }
+});
+
+// ====== AUTO CHECKIN (จาก QR URL) ======
+async function autoCheckin(eventCode, qrToken) {
+  const validCodes = ['FXC','FXCXO','FXCXU','FXCXS','SinghawaxyFOCUS'];
+  if (!validCodes.includes(eventCode)) {
+    showToast('QR Code ไม่ถูกต้อง', 'error');
+    return;
+  }
+  showToast('⏳ กำลังรับ Badge ' + eventCode + '...', 'info');
+  try {
+    const res = await apiCall({
+      action: 'checkin',
+      lineUserId: currentUser.userId,
+      eventCode,
+      qrToken
+    });
+    if (res.success) {
+      await loadProfile();
+      showToast(`🎉 ได้รับ Badge!\n${eventCode}\nรวม ${res.totalBadges}/5 Badge`, 'success');
+      if (res.allEventsCompleted) {
+        setTimeout(() => showToast('🏆 ครบทุก Badge แล้ว!', 'success'), 2500);
+      }
+    } else {
+      showToast(res.message || 'เกิดข้อผิดพลาด', 'error');
+    }
+  } catch(err) {
+    showToast('เชื่อมต่อไม่ได้ กรุณาลองใหม่', 'error');
   }
 }
 
-// ---------------- CHECKIN ----------------
-async function checkin() {
+// ====== API ======
+async function apiCall(body) {
+  const res = await fetch(GAS_URL, {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+  return res.json();
+}
+
+// ====== LOAD PROFILE ======
+async function loadProfile() {
+  const res = await apiCall({ action: 'getProfile', lineUserId: currentUser.userId });
+  if (res.success) {
+    userProfile = res;
+    renderProfile(res);
+  }
+}
+
+// ====== RENDER PROFILE ======
+function renderProfile(data) {
+  const total = data.badges.total || 0;
+  const pct = Math.round((total / 5) * 100);
+
+  document.getElementById('total-count').innerHTML = `${total} <span>/ 5</span>`;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-pct').textContent = pct + '%';
+
+  const subs = ['เริ่มสะสม Badge เลย!', 'ดีมาก! เก็บต่อเลย 🔥', 'กำลังมาแรง! 💪', 'เกือบครบแล้ว! 😤', 'แค่อีกนิดเดียว! 🏃', 'ยอดเยี่ยม! ครบทุก Badge! 🎉'];
+  document.getElementById('hero-sub').textContent = subs[Math.min(total, 5)];
+
+  const completeBanner = document.getElementById('complete-banner');
+  completeBanner.style.display = total >= 5 ? 'flex' : 'none';
+
+  renderBadgesGrid(data.badges);
+}
+
+// ====== RENDER BADGES ======
+function renderBadgesGrid(badges) {
+  const grid = document.getElementById('badges-grid');
+  grid.innerHTML = EVENTS.map(ev => {
+    const earned = badges[ev.code] >= 1;
+    return `
+      <div class="badge-item ${earned ? 'earned' : ''}">
+        <div class="badge-icon">${ev.icon}</div>
+        <div class="badge-name">${ev.name}</div>
+        <div class="badge-check">${earned ? '✓' : ''}</div>
+      </div>`;
+  }).join('');
+}
+
+// ====== TABS ======
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('tab-my').style.display    = tab === 'my'    ? 'block' : 'none';
+  document.getElementById('tab-board').style.display = tab === 'board' ? 'block' : 'none';
+  if (tab === 'board') loadLeaderboard();
+}
+
+// ====== LEADERBOARD ======
+async function loadLeaderboard() {
+  const res = await apiCall({ action: 'getLeaderboard' });
+  const el = document.getElementById('leaderboard-list');
+  if (!res.success) { el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--c-muted)">โหลดไม่ได้</div>'; return; }
+
+  const rankClass = (i) => i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+  const rankEmoji = (i) => i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
+
+  el.innerHTML = res.leaderboard.map((u, i) => {
+    const isMe = currentUser && u.displayName === currentUser.displayName;
+    const dots = EVENTS.map(ev => `<div class="lb-dot ${u.badges[ev.code] >= 1 ? 'earned' : ''}"></div>`).join('');
+    return `
+      <div class="lb-item ${isMe ? 'me' : ''}">
+        <div class="lb-rank ${rankClass(i)}">${rankEmoji(i)}</div>
+        <img class="lb-avatar" src="${u.pictureUrl || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1 1%22><rect fill=%22%231A2235%22/></svg>'}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1 1%22><rect fill=%22%231A2235%22/></svg>'"/>
+        <div class="lb-name">${u.displayName}${isMe ? ' (คุณ)' : ''}</div>
+        <div class="lb-badges">${dots}</div>
+        <div class="lb-total">${u.total}</div>
+      </div>`;
+  }).join('');
+}
+
+// ====== SCAN MODAL ======
+function openScanModal() {
+  document.getElementById('scan-modal').classList.add('open');
+}
+function closeScanModal() {
+  document.getElementById('scan-modal').classList.remove('open');
+  document.getElementById('qr-token-input').value = '';
+  document.getElementById('event-select').value = '';
+}
+
+// ====== SUBMIT CHECK-IN ======
+async function submitCheckin() {
+  const eventCode = document.getElementById('event-select').value;
+  const qrToken   = document.getElementById('qr-token-input').value.trim();
+
+  if (!eventCode) { showToast('กรุณาเลือกกิจกรรม', 'error'); return; }
+  if (!qrToken)   { showToast('กรุณากรอกรหัส QR', 'error'); return; }
+  if (!currentUser) { showToast('กรุณาเข้าสู่ระบบ', 'error'); return; }
+
+  const btn = document.getElementById('confirm-btn');
+  btn.disabled = true;
+  btn.textContent = 'กำลังตรวจสอบ...';
+
   try {
-
-    console.log("CLICKED");
-
-    document.getElementById("status").innerText =
-      "กำลังส่งข้อมูล...";
-
-    console.log({ userId, eventId, token });
-
-    if (!userId || !eventId || !token) {
-      document.getElementById("status").innerText =
-        "ข้อมูลไม่ครบ (user/event/token)";
-      return;
-    }
-
-    const res = await fetch(API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        userId,
-        eventId,
-        token,
-        activity: "check-in"
-      })
+    const res = await apiCall({
+      action: 'checkin',
+      lineUserId: currentUser.userId,
+      eventCode,
+      qrToken
     });
 
-    const data = await res.json();
-    console.log("RESPONSE:", data);
+    closeScanModal();
 
-    if (data.status === "success") {
-      document.getElementById("status").innerText =
-        "✅ สำเร็จ! แต้มรวม: " + data.total;
+    if (res.success) {
+      showToast(`🎉 ได้รับ Badge!\n${eventCode}\nรวม ${res.totalBadges}/5 Badge`, 'success');
+      await loadProfile();
+      if (res.allEventsCompleted) {
+        setTimeout(() => showToast('🏆 ยินดีด้วย! ครบทุก Badge แล้ว!', 'success'), 2000);
+      }
     } else {
-      document.getElementById("status").innerText =
-        "❌ " + data.message;
+      showToast(res.message || 'เกิดข้อผิดพลาด', 'error');
     }
-
   } catch (err) {
-    console.error("CHECKIN ERROR:", err);
-    document.getElementById("status").innerText =
-      "ERROR: " + err.message;
+    showToast('เชื่อมต่อไม่ได้ กรุณาลองใหม่', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '✅ ยืนยันรับ Badge';
   }
 }
 
-// start
-init();
+// ====== TOAST ======
+function showToast(msg, type = 'info') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `toast ${type} show`;
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 3500);
+}
 
+// ====== LOADING ======
+function hideLoading() {
+  const screen = document.getElementById('loading-screen');
+  screen.style.opacity = '0';
+  setTimeout(() => { screen.style.display = 'none'; }, 500);
+  document.getElementById('app').classList.add('visible');
+}
 </script>
-
 </body>
 </html>
