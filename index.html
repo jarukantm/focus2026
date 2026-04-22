@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Check-in System</title>
+
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      padding: 30px;
+      background: #f5f6fa;
+    }
+
+    button {
+      padding: 12px 20px;
+      font-size: 16px;
+      background: #00c300;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #status {
+      margin-top: 20px;
+      padding: 10px;
+      background: white;
+      border-radius: 10px;
+      display: inline-block;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h2>🎯 Check-in System</h2>
+
+  <button onclick="checkin()">รับแต้ม</button>
+
+  <div id="status">กำลังโหลด...</div>
+
+<script>
+
+const LIFF_ID = "2009811756-c4UsNlZB";
+const API_URL = "https://script.google.com/macros/s/AKfycbwNru0l-_x-vc19dEf-uHmVL-T_VM-YT27ubhpyUybu_WnKS09Q0z8URKZeLaaAwywu/exec";
+
+let userId = "";
+let eventId = "";
+let token = "";
+
+// ---------------- INIT ----------------
+async function init() {
+  try {
+    await liff.init({ liffId: LIFF_ID });
+
+    if (!liff.isLoggedIn()) {
+      liff.login();
+      return;
+    }
+
+    const profile = await liff.getProfile();
+    userId = profile.userId;
+
+    // รับค่าจาก QR
+    const params = new URLSearchParams(window.location.search);
+    eventId = params.get("eventId");
+    token = params.get("token");
+
+    console.log("INIT OK", { userId, eventId, token });
+
+    document.getElementById("status").innerText =
+      "พร้อมใช้งาน ✔";
+
+  } catch (err) {
+    console.error("INIT ERROR:", err);
+    document.getElementById("status").innerText =
+      "INIT ERROR: " + err.message;
+  }
+}
+
+// ---------------- CHECKIN ----------------
+async function checkin() {
+  try {
+
+    console.log("CLICKED");
+
+    document.getElementById("status").innerText =
+      "กำลังส่งข้อมูล...";
+
+    console.log({ userId, eventId, token });
+
+    if (!userId || !eventId || !token) {
+      document.getElementById("status").innerText =
+        "ข้อมูลไม่ครบ (user/event/token)";
+      return;
+    }
+
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        userId,
+        eventId,
+        token,
+        activity: "check-in"
+      })
+    });
+
+    const data = await res.json();
+    console.log("RESPONSE:", data);
+
+    if (data.status === "success") {
+      document.getElementById("status").innerText =
+        "✅ สำเร็จ! แต้มรวม: " + data.total;
+    } else {
+      document.getElementById("status").innerText =
+        "❌ " + data.message;
+    }
+
+  } catch (err) {
+    console.error("CHECKIN ERROR:", err);
+    document.getElementById("status").innerText =
+      "ERROR: " + err.message;
+  }
+}
+
+// start
+init();
+
+</script>
+
+</body>
+</html>
