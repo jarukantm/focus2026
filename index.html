@@ -476,7 +476,7 @@ const EVENTS = [
   { code: 'FXCXO',           icon: '🔥', name: 'FXCXO' },
   { code: 'FXCXU',           icon: '💎', name: 'FXCXU' },
   { code: 'FXCXS',           icon: '🌟', name: 'FXCXS' },
-  { code: 'SinghawaxyFOCUS', icon: '🦁', name: 'FOCUS' },
+  { code: 'SinghawayxFOCUS', icon: '🦁', name: 'FOCUS' },
 ];
 
 let currentUser = null;
@@ -548,7 +548,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
 // ====== AUTO CHECKIN (จาก QR URL) ======
 async function autoCheckin(eventCode, qrToken) {
-  const validCodes = ['FXC','FXCXO','FXCXU','FXCXS','SinghawaxyFOCUS'];
+  const validCodes = ['FXC','FXCXO','FXCXU','FXCXS','SinghawayxFOCUS'];
   if (!validCodes.includes(eventCode)) {
     showToast('QR Code ไม่ถูกต้อง', 'error');
     return;
