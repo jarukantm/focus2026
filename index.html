@@ -1,255 +1,213 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>Badge Collection</title>
-<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
-<style>
-  /* ====== ROOT & RESET ====== */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --c-bg: #0A0E1A; --c-surface: #111827; --c-card: #1A2235; --c-border: #243050;
-    --c-gold: #F5C842; --c-gold2: #E8A820; --c-cyan: #22D3EE; --c-green: #34D399;
-    --c-red: #F87171; --c-text: #E2E8F0; --c-muted: #64748B; --radius: 14px;
-  }
-  html, body { background: var(--c-bg); color: var(--c-text); font-family: 'Kanit', sans-serif; min-height: 100dvh; overflow-x: hidden; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FOCUS 2026 Badge Collection</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f172a; --card: #1e293b; --accent: #22d3ee; --gold: #fbbf24;
+            --text: #f8fafc; --muted: #94a3b8; --border: #334155;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Kanit', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-  /* ====== LOADING ====== */
-  #loading-screen { position: fixed; inset: 0; background: var(--c-bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; transition: opacity .5s; }
-  .loader-bar { width: 160px; height: 4px; background: var(--c-border); border-radius: 99px; overflow: hidden; margin-top: 20px; }
-  .loader-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--c-cyan), var(--c-gold)); animation: load 1.8s ease forwards; }
-  @keyframes load { to { width: 100%; } }
+        /* Loading Overlay */
+        #loader { position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; }
+        .spinner { width: 40px; height: 40px; border: 4px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* ====== APP ====== */
-  #app { display: none; flex-direction: column; min-height: 100dvh; }
-  #app.visible { display: flex; }
-  header { padding: 20px; display: flex; align-items: center; gap: 14px; }
-  .avatar { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--c-gold); object-fit: cover; }
+        /* UI Components */
+        header { padding: 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); }
+        .profile-img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--accent); }
+        
+        .stats-card { margin: 20px; padding: 20px; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid var(--border); border-radius: 16px; text-align: center; }
+        .progress-container { height: 10px; background: var(--border); border-radius: 5px; margin: 15px 0; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--gold)); transition: width 0.5s ease; }
 
-  /* ====== TABS ====== */
-  .tab-nav { display: flex; background: var(--c-surface); border-bottom: 1px solid var(--c-border); padding: 0 20px; gap: 24px; position: sticky; top: 0; z-index: 10; }
-  .tab-btn { padding: 14px 0; background: none; border: none; color: var(--c-muted); font-family: 'Kanit'; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; }
-  .tab-btn.active { color: var(--c-cyan); border-bottom-color: var(--c-cyan); }
+        .badge-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 0 20px; }
+        .badge-item { background: var(--card); border: 1px solid var(--border); padding: 12px 5px; border-radius: 12px; text-align: center; opacity: 0.3; filter: grayscale(1); transition: 0.3s; }
+        .badge-item.active { opacity: 1; filter: grayscale(0); border-color: var(--gold); background: rgba(251, 191, 36, 0.05); }
+        .badge-icon { font-size: 24px; margin-bottom: 5px; }
+        .badge-label { font-size: 10px; color: var(--muted); display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-  /* ====== HERO & PROGRESS ====== */
-  .hero { margin: 20px; background: linear-gradient(135deg, #1E3A5F 0%, #0A1628 100%); border: 1px solid var(--c-border); border-radius: var(--radius); padding: 24px 20px; }
-  .hero-total { font-size: 52px; font-weight: 900; font-family: 'Space Mono'; background: linear-gradient(135deg, var(--c-gold), var(--c-gold2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .progress-bar { margin-top: 16px; height: 8px; background: var(--c-border); border-radius: 99px; overflow: hidden; }
-  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--c-cyan), var(--c-gold)); transition: width 0.8s ease; }
+        .btn-redeem { display: block; width: calc(100% - 40px); margin: 25px auto; padding: 16px; background: var(--accent); color: #000; border: none; border-radius: 12px; font-weight: 600; font-size: 16px; cursor: pointer; }
 
-  /* ====== GRID ====== */
-  .badges-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 0 20px; }
-  .badge-item { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 4px; background: var(--c-card); border: 1px solid var(--c-border); border-radius: var(--radius); opacity: 0.5; transition: 0.3s; }
-  .badge-item.earned { opacity: 1; border-color: var(--c-gold); background: linear-gradient(135deg, #1A2235 0%, #1E2D1A 100%); }
-  .badge-name { font-size: 9px; text-align: center; color: var(--c-muted); font-weight: 600; }
-  .badge-item.earned .badge-name { color: var(--c-gold); }
-
-  /* ====== MODAL & TOAST ====== */
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: flex-end; justify-content: center; z-index: 50; visibility: hidden; opacity: 0; transition: 0.3s; }
-  .modal-overlay.open { visibility: visible; opacity: 1; }
-  .modal { background: var(--c-card); width: 100%; max-width: 480px; padding: 30px 20px; border-radius: 20px 20px 0 0; transform: translateY(100%); transition: 0.4s; }
-  .modal-overlay.open .modal { transform: translateY(0); }
-  .input-field { width: 100%; padding: 15px; background: var(--c-surface); border: 1px solid var(--c-border); border-radius: 10px; color: #fff; font-size: 18px; text-align: center; margin-bottom: 15px; outline: none; }
-  .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: var(--c-card); padding: 12px 24px; border-radius: 10px; border: 1px solid var(--c-border); z-index: 100; transition: 0.4s; opacity: 0; }
-  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-</style>
+        /* Modal */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 100; }
+        .modal-content { background: var(--card); width: 100%; max-width: 400px; padding: 25px; border-radius: 20px; border: 1px solid var(--border); }
+        .input-code { width: 100%; padding: 15px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; color: #fff; font-size: 20px; text-align: center; margin-bottom: 20px; }
+        
+        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); padding: 12px 24px; background: var(--card); border: 1px solid var(--border); border-radius: 50px; display: none; z-index: 1000; font-size: 14px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+    </style>
 </head>
 <body>
 
-<div id="loading-screen">
-  <div style="font-size: 40px;">🏆</div>
-  <div class="loader-bar"><div class="loader-fill"></div></div>
+<div id="loader"><div class="spinner"></div><p style="margin-top:15px; color:var(--muted)">กำลังเชื่อมต่อ...</p></div>
+
+<header>
+    <img id="user-img" class="profile-img" src="" alt="">
+    <div>
+        <h2 id="user-name" style="font-size:18px">...</h2>
+        <p style="font-size:12px; color:var(--muted)">Water Resource Conservation</p>
+    </div>
+</header>
+
+<div class="stats-card">
+    <p style="font-size:14px; color:var(--accent)">Badge ที่สะสมได้</p>
+    <h1 id="total-text" style="font-size:48px; margin:5px 0">0 <small style="font-size:16px; color:var(--muted)">/ 10</small></h1>
+    <div class="progress-container"><div id="progress-bar" class="progress-fill" style="width: 0%"></div></div>
+    <p id="status-msg" style="font-size:12px; color:var(--muted)">สะสมครบเพื่อรับรางวัลพิเศษ!</p>
 </div>
 
-<div id="app">
-  <header>
-    <img id="user-avatar" class="avatar" src="" alt="">
-    <div style="flex:1">
-      <div id="user-name" style="font-weight:600">กำลังโหลด...</div>
-      <div style="font-size:12px; color:var(--c-muted)">Badge Collector</div>
+<div class="badge-grid" id="badge-container"></div>
+
+<button class="btn-redeem" onclick="toggleModal(true)">🔑 กรอกรหัสรับ Badge</button>
+
+<div class="modal" id="redeem-modal">
+    <div class="modal-content">
+        <h3 style="margin-bottom:15px; text-align:center">กรอกรหัสกิจกรรม</h3>
+        <input type="text" id="code-input" class="input-code" placeholder="เช่น FCA001" autocomplete="off" oninput="this.value = this.value.toUpperCase()">
+        <button id="submit-btn" class="btn-redeem" style="width:100%; margin:0" onclick="handleRedeem()">ยืนยันรหัส</button>
+        <button onclick="toggleModal(false)" style="width:100%; background:none; border:none; color:var(--muted); margin-top:15px; cursor:pointer">ปิดหน้าต่าง</button>
     </div>
-  </header>
-
-  <nav class="tab-nav">
-    <button class="tab-btn active" onclick="switchTab('my', event)">ของฉัน</button>
-    <button class="tab-btn" onclick="switchTab('board', event)">Leaderboard</button>
-  </nav>
-
-  <div id="tab-my">
-    <div class="hero">
-      <div style="font-size:12px; color:var(--c-cyan)">สะสมได้แล้ว</div>
-      <div class="hero-total" id="total-count">0</div>
-      <div id="hero-sub" style="font-size:14px; color:var(--c-muted); margin-bottom:15px;">เริ่มสะสม Badge เลย!</div>
-      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
-      <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--c-muted); margin-top:8px;">
-        <span id="badge-count-label">0 / 10 Badge</span>
-        <span id="progress-pct">0%</span>
-      </div>
-    </div>
-
-    <div class="badges-grid" id="badges-grid"></div>
-
-    <div style="padding: 20px;">
-      <button onclick="openModal()" style="width:100%; padding:18px; border:none; border-radius:12px; background:linear-gradient(135deg, var(--c-cyan), #0EA5E9); color:#000; font-weight:700; font-size:16px; font-family:'Kanit'; cursor:pointer;">
-        🔑 กรอกรหัสรับ Badge
-      </button>
-    </div>
-  </div>
-
-  <div id="tab-board" style="display:none; padding:20px;">
-    <div id="leaderboard-list"></div>
-  </div>
 </div>
 
-<!-- Modal -->
-<div class="modal-overlay" id="modal">
-  <div class="modal">
-    <h3 style="margin-bottom:15px">กรอกรหัสกิจกรรม</h3>
-    <input type="text" class="input-field" id="redeem-input" placeholder="ตัวอย่าง: FCA001" oninput="this.value=this.value.toUpperCase()">
-    <button onclick="submitRedeem()" id="submit-btn" style="width:100%; padding:15px; border:none; border-radius:10px; background:var(--c-cyan); color:#000; font-weight:700; font-family:'Kanit';">ยืนยัน</button>
-    <button onclick="closeModal()" style="width:100%; background:none; border:none; color:var(--c-muted); margin-top:15px; font-family:'Kanit';">ยกเลิก</button>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
+<div id="toast" class="toast"></div>
 
 <script>
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbxYDJk4lB606Hs4yGm4-1xheSXdsX901EnxR4L8KwBqqCORutiU88JELqHwJhDBxz1W/exec';
-const LIFF_ID = '2009815147-aGgIrfPv';
-const EVENTS = [
-  { code:'FXC-A', icon:'⚡', name:'FXC A' }, { code:'FXC-B', icon:'⚡', name:'FXC B' },
-  { code:'FXCXO-A', icon:'🔥', name:'FXCXO A' }, { code:'FXCXO-B', icon:'🔥', name:'FXCXO B' },
-  { code:'FXCXU-A', icon:'💎', name:'FXCXU A' }, { code:'FXCXU-B', icon:'💎', name:'FXCXU B' },
-  { code:'FXCXS-A', icon:'🌟', name:'FXCXS A' }, { code:'FXCXS-B', icon:'🌟', name:'FXCXS B' },
-  { code:'SinghawayxFOCUS-A', icon:'🦁', name:'FOCUS A' }, { code:'SinghawayxFOCUS-B', icon:'🦁', name:'FOCUS B' }
-];
-
-let userData = null;
-
-async function init() {
-  try {
-    await liff.init({ liffId: LIFF_ID });
-    if (!liff.isLoggedIn()) {
-      liff.login();
-      return;
-    }
-    const profile = await liff.getProfile();
-    document.getElementById('user-name').textContent = profile.displayName;
-    document.getElementById('user-avatar').src = profile.pictureUrl;
-
-    // Register & Load
-    await apiCall({ action:'register', lineUserId: profile.userId, displayName: profile.displayName, pictureUrl: profile.pictureUrl });
-    await loadData();
-
-    // Auto check-in from URL
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('code')) {
-      document.getElementById('redeem-input').value = params.get('code');
-      submitRedeem();
-    }
-
-  } catch (err) {
-    console.error(err);
-  } finally {
-    document.getElementById('loading-screen').style.opacity = '0';
-    setTimeout(() => {
-      document.getElementById('loading-screen').style.display = 'none';
-      document.getElementById('app').classList.add('visible');
-    }, 500);
-  }
-}
-
-async function apiCall(body) {
-  const response = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify(body) });
-  return response.json();
-}
-
-async function loadData() {
-  const profile = await liff.getProfile();
-  const res = await apiCall({ action: 'getProfile', lineUserId: profile.userId });
-  if (res.success) {
-    const total = res.badges.total || 0;
-    document.getElementById('total-count').textContent = total;
-    document.getElementById('badge-count-label').textContent = `${total} / 10 Badge`;
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxYDJk4lB606Hs4yGm4-1xheSXdsX901EnxR4L8KwBqqCORutiU88JELqHwJhDBxz1W/exec';
+    const LIFF_ID = '2009815147-aGgIrfPv';
     
-    const pct = (total / 10) * 100;
-    document.getElementById('progress-fill').style.width = pct + '%';
-    document.getElementById('progress-pct').textContent = Math.round(pct) + '%';
-    
-    const grid = document.getElementById('badges-grid');
-    grid.innerHTML = EVENTS.map(ev => `
-      <div class="badge-item ${res.badges[ev.code] ? 'earned' : ''}">
-        <div style="font-size:24px">${ev.icon}</div>
-        <div class="badge-name">${ev.name}</div>
-      </div>
-    `).join('');
-    
-    if(total >= 10) document.getElementById('hero-sub').innerHTML = "ยินดีด้วย! คุณสะสมครบแล้ว 🎉";
-  }
-}
+    const BADGE_LIST = [
+        { id: 'FXC-A', icon: '⚡', name: 'FXC A' }, { id: 'FXC-B', icon: '⚡', name: 'FXC B' },
+        { id: 'FXCXO-A', icon: '🔥', name: 'XO A' }, { id: 'FXCXO-B', icon: '🔥', name: 'XO B' },
+        { id: 'FXCXU-A', icon: '💎', name: 'XU A' }, { id: 'FXCXU-B', icon: '💎', name: 'XU B' },
+        { id: 'FXCXS-A', icon: '🌟', name: 'XS A' }, { id: 'FXCXS-B', icon: '🌟', name: 'XS B' },
+        { id: 'SinghawayxFOCUS-A', icon: '🦁', name: 'FOCUS A' }, { id: 'SinghawayxFOCUS-B', icon: '🦁', name: 'FOCUS B' }
+    ];
 
-function switchTab(tab, e) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  e.target.classList.add('active');
-  document.getElementById('tab-my').style.display = tab === 'my' ? 'block' : 'none';
-  document.getElementById('tab-board').style.display = tab === 'board' ? 'block' : 'none';
-  if (tab === 'board') renderLeaderboard();
-}
+    async function init() {
+        try {
+            await liff.init({ liffId: LIFF_ID });
+            if (!liff.isLoggedIn()) {
+                liff.login();
+                return;
+            }
+            const profile = await liff.getProfile();
+            document.getElementById('user-img').src = profile.pictureUrl;
+            document.getElementById('user-name').innerText = profile.displayName;
 
-async function renderLeaderboard() {
-  const res = await apiCall({ action: 'getLeaderboard' });
-  const container = document.getElementById('leaderboard-list');
-  if (res.success) {
-    container.innerHTML = res.leaderboard.map((u, i) => `
-      <div style="display:flex; align-items:center; gap:12px; background:var(--c-card); padding:12px; border-radius:10px; margin-bottom:8px; border:1px solid ${i < 3 ? 'var(--c-gold)' : 'var(--c-border)'}">
-        <div style="width:20px; font-weight:700">${i+1}</div>
-        <img src="${u.pictureUrl}" style="width:32px; height:32px; border-radius:50%">
-        <div style="flex:1; font-size:14px">${u.displayName}</div>
-        <div style="color:var(--c-gold); font-weight:700">${u.total}</div>
-      </div>
-    `).join('');
-  }
-}
+            await apiCall('register', { 
+                lineUserId: profile.userId, 
+                displayName: profile.displayName, 
+                pictureUrl: profile.pictureUrl 
+            });
 
-function openModal() { document.getElementById('modal').classList.add('open'); }
-function closeModal() { document.getElementById('modal').classList.remove('open'); }
+            await loadData();
+            
+            // Auto check-in if URL has code
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('code')) {
+                document.getElementById('code-input').value = urlParams.get('code');
+                toggleModal(true);
+            }
 
-async function submitRedeem() {
-  const code = document.getElementById('redeem-input').value.trim();
-  if (!code) return;
-  
-  const btn = document.getElementById('submit-btn');
-  btn.disabled = true; btn.textContent = "กำลังตรวจสอบ...";
-  
-  try {
-    const profile = await liff.getProfile();
-    const res = await apiCall({ action: 'redeemCode', lineUserId: profile.userId, code: code });
-    if (res.success) {
-      showToast("🎉 รับ Badge สำเร็จ!", "var(--c-green)");
-      closeModal();
-      loadData();
-    } else {
-      showToast(res.message || "รหัสไม่ถูกต้อง", "var(--c-red)");
+        } catch (err) {
+            console.error(err);
+            showToast("⚠️ ไม่สามารถโหลดข้อมูลได้", "#f87171");
+        } finally {
+            document.getElementById('loader').style.display = 'none';
+        }
     }
-  } catch (e) {
-    showToast("เกิดข้อผิดพลาด", "var(--c-red)");
-  } finally {
-    btn.disabled = false; btn.textContent = "ยืนยัน";
-  }
-}
 
-function showToast(msg, color) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.style.borderColor = color;
-  t.style.color = color;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
+    async function apiCall(action, data) {
+        try {
+            const response = await fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action, ...data })
+            });
+            // ตรวจสอบว่า response เป็น JSON หรือไม่
+            const text = await response.text();
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                console.error("Non-JSON response:", text);
+                return { success: false, message: "Server Response Error" };
+            }
+        } catch (err) {
+            return { success: false, message: "Network Error" };
+        }
+    }
 
-init();
+    async function loadData() {
+        const profile = await liff.getProfile();
+        const res = await apiCall('getProfile', { lineUserId: profile.userId });
+        
+        if (res.success) {
+            const badges = res.badges || {};
+            const total = badges.total || 0;
+            
+            document.getElementById('total-text').innerHTML = `${total} <small style="font-size:16px; color:var(--muted)">/ 10</small>`;
+            document.getElementById('progress-bar').style.width = (total * 10) + '%';
+
+            const container = document.getElementById('badge-container');
+            container.innerHTML = BADGE_LIST.map(b => `
+                <div class="badge-item ${badges[b.id] >= 1 ? 'active' : ''}">
+                    <div class="badge-icon">${b.icon}</div>
+                    <span class="badge-label">${b.name}</span>
+                </div>
+            `).join('');
+
+            if(total >= 10) {
+                document.getElementById('status-msg').innerText = "🎉 คุณได้รับรางวัลเกียรติยศครบถ้วน!";
+                document.getElementById('status-msg').style.color = "var(--gold)";
+            }
+        }
+    }
+
+    async function handleRedeem() {
+        const codeInput = document.getElementById('code-input');
+        const code = codeInput.value.trim();
+        if (!code) return;
+
+        const btn = document.getElementById('submit-btn');
+        btn.disabled = true;
+        btn.innerText = "กำลังตรวจสอบ...";
+
+        const profile = await liff.getProfile();
+        const res = await apiCall('redeemCode', { lineUserId: profile.userId, code: code });
+
+        if (res.success) {
+            showToast("🎉 ยินดีด้วย! คุณได้รับ Badge ใหม่", "var(--accent)");
+            toggleModal(false);
+            codeInput.value = "";
+            await loadData();
+        } else {
+            showToast(res.message || "❌ รหัสไม่ถูกต้อง", "#f87171");
+        }
+        
+        btn.disabled = false;
+        btn.innerText = "ยืนยันรหัส";
+    }
+
+    function toggleModal(show) {
+        document.getElementById('redeem-modal').style.display = show ? 'flex' : 'none';
+        if(show) document.getElementById('code-input').focus();
+    }
+
+    function showToast(msg, color) {
+        const toast = document.getElementById('toast');
+        toast.innerText = msg;
+        toast.style.borderColor = color;
+        toast.style.color = color;
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 3000);
+    }
+
+    init();
 </script>
 </body>
 </html>
