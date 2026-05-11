@@ -1,105 +1,145 @@
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbxYDJk4lB606Hs4yGm4-1xheSXdsX901EnxR4L8KwBqqCORutiU88JELqHwJhDBxz1W/exec';
-const LIFF_ID = '2009815147-aGgIrfPv';
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Badge LIFF</title>
 
-let currentUser = null;
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+
+<style>
+body { font-family: Arial; margin:0; background:#0b0f1a; color:white; }
+
+header { padding:16px; display:flex; align-items:center; gap:10px; }
+img { width:40px; height:40px; border-radius:50%; }
+
+.tab { display:flex; background:#111827; }
+.tab button {
+  flex:1; padding:12px; background:none; border:none;
+  color:#aaa; font-weight:bold;
+}
+.tab button.active { color:#22d3ee; border-bottom:2px solid #22d3ee; }
+
+.section { padding:16px; }
+
+.card { background:#1f2937; padding:10px; margin:8px 0; border-radius:10px; }
+
+button.main {
+  width:100%; padding:14px; background:#22d3ee;
+  border:none; color:#000; font-weight:bold; border-radius:10px;
+}
+
+input {
+  width:100%; padding:12px; border-radius:8px;
+  border:none; margin:10px 0;
+}
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<header>
+  <img id="avatar">
+  <div>
+    <div id="name">Loading...</div>
+    <small>Badge System</small>
+  </div>
+</header>
+
+<!-- TAB -->
+<div class="tab">
+  <button class="active" onclick="switchTab('my')">My Badge</button>
+  <button onclick="switchTab('board')">Leaderboard</button>
+</div>
+
+<!-- MY -->
+<div id="my" class="section">
+
+  <h3>คะแนนของคุณ</h3>
+  <h1 id="total">0</h1>
+
+  <input id="code" placeholder="ใส่ Code ที่นี่">
+  <button class="main" onclick="redeem()">ยืนยันรับ Badge</button>
+
+</div>
+
+<!-- LEADERBOARD -->
+<div id="board" class="section" style="display:none;">
+  <h3>Leaderboard</h3>
+  <div id="lb">กำลังโหลด...</div>
+</div>
+
+<script>
+
+const GAS = "https://script.google.com/macros/s/AKfycbxYDJk4lB606Hs4yGm4-1xheSXdsX901EnxR4L8KwBqqCORutiU88JELqHwJhDBxz1W/exec";
+
+let user = null;
 
 // ================= INIT =================
 window.onload = async () => {
-  await liff.init({ liffId: LIFF_ID });
+
+  await liff.init({ liffId: "2009815147-aGgIrfPv" });
 
   if (!liff.isLoggedIn()) {
     liff.login();
     return;
   }
 
-  const profile = await liff.getProfile();
-  currentUser = profile;
+  user = await liff.getProfile();
 
-  document.getElementById('user-name').innerText = profile.displayName;
-  document.getElementById('user-avatar').src = profile.pictureUrl;
+  document.getElementById("name").innerText = user.displayName;
+  document.getElementById("avatar").src = user.pictureUrl;
 
-  await api({ action:'register',
-    lineUserId:profile.userId,
-    displayName:profile.displayName,
-    pictureUrl:profile.pictureUrl
+  await api("register", {
+    lineUserId: user.userId,
+    displayName: user.displayName,
+    pictureUrl: user.pictureUrl
   });
 
   await loadProfile();
   await loadLeaderboard();
-
-  hideLoading();
 };
 
 // ================= API =================
-async function api(body){
-  const res = await fetch(GAS_URL,{
-    method:'POST',
-    body:JSON.stringify(body)
+async function api(action, data){
+
+  const res = await fetch(GAS, {
+    method: "POST",
+    body: JSON.stringify({ action, ...data })
   });
+
   return res.json();
 }
 
 // ================= PROFILE =================
 async function loadProfile(){
-  const res = await api({
-    action:'getProfile',
-    lineUserId: currentUser.userId
+
+  const res = await api("getProfile", {
+    lineUserId: user.userId
   });
 
-  const total = res.badges?.total || 0;
-
-  document.getElementById('total-count').innerText = total;
+  document.getElementById("total").innerText =
+    res.badges?.total || 0;
 }
 
-// ================= LEADERBOARD FIX =================
-async function loadLeaderboard(){
+// ================= REDEEM =================
+async function redeem(){
 
-  const res = await api({ action:'getLeaderboard' });
+  const code = document.getElementById("code").value.trim();
 
-  const el = document.getElementById('leaderboard-list');
-
-  if (!res.success || !res.leaderboard.length) {
-    el.innerHTML = '<div style="padding:20px;text-align:center">ไม่มีข้อมูล</div>';
+  if(!code){
+    alert("กรอก Code ก่อน");
     return;
   }
 
-  el.innerHTML = res.leaderboard.map((u,i)=>`
-    <div class="lb-item">
-      <div class="lb-rank">${i+1}</div>
-      <div class="lb-name">${u.displayName}</div>
-      <div class="lb-total">${u.total}</div>
-    </div>
-  `).join('');
-}
-
-// ================= FIX TAB =================
-function switchTab(tab){
-
-  document.getElementById('tab-my').style.display = tab==='my'?'block':'none';
-  document.getElementById('tab-board').style.display = tab==='board'?'block':'none';
-
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-
-  event.target.classList.add('active');
-
-  if(tab==='board') loadLeaderboard();
-}
-
-// ================= REDEEM FIX =================
-async function submitCheckin(){
-
-  const code = document.getElementById('qr-token-input').value.trim().toUpperCase();
-
-  if(!code) return alert('ใส่โค้ดก่อน');
-
-  const res = await api({
-    action:'redeemCode',
-    lineUserId: currentUser.userId,
-    code
+  const res = await api("redeemCode", {
+    lineUserId: user.userId,
+    code: code
   });
 
   if(res.success){
-    alert('สำเร็จ');
+    alert("สำเร็จ ได้ Badge แล้ว");
     await loadProfile();
     await loadLeaderboard();
   } else {
@@ -107,7 +147,43 @@ async function submitCheckin(){
   }
 }
 
-function hideLoading(){
-  document.getElementById('loading-screen').style.display='none';
-  document.getElementById('app').classList.add('visible');
+// ================= LEADERBOARD =================
+async function loadLeaderboard(){
+
+  const res = await api("getLeaderboard", {});
+
+  const el = document.getElementById("lb");
+
+  if(!res.success || !res.leaderboard.length){
+    el.innerHTML = "ยังไม่มีข้อมูล";
+    return;
+  }
+
+  el.innerHTML = res.leaderboard.map((u,i)=>`
+    <div class="card">
+      <b>#${i+1} ${u.displayName}</b><br>
+      Badge: ${u.total}
+    </div>
+  `).join("");
 }
+
+// ================= TAB =================
+function switchTab(tab){
+
+  document.querySelectorAll(".tab button")
+    .forEach(b => b.classList.remove("active"));
+
+  event.target.classList.add("active");
+
+  document.getElementById("my").style.display =
+    tab === "my" ? "block" : "none";
+
+  document.getElementById("board").style.display =
+    tab === "board" ? "block" : "none";
+
+  if(tab === "board") loadLeaderboard();
+}
+
+</script>
+</body>
+</html>
