@@ -437,7 +437,7 @@
       <div class="input-group">
         <label class="input-label">รหัสที่ได้รับจาก LINE OA</label>
         <input type="text" class="input-field" id="qr-token-input"
-          placeholder="เช่น FXC-A3KP-7MQR"
+          placeholder="เช่น FCA001"
           style="text-transform:uppercase;letter-spacing:2px;font-family:monospace;font-size:17px;text-align:center;"
           oninput="this.value=this.value.toUpperCase()"
           onkeydown="if(event.key==='Enter') submitCheckin()"/>
@@ -472,11 +472,22 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycbwwFH9Rw91sbD_3vA0tWFQz
 const LIFF_ID = '2009815147-aGgIrfPv';
 
 const EVENTS = [
-  { code: 'FXC',             icon: '⚡', name: 'FXC' },
-  { code: 'FXCXO',           icon: '🔥', name: 'FXCXO' },
-  { code: 'FXCXU',           icon: '💎', name: 'FXCXU' },
-  { code: 'FXCXS',           icon: '🌟', name: 'FXCXS' },
-  { code: 'SinghawaxyFOCUS', icon: '🦁', name: 'FOCUS' },
+
+  { code:'FXC-A', icon:'⚡', name:'FXC A' },
+  { code:'FXC-B', icon:'⚡', name:'FXC B' },
+
+  { code:'FXCXO-A', icon:'🔥', name:'FXCXO A' },
+  { code:'FXCXO-B', icon:'🔥', name:'FXCXO B' },
+
+  { code:'FXCXU-A', icon:'💎', name:'FXCXU A' },
+  { code:'FXCXU-B', icon:'💎', name:'FXCXU B' },
+
+  { code:'FXCXS-A', icon:'🌟', name:'FXCXS A' },
+  { code:'FXCXS-B', icon:'🌟', name:'FXCXS B' },
+
+  { code:'SinghawayxFOCUS-A', icon:'🦁', name:'FOCUS A' },
+  { code:'SinghawayxFOCUS-B', icon:'🦁', name:'FOCUS B' },
+
 ];
 
 let currentUser = null;
@@ -563,7 +574,7 @@ async function autoCheckin(eventCode, qrToken) {
     });
     if (res.success) {
       await loadProfile();
-      showToast(`🎉 ได้รับ Badge!\n${eventCode}\nรวม ${res.totalBadges}/5 Badge`, 'success');
+      showToast(`🎉 ได้รับ Badge!\n${eventCode}\nรวม ${res.totalBadges}/10 Badge`, 'success');
       if (res.allEventsCompleted) {
         setTimeout(() => showToast('🏆 ครบทุก Badge แล้ว!', 'success'), 2500);
       }
@@ -604,8 +615,19 @@ function renderProfile(data) {
   document.getElementById('progress-fill').style.width = pct + '%';
   document.getElementById('progress-pct').textContent = pct + '%';
 
-  const subs = ['เริ่มสะสม Badge เลย!','1 Badge แล้ว! ต่อไป!','กำลังมาแรง! 💪','ดีมาก เก็บต่อ! 🔥','ครึ่งทางแล้ว! 💎','เกินครึ่งแล้ว! 😤','ใกล้แล้ว! 🏃','เกือบครบ! 😤','อีกแค่ 2 Badge!','อีก 1 Badge เดียว! 🏃','ยอดเยี่ยม! ครบทุก Badge! 🎉'];
-  document.getElementById('hero-sub').textContent = subs[Math.min(total, 5)];
+ const subs = [
+  'เริ่มสะสม Badge เลย!',
+  '1 Badge แล้ว! ต่อไป!',
+  '2 Badge แล้ว! 🔥',
+  '3 Badge แล้ว! 💪',
+  '4 Badge แล้ว! 🚀',
+  'ครึ่งทางแล้ว! 💎',
+  '6 Badge แล้ว! 😤',
+  '7 Badge แล้ว! 🏃',
+  'เหลืออีกนิดเดียว!',
+  'อีก 1 Badge เดียว! 🎯',
+  'ยอดเยี่ยม! ครบทุก Badge! 🎉'
+];
 
   const completeBanner = document.getElementById('complete-banner');
   completeBanner.style.display = total >= 10 ? 'flex' : 'none';
