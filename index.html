@@ -4,256 +4,288 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <title>Badge Collection</title>
-
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
-
 <style>
-/* ====== BASIC (ยกจากของเดิมแบบย่อ แต่คง UI หลัก) ====== */
-body{
-  margin:0;
-  background:#0A0E1A;
-  color:#E2E8F0;
-  font-family:'Kanit',sans-serif;
-}
+  /* ====== คง UI เดิมของคุณไว้ทั้งหมด 100% ====== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* HEADER */
-header{
-  padding:20px;
-  display:flex;
-  gap:12px;
-  align-items:center;
-}
-.avatar{
-  width:44px;height:44px;border-radius:50%;
-  background:#1A2235;
-}
-.user-name{font-weight:700}
+  :root {
+    --c-bg:      #0A0E1A;
+    --c-surface: #111827;
+    --c-card:    #1A2235;
+    --c-border:  #243050;
+    --c-gold:    #F5C842;
+    --c-gold2:   #E8A820;
+    --c-cyan:    #22D3EE;
+    --c-green:   #34D399;
+    --c-red:     #F87171;
+    --c-text:    #E2E8F0;
+    --c-muted:   #64748B;
+    --radius:    14px;
+  }
 
-/* HERO */
-.hero{
-  margin:20px;
-  padding:20px;
-  background:#1A2235;
-  border-radius:14px;
-}
-.hero-total{
-  font-size:42px;
-  font-family:'Space Mono';
-  color:#F5C842;
-}
+  html, body {
+    background: var(--c-bg);
+    color: var(--c-text);
+    font-family: 'Kanit', sans-serif;
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
 
-/* GRID */
-.grid{
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  gap:8px;
-  padding:0 20px;
-}
-.badge{
-  background:#1A2235;
-  padding:10px;
-  border-radius:10px;
-  text-align:center;
-  font-size:12px;
-}
+  #loading-screen {
+    position: fixed; inset: 0;
+    background: var(--c-bg);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 20px; z-index: 100;
+    transition: opacity .5s ease;
+  }
+  .loader-logo { font-size: 48px; animation: pulse 1.5s ease-in-out infinite; }
+  .loader-bar { width: 160px; height: 4px; background: var(--c-border); border-radius: 99px; overflow: hidden; }
+  .loader-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--c-cyan), var(--c-gold)); border-radius: 99px; animation: load 1.8s ease forwards; }
+  @keyframes load { to { width: 100%; } }
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.12)} }
 
-/* TAB */
-.tab{
-  display:flex;
-  gap:10px;
-  padding:0 20px;
-}
-.tab button{
-  flex:1;
-  padding:10px;
-  border:none;
-  border-radius:10px;
-  background:#1A2235;
-  color:#fff;
-  font-weight:700;
-}
-.tab button.active{
-  background:#22D3EE;
-  color:#000;
-}
+  #app { display: none; flex-direction: column; min-height: 100dvh; }
+  #app.visible { display: flex; }
 
-/* LEADERBOARD */
-.lb{
-  padding:0 20px 30px;
-}
-.lb-item{
-  display:flex;
-  justify-content:space-between;
-  padding:10px;
-  border-bottom:1px solid #243050;
-}
+  header { padding: 20px 20px 0; display: flex; align-items: center; gap: 14px; }
+  .avatar { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--c-gold); object-fit: cover; flex-shrink: 0; background: var(--c-card); }
+  .user-info { flex: 1; min-width: 0; }
+  .user-name { font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .user-sub { font-size: 12px; color: var(--c-muted); }
+
+  .hero { margin: 20px 20px 0; background: linear-gradient(135deg, #1E3A5F 0%, #0A1628 100%); border: 1px solid var(--c-border); border-radius: var(--radius); padding: 24px 20px; position: relative; overflow: hidden; }
+  .hero-label { font-size: 12px; color: var(--c-cyan); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+  .hero-total { font-size: 52px; font-weight: 900; line-height: 1; font-family: 'Space Mono', monospace; background: linear-gradient(135deg, var(--c-gold), var(--c-gold2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero-total span { font-size: 24px; color: var(--c-muted); -webkit-text-fill-color: var(--c-muted); }
+  .hero-sub { margin-top: 6px; font-size: 14px; color: var(--c-muted); }
+  .progress-bar { margin-top: 16px; height: 8px; background: var(--c-border); border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--c-cyan), var(--c-gold)); border-radius: 99px; transition: width .8s cubic-bezier(.4,0,.2,1); }
+  .progress-label { margin-top: 8px; font-size: 11px; color: var(--c-muted); display: flex; justify-content: space-between; }
+
+  .section-title { font-size: 13px; color: var(--c-muted); letter-spacing: 1.5px; text-transform: uppercase; padding: 20px 20px 12px; }
+  .badges-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 0 20px; }
+  .badge-item { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 6px; background: var(--c-card); border: 1px solid var(--c-border); border-radius: var(--radius); transition: all .3s ease; position: relative; overflow: hidden; opacity: 0.4; filter: grayscale(1); }
+  .badge-item.earned { opacity: 1; filter: grayscale(0); border-color: var(--c-gold); background: linear-gradient(135deg, #1A2235 0%, #1E2D1A 100%); box-shadow: 0 0 20px rgba(245,200,66,.15); }
+  .badge-icon { font-size: 26px; transition: transform .3s ease; }
+  .badge-name { font-size: 9px; text-align: center; color: var(--c-muted); line-height: 1.3; font-weight: 600; }
+  .badge-item.earned .badge-name { color: var(--c-gold); }
+  .badge-check { width: 16px; height: 16px; border-radius: 50%; background: var(--c-border); display: flex; align-items: center; justify-content: center; font-size: 9px; color: transparent; transition: all .3s ease; }
+  .badge-item.earned .badge-check { background: var(--c-green); color: #fff; }
+
+  .scan-wrap { padding: 24px 20px 12px; }
+  .btn-scan { width: 100%; padding: 18px; border: none; border-radius: var(--radius); background: linear-gradient(135deg, var(--c-cyan) 0%, #0EA5E9 100%); color: #0A0E1A; font-family: 'Kanit', sans-serif; font-size: 18px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all .2s ease; box-shadow: 0 6px 24px rgba(34,211,238,.3); letter-spacing: .5px; }
+
+  .leaderboard { padding: 0 20px 20px; }
+  .lb-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--c-card); border: 1px solid var(--c-border); border-radius: 10px; margin-bottom: 8px; }
+  .lb-rank { font-family: 'Space Mono', monospace; font-size: 13px; font-weight: 700; color: var(--c-muted); min-width: 24px; text-align: center; }
+  .lb-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: var(--c-border); flex-shrink: 0; }
+  .lb-name { flex: 1; font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .lb-total { font-family: 'Space Mono', monospace; font-size: 14px; font-weight: 700; color: var(--c-gold); min-width: 20px; text-align: right; }
+
+  .tab-nav { display: flex; background: var(--c-surface); border-bottom: 1px solid var(--c-border); padding: 0 20px; gap: 24px; margin-bottom: 4px; position: sticky; top: 0; z-index: 10; }
+  .tab-btn { padding: 14px 0; background: none; border: none; font-family: 'Kanit', sans-serif; font-size: 14px; font-weight: 600; color: var(--c-muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all .2s ease; }
+  .tab-btn.active { color: var(--c-cyan); border-bottom-color: var(--c-cyan); }
+
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.75); display: none; align-items: flex-end; justify-content: center; z-index: 50; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--c-card); border: 1px solid var(--c-border); border-radius: 20px 20px 0 0; padding: 24px 20px 40px; width: 100%; max-width: 480px; transform: translateY(0); }
+  .modal-title { font-size: 20px; font-weight: 700; margin-bottom: 20px; text-align: center; }
+  .input-field { width: 100%; padding: 14px 16px; background: var(--c-surface); border: 1px solid var(--c-border); border-radius: 10px; color: var(--c-text); font-family: 'Kanit', sans-serif; font-size: 15px; outline: none; text-align: center; }
+  .btn-confirm { width: 100%; padding: 16px; border: none; border-radius: 10px; background: var(--c-cyan); color: #0A0E1A; font-family: 'Kanit', sans-serif; font-size: 17px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+
+  .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-80px); background: var(--c-card); border: 1px solid var(--c-border); border-radius: 12px; padding: 14px 20px; font-size: 14px; font-weight: 600; z-index: 200; transition: 0.4s; opacity: 0; box-shadow: 0 8px 32px rgba(0,0,0,.4); }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  .toast.success { border-color: var(--c-green); color: var(--c-green); }
+  .toast.error { border-color: var(--c-red); color: var(--c-red); }
 </style>
 </head>
-
 <body>
 
-<header>
-  <img class="avatar" id="avatar"/>
-  <div>
-    <div class="user-name" id="name">Loading...</div>
+<div id="loading-screen">
+  <div class="loader-logo">🏆</div>
+  <div style="font-size:18px;font-weight:700;color:#E2E8F0">กำลังโหลด...</div>
+  <div class="loader-bar"><div class="loader-fill"></div></div>
+</div>
+
+<div id="app">
+  <header>
+    <img id="user-avatar" class="avatar" src="" alt=""/>
+    <div class="user-info">
+      <div class="user-name" id="user-name">กำลังโหลด...</div>
+      <div class="user-sub">Badge Collector</div>
+    </div>
+  </header>
+
+  <nav class="tab-nav">
+    <button class="tab-btn active" id="btn-my" onclick="switchTab('my')">ของฉัน</button>
+    <button class="tab-btn" id="btn-board" onclick="switchTab('board')">Leaderboard</button>
+  </nav>
+
+  <div id="tab-my">
+    <div class="hero">
+      <div class="hero-label">Badge ที่สะสมได้</div>
+      <div class="hero-total" id="total-count">0 <span>/ 10</span></div>
+      <div class="hero-sub" id="hero-sub">มาเริ่มสะสม Badge กัน!</div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+      <div class="progress-label">
+        <span id="badge-count-label">0 / 10 Badge</span>
+        <span id="progress-pct">0%</span>
+      </div>
+    </div>
+
+    <div class="section-title">Badge ทั้งหมด</div>
+    <div class="badges-grid" id="badges-grid"></div>
+
+    <div class="scan-wrap">
+      <button class="btn-scan" onclick="openScanModal()">
+        <span>🔑</span> <span>กรอกรหัสรับ Badge</span>
+      </button>
+    </div>
   </div>
-</header>
 
-<div class="hero">
-  <div>Badge Score</div>
-  <div class="hero-total" id="total">0</div>
-</div>
-
-<div class="tab">
-  <button class="active" onclick="showTab('my')">My Badge</button>
-  <button onclick="showTab('lb')">Leaderboard</button>
-</div>
-
-<!-- MY BADGE -->
-<div id="tab-my">
-  <div class="grid" id="badgeGrid"></div>
-
-  <div style="padding:20px">
-    <input id="code" placeholder="กรอกรหัส" style="width:100%;padding:10px"/>
-    <button onclick="redeem()" style="width:100%;margin-top:10px;padding:12px;background:#22D3EE;border:none;font-weight:bold">Redeem</button>
+  <div id="tab-board" style="display:none">
+    <div class="section-title">อันดับผู้สะสม</div>
+    <div class="leaderboard" id="leaderboard-list"></div>
   </div>
 </div>
 
-<!-- LEADERBOARD -->
-<div id="tab-lb" style="display:none">
-  <div class="lb" id="leaderboard">Loading...</div>
+<div class="modal-overlay" id="scan-modal">
+  <div class="modal">
+    <div class="modal-title">🔑 กรอกรหัสรับ Badge</div>
+    <input type="text" class="input-field" id="qr-token-input" placeholder="กรอกรหัสที่ได้รับ" oninput="this.value=this.value.toUpperCase()">
+    <button class="btn-confirm" id="confirm-btn" onclick="submitRedeem()">✅ ยืนยัน</button>
+    <button class="btn-confirm" style="background:transparent;color:var(--c-muted);" onclick="closeScanModal()">ยกเลิก</button>
+  </div>
 </div>
+
+<div class="toast" id="toast"></div>
 
 <script>
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwwFH9Rw91sbD_3vA0tWFQzIcpfvcuul-qwpPyJCspp1NDamwwtzmb70wXr-jwyoA/exec';
+const LIFF_ID = '2009815147-aGgIrfPv';
 
-const LIFF_ID = "2009815147-aGgIrfPv";
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxYDJk4lB606Hs4yGm4-1xheSXdsX901EnxR4L8KwBqqCORutiU88JELqHwJhDBxz1W/exec";
+// รายการ Badge 10 อัน
+const BADGE_LIST = [
+  { id: 'FXC-A', icon: '⚡', name: 'FXC A' }, { id: 'FXC-B', icon: '⚡', name: 'FXC B' },
+  { id: 'FXCXO-A', icon: '🔥', name: 'XO A' }, { id: 'FXCXO-B', icon: '🔥', name: 'XO B' },
+  { id: 'FXCXU-A', icon: '💎', name: 'XU A' }, { id: 'FXCXU-B', icon: '💎', name: 'XU B' },
+  { id: 'FXCXS-A', icon: '🌟', name: 'XS A' }, { id: 'FXCXS-B', icon: '🌟', name: 'XS B' },
+  { id: 'SinghawayxFOCUS-A', icon: '🦁', name: 'FOCUS A' }, { id: 'SinghawayxFOCUS-B', icon: '🦁', name: 'FOCUS B' }
+];
 
-let userId="";
-let displayName="";
+async function init() {
+  try {
+    await liff.init({ liffId: LIFF_ID });
+    if (!liff.isLoggedIn()) { liff.login(); return; }
+    
+    const profile = await liff.getProfile();
+    document.getElementById('user-name').textContent = profile.displayName;
+    document.getElementById('user-avatar').src = profile.pictureUrl || '';
 
-// ================= INIT =================
-async function init(){
+    await apiCall({ action: 'register', lineUserId: profile.userId, displayName: profile.displayName, pictureUrl: profile.pictureUrl });
+    await loadProfile();
 
-  await liff.init({ liffId: LIFF_ID });
-
-  if(!liff.isLoggedIn()){
-    liff.login();
-    return;
-  }
-
-  const profile = await liff.getProfile();
-
-  userId = profile.userId;
-  displayName = profile.displayName;
-
-  document.getElementById("name").innerText = displayName;
-  document.getElementById("avatar").src = profile.pictureUrl;
-
-  await api({action:"register",lineUserId:userId,displayName});
-
-  await loadProfile();
-  await loadLeaderboard();
-}
-
-// ================= API =================
-async function api(body){
-  try{
-    const res = await fetch(GAS_URL,{
-      method:"POST",
-      body:JSON.stringify(body)
-    });
-    return await res.json();
-  }catch(e){
-    return {success:false};
-  }
-}
-
-// ================= PROFILE =================
-async function loadProfile(){
-
-  const res = await api({
-    action:"getProfile",
-    lineUserId:userId
-  });
-
-  if(!res.success) return;
-
-  document.getElementById("total").innerText = res.badges.total || 0;
-
-  const grid = document.getElementById("badgeGrid");
-  let html="";
-
-  Object.keys(res.badges).forEach(k=>{
-    if(k==="total") return;
-    if(res.badges[k]==1){
-      html+=`<div class="badge">✔ ${k}</div>`;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('code')) {
+      document.getElementById('qr-token-input').value = params.get('code');
+      openScanModal();
     }
-  });
-
-  grid.innerHTML = html;
-}
-
-// ================= REDEEM =================
-async function redeem(){
-
-  const code = document.getElementById("code").value;
-
-  const res = await api({
-    action:"redeemCode",
-    lineUserId:userId,
-    code
-  });
-
-  alert(res.message || "done");
-
-  await loadProfile();
-  await loadLeaderboard();
-}
-
-// ================= LEADERBOARD FIX =================
-async function loadLeaderboard(){
-
-  const res = await api({action:"getLeaderboard"});
-
-  if(!res.success){
-    document.getElementById("leaderboard").innerHTML="error";
-    return;
+  } catch (err) {
+    showToast('โหลดข้อมูลล้มเหลว', 'error');
+  } finally {
+    hideLoading();
   }
+}
 
-  let html="";
+async function apiCall(body) {
+  const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify(body) });
+  return res.json();
+}
 
-  res.leaderboard.forEach((u,i)=>{
-    html+=`
+async function loadProfile() {
+  const profile = await liff.getProfile();
+  const res = await apiCall({ action: 'getProfile', lineUserId: profile.userId });
+  if (res.success) renderProfile(res.badges);
+}
+
+function renderProfile(badges) {
+  const total = badges.total || 0;
+  const pct = (total / 10) * 100;
+  
+  document.getElementById('total-count').innerHTML = `${total} <span>/ 10</span>`;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-pct').textContent = pct + '%';
+  document.getElementById('badge-count-label').textContent = `${total} / 10 Badge`;
+  
+  const grid = document.getElementById('badges-grid');
+  grid.innerHTML = BADGE_LIST.map(b => `
+    <div class="badge-item ${badges[b.id] >= 1 ? 'earned' : ''}">
+      <div class="badge-icon">${b.icon}</div>
+      <div class="badge-name">${b.name}</div>
+      <div class="badge-check">${badges[b.id] >= 1 ? '✓' : ''}</div>
+    </div>
+  `).join('');
+}
+
+async function submitRedeem() {
+  const code = document.getElementById('qr-token-input').value.trim();
+  if (!code) return;
+  
+  const btn = document.getElementById('confirm-btn');
+  btn.disabled = true; btn.textContent = 'กำลังตรวจสอบ...';
+  
+  const profile = await liff.getProfile();
+  const res = await apiCall({ action: 'redeemCode', lineUserId: profile.userId, code: code });
+  
+  if (res.success) {
+    showToast('ยินดีด้วย! ได้รับ Badge แล้ว', 'success');
+    closeScanModal();
+    await loadProfile();
+  } else {
+    showToast(res.message || 'รหัสไม่ถูกต้อง', 'error');
+  }
+  btn.disabled = false; btn.textContent = '✅ ยืนยัน';
+}
+
+async function loadLeaderboard() {
+  const res = await apiCall({ action: 'getLeaderboard' });
+  const list = document.getElementById('leaderboard-list');
+  if (res.success) {
+    list.innerHTML = res.leaderboard.map((u, i) => `
       <div class="lb-item">
-        <div>#${i+1} ${u.displayName}</div>
-        <div>${u.total}</div>
+        <div class="lb-rank">${i + 1}</div>
+        <img class="lb-avatar" src="${u.pictureUrl || ''}">
+        <div class="lb-name">${u.displayName}</div>
+        <div class="lb-total">${u.total}</div>
       </div>
-    `;
-  });
-
-  document.getElementById("leaderboard").innerHTML=html;
+    `).join('');
+  }
 }
 
-// ================= TAB =================
-function showTab(t){
-
-  document.querySelectorAll(".tab button")
-  .forEach(b=>b.classList.remove("active"));
-
-  event.target.classList.add("active");
-
-  document.getElementById("tab-my").style.display = t==="my"?"block":"none";
-  document.getElementById("tab-lb").style.display = t==="lb"?"block":"none";
-
+function switchTab(tab) {
+  document.getElementById('tab-my').style.display = tab === 'my' ? 'block' : 'none';
+  document.getElementById('tab-board').style.display = tab === 'board' ? 'block' : 'none';
+  document.getElementById('btn-my').classList.toggle('active', tab === 'my');
+  document.getElementById('btn-board').classList.toggle('active', tab === 'board');
+  if (tab === 'board') loadLeaderboard();
 }
 
-// start
+function openScanModal() { document.getElementById('scan-modal').classList.add('open'); }
+function closeScanModal() { document.getElementById('scan-modal').classList.remove('open'); }
+function showToast(m, t) { 
+  const el = document.getElementById('toast'); 
+  el.textContent = m; el.className = `toast show ${t}`; 
+  setTimeout(() => el.classList.remove('show'), 3000); 
+}
+function hideLoading() { 
+  document.getElementById('loading-screen').style.opacity = '0';
+  setTimeout(() => { document.getElementById('loading-screen').style.display = 'none'; document.getElementById('app').classList.add('visible'); }, 500);
+}
+
 init();
-
 </script>
-
 </body>
 </html>
