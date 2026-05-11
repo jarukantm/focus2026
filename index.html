@@ -1,213 +1,259 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FOCUS 2026 Badge Collection</title>
-    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg: #0f172a; --card: #1e293b; --accent: #22d3ee; --gold: #fbbf24;
-            --text: #f8fafc; --muted: #94a3b8; --border: #334155;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Kanit', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Badge Collection</title>
 
-        /* Loading Overlay */
-        #loader { position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; }
-        .spinner { width: 40px; height: 40px; border: 4px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 
-        /* UI Components */
-        header { padding: 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); }
-        .profile-img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--accent); }
-        
-        .stats-card { margin: 20px; padding: 20px; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid var(--border); border-radius: 16px; text-align: center; }
-        .progress-container { height: 10px; background: var(--border); border-radius: 5px; margin: 15px 0; overflow: hidden; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--gold)); transition: width 0.5s ease; }
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
 
-        .badge-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 0 20px; }
-        .badge-item { background: var(--card); border: 1px solid var(--border); padding: 12px 5px; border-radius: 12px; text-align: center; opacity: 0.3; filter: grayscale(1); transition: 0.3s; }
-        .badge-item.active { opacity: 1; filter: grayscale(0); border-color: var(--gold); background: rgba(251, 191, 36, 0.05); }
-        .badge-icon { font-size: 24px; margin-bottom: 5px; }
-        .badge-label { font-size: 10px; color: var(--muted); display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+<style>
+/* ====== BASIC (ยกจากของเดิมแบบย่อ แต่คง UI หลัก) ====== */
+body{
+  margin:0;
+  background:#0A0E1A;
+  color:#E2E8F0;
+  font-family:'Kanit',sans-serif;
+}
 
-        .btn-redeem { display: block; width: calc(100% - 40px); margin: 25px auto; padding: 16px; background: var(--accent); color: #000; border: none; border-radius: 12px; font-weight: 600; font-size: 16px; cursor: pointer; }
+/* HEADER */
+header{
+  padding:20px;
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+.avatar{
+  width:44px;height:44px;border-radius:50%;
+  background:#1A2235;
+}
+.user-name{font-weight:700}
 
-        /* Modal */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 100; }
-        .modal-content { background: var(--card); width: 100%; max-width: 400px; padding: 25px; border-radius: 20px; border: 1px solid var(--border); }
-        .input-code { width: 100%; padding: 15px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; color: #fff; font-size: 20px; text-align: center; margin-bottom: 20px; }
-        
-        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); padding: 12px 24px; background: var(--card); border: 1px solid var(--border); border-radius: 50px; display: none; z-index: 1000; font-size: 14px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-    </style>
+/* HERO */
+.hero{
+  margin:20px;
+  padding:20px;
+  background:#1A2235;
+  border-radius:14px;
+}
+.hero-total{
+  font-size:42px;
+  font-family:'Space Mono';
+  color:#F5C842;
+}
+
+/* GRID */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:8px;
+  padding:0 20px;
+}
+.badge{
+  background:#1A2235;
+  padding:10px;
+  border-radius:10px;
+  text-align:center;
+  font-size:12px;
+}
+
+/* TAB */
+.tab{
+  display:flex;
+  gap:10px;
+  padding:0 20px;
+}
+.tab button{
+  flex:1;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:#1A2235;
+  color:#fff;
+  font-weight:700;
+}
+.tab button.active{
+  background:#22D3EE;
+  color:#000;
+}
+
+/* LEADERBOARD */
+.lb{
+  padding:0 20px 30px;
+}
+.lb-item{
+  display:flex;
+  justify-content:space-between;
+  padding:10px;
+  border-bottom:1px solid #243050;
+}
+</style>
 </head>
+
 <body>
 
-<div id="loader"><div class="spinner"></div><p style="margin-top:15px; color:var(--muted)">กำลังเชื่อมต่อ...</p></div>
-
 <header>
-    <img id="user-img" class="profile-img" src="" alt="">
-    <div>
-        <h2 id="user-name" style="font-size:18px">...</h2>
-        <p style="font-size:12px; color:var(--muted)">Water Resource Conservation</p>
-    </div>
+  <img class="avatar" id="avatar"/>
+  <div>
+    <div class="user-name" id="name">Loading...</div>
+  </div>
 </header>
 
-<div class="stats-card">
-    <p style="font-size:14px; color:var(--accent)">Badge ที่สะสมได้</p>
-    <h1 id="total-text" style="font-size:48px; margin:5px 0">0 <small style="font-size:16px; color:var(--muted)">/ 10</small></h1>
-    <div class="progress-container"><div id="progress-bar" class="progress-fill" style="width: 0%"></div></div>
-    <p id="status-msg" style="font-size:12px; color:var(--muted)">สะสมครบเพื่อรับรางวัลพิเศษ!</p>
+<div class="hero">
+  <div>Badge Score</div>
+  <div class="hero-total" id="total">0</div>
 </div>
 
-<div class="badge-grid" id="badge-container"></div>
-
-<button class="btn-redeem" onclick="toggleModal(true)">🔑 กรอกรหัสรับ Badge</button>
-
-<div class="modal" id="redeem-modal">
-    <div class="modal-content">
-        <h3 style="margin-bottom:15px; text-align:center">กรอกรหัสกิจกรรม</h3>
-        <input type="text" id="code-input" class="input-code" placeholder="เช่น FCA001" autocomplete="off" oninput="this.value = this.value.toUpperCase()">
-        <button id="submit-btn" class="btn-redeem" style="width:100%; margin:0" onclick="handleRedeem()">ยืนยันรหัส</button>
-        <button onclick="toggleModal(false)" style="width:100%; background:none; border:none; color:var(--muted); margin-top:15px; cursor:pointer">ปิดหน้าต่าง</button>
-    </div>
+<div class="tab">
+  <button class="active" onclick="showTab('my')">My Badge</button>
+  <button onclick="showTab('lb')">Leaderboard</button>
 </div>
 
-<div id="toast" class="toast"></div>
+<!-- MY BADGE -->
+<div id="tab-my">
+  <div class="grid" id="badgeGrid"></div>
+
+  <div style="padding:20px">
+    <input id="code" placeholder="กรอกรหัส" style="width:100%;padding:10px"/>
+    <button onclick="redeem()" style="width:100%;margin-top:10px;padding:12px;background:#22D3EE;border:none;font-weight:bold">Redeem</button>
+  </div>
+</div>
+
+<!-- LEADERBOARD -->
+<div id="tab-lb" style="display:none">
+  <div class="lb" id="leaderboard">Loading...</div>
+</div>
 
 <script>
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxlLG9hMqTqyEENEM4rj-L4ALUasAdK7uAmLCHBUUyk0QejX7LCTMy5_rHd3O3XSWrH/exec';
-    const LIFF_ID = '2009815147-aGgIrfPv';
-    
-    const BADGE_LIST = [
-        { id: 'FXC-A', icon: '⚡', name: 'FXC A' }, { id: 'FXC-B', icon: '⚡', name: 'FXC B' },
-        { id: 'FXCXO-A', icon: '🔥', name: 'XO A' }, { id: 'FXCXO-B', icon: '🔥', name: 'XO B' },
-        { id: 'FXCXU-A', icon: '💎', name: 'XU A' }, { id: 'FXCXU-B', icon: '💎', name: 'XU B' },
-        { id: 'FXCXS-A', icon: '🌟', name: 'XS A' }, { id: 'FXCXS-B', icon: '🌟', name: 'XS B' },
-        { id: 'SinghawayxFOCUS-A', icon: '🦁', name: 'FOCUS A' }, { id: 'SinghawayxFOCUS-B', icon: '🦁', name: 'FOCUS B' }
-    ];
 
-    async function init() {
-        try {
-            await liff.init({ liffId: LIFF_ID });
-            if (!liff.isLoggedIn()) {
-                liff.login();
-                return;
-            }
-            const profile = await liff.getProfile();
-            document.getElementById('user-img').src = profile.pictureUrl;
-            document.getElementById('user-name').innerText = profile.displayName;
+const LIFF_ID = "2009815147-aGgIrfPv";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbz9EaqxwoFvKX7zuBrZVN2kYz0xy52F8yNacsTyB1wONkgE2e6iY77JQZNM0B1PlYqA/exec";
 
-            await apiCall('register', { 
-                lineUserId: profile.userId, 
-                displayName: profile.displayName, 
-                pictureUrl: profile.pictureUrl 
-            });
+let userId="";
+let displayName="";
 
-            await loadData();
-            
-            // Auto check-in if URL has code
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('code')) {
-                document.getElementById('code-input').value = urlParams.get('code');
-                toggleModal(true);
-            }
+// ================= INIT =================
+async function init(){
 
-        } catch (err) {
-            console.error(err);
-            showToast("⚠️ ไม่สามารถโหลดข้อมูลได้", "#f87171");
-        } finally {
-            document.getElementById('loader').style.display = 'none';
-        }
+  await liff.init({ liffId: LIFF_ID });
+
+  if(!liff.isLoggedIn()){
+    liff.login();
+    return;
+  }
+
+  const profile = await liff.getProfile();
+
+  userId = profile.userId;
+  displayName = profile.displayName;
+
+  document.getElementById("name").innerText = displayName;
+  document.getElementById("avatar").src = profile.pictureUrl;
+
+  await api({action:"register",lineUserId:userId,displayName});
+
+  await loadProfile();
+  await loadLeaderboard();
+}
+
+// ================= API =================
+async function api(body){
+  try{
+    const res = await fetch(GAS_URL,{
+      method:"POST",
+      body:JSON.stringify(body)
+    });
+    return await res.json();
+  }catch(e){
+    return {success:false};
+  }
+}
+
+// ================= PROFILE =================
+async function loadProfile(){
+
+  const res = await api({
+    action:"getProfile",
+    lineUserId:userId
+  });
+
+  if(!res.success) return;
+
+  document.getElementById("total").innerText = res.badges.total || 0;
+
+  const grid = document.getElementById("badgeGrid");
+  let html="";
+
+  Object.keys(res.badges).forEach(k=>{
+    if(k==="total") return;
+    if(res.badges[k]==1){
+      html+=`<div class="badge">✔ ${k}</div>`;
     }
+  });
 
-    async function apiCall(action, data) {
-        try {
-            const response = await fetch(GAS_URL, {
-                method: 'POST',
-                body: JSON.stringify({ action, ...data })
-            });
-            // ตรวจสอบว่า response เป็น JSON หรือไม่
-            const text = await response.text();
-            try {
-                return JSON.parse(text);
-            } catch (e) {
-                console.error("Non-JSON response:", text);
-                return { success: false, message: "Server Response Error" };
-            }
-        } catch (err) {
-            return { success: false, message: "Network Error" };
-        }
-    }
+  grid.innerHTML = html;
+}
 
-    async function loadData() {
-        const profile = await liff.getProfile();
-        const res = await apiCall('getProfile', { lineUserId: profile.userId });
-        
-        if (res.success) {
-            const badges = res.badges || {};
-            const total = badges.total || 0;
-            
-            document.getElementById('total-text').innerHTML = `${total} <small style="font-size:16px; color:var(--muted)">/ 10</small>`;
-            document.getElementById('progress-bar').style.width = (total * 10) + '%';
+// ================= REDEEM =================
+async function redeem(){
 
-            const container = document.getElementById('badge-container');
-            container.innerHTML = BADGE_LIST.map(b => `
-                <div class="badge-item ${badges[b.id] >= 1 ? 'active' : ''}">
-                    <div class="badge-icon">${b.icon}</div>
-                    <span class="badge-label">${b.name}</span>
-                </div>
-            `).join('');
+  const code = document.getElementById("code").value;
 
-            if(total >= 10) {
-                document.getElementById('status-msg').innerText = "🎉 คุณได้รับรางวัลเกียรติยศครบถ้วน!";
-                document.getElementById('status-msg').style.color = "var(--gold)";
-            }
-        }
-    }
+  const res = await api({
+    action:"redeemCode",
+    lineUserId:userId,
+    code
+  });
 
-    async function handleRedeem() {
-        const codeInput = document.getElementById('code-input');
-        const code = codeInput.value.trim();
-        if (!code) return;
+  alert(res.message || "done");
 
-        const btn = document.getElementById('submit-btn');
-        btn.disabled = true;
-        btn.innerText = "กำลังตรวจสอบ...";
+  await loadProfile();
+  await loadLeaderboard();
+}
 
-        const profile = await liff.getProfile();
-        const res = await apiCall('redeemCode', { lineUserId: profile.userId, code: code });
+// ================= LEADERBOARD FIX =================
+async function loadLeaderboard(){
 
-        if (res.success) {
-            showToast("🎉 ยินดีด้วย! คุณได้รับ Badge ใหม่", "var(--accent)");
-            toggleModal(false);
-            codeInput.value = "";
-            await loadData();
-        } else {
-            showToast(res.message || "❌ รหัสไม่ถูกต้อง", "#f87171");
-        }
-        
-        btn.disabled = false;
-        btn.innerText = "ยืนยันรหัส";
-    }
+  const res = await api({action:"getLeaderboard"});
 
-    function toggleModal(show) {
-        document.getElementById('redeem-modal').style.display = show ? 'flex' : 'none';
-        if(show) document.getElementById('code-input').focus();
-    }
+  if(!res.success){
+    document.getElementById("leaderboard").innerHTML="error";
+    return;
+  }
 
-    function showToast(msg, color) {
-        const toast = document.getElementById('toast');
-        toast.innerText = msg;
-        toast.style.borderColor = color;
-        toast.style.color = color;
-        toast.style.display = 'block';
-        setTimeout(() => { toast.style.display = 'none'; }, 3000);
-    }
+  let html="";
 
-    init();
+  res.leaderboard.forEach((u,i)=>{
+    html+=`
+      <div class="lb-item">
+        <div>#${i+1} ${u.displayName}</div>
+        <div>${u.total}</div>
+      </div>
+    `;
+  });
+
+  document.getElementById("leaderboard").innerHTML=html;
+}
+
+// ================= TAB =================
+function showTab(t){
+
+  document.querySelectorAll(".tab button")
+  .forEach(b=>b.classList.remove("active"));
+
+  event.target.classList.add("active");
+
+  document.getElementById("tab-my").style.display = t==="my"?"block":"none";
+  document.getElementById("tab-lb").style.display = t==="lb"?"block":"none";
+
+}
+
+// start
+init();
+
 </script>
+
 </body>
 </html>
