@@ -2,36 +2,46 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Badge LIFF</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>Badge Collection</title>
 
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 
 <style>
-body { font-family: Arial; margin:0; background:#0b0f1a; color:white; }
+/* ====== KEEP YOUR ORIGINAL UI ====== */
+body { margin:0; font-family:'Kanit',sans-serif; background:#0A0E1A; color:#E2E8F0; }
 
-header { padding:16px; display:flex; align-items:center; gap:10px; }
-img { width:40px; height:40px; border-radius:50%; }
+header { padding:20px; display:flex; align-items:center; gap:12px; }
+.avatar { width:48px;height:48px;border-radius:50%;border:2px solid #F5C842; }
+.user-name { font-weight:600; }
 
-.tab { display:flex; background:#111827; }
-.tab button {
-  flex:1; padding:12px; background:none; border:none;
-  color:#aaa; font-weight:bold;
+.tab-nav { display:flex; background:#111827; }
+.tab-btn {
+  flex:1; padding:14px; background:none; border:none;
+  color:#64748B; font-weight:600;
 }
-.tab button.active { color:#22d3ee; border-bottom:2px solid #22d3ee; }
+.tab-btn.active { color:#22D3EE; border-bottom:2px solid #22D3EE; }
 
 .section { padding:16px; }
 
-.card { background:#1f2937; padding:10px; margin:8px 0; border-radius:10px; }
+/* HERO */
+.hero { background:#1E3A5F; padding:20px; border-radius:12px; }
+.hero-total { font-size:42px; font-weight:900; color:#F5C842; }
 
-button.main {
-  width:100%; padding:14px; background:#22d3ee;
-  border:none; color:#000; font-weight:bold; border-radius:10px;
-}
+/* BADGES */
+.badges-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; }
+.badge-item { background:#1A2235; padding:10px; border-radius:10px; text-align:center; }
+.badge-item.earned { border:1px solid #F5C842; }
 
-input {
-  width:100%; padding:12px; border-radius:8px;
-  border:none; margin:10px 0;
+/* LEADERBOARD */
+.lb-item { display:flex; gap:10px; padding:10px; background:#1A2235; margin:6px 0; border-radius:10px; }
+.lb-avatar { width:36px;height:36px;border-radius:50%; }
+.lb-total { margin-left:auto; color:#F5C842; }
+
+/* SCAN */
+.btn-scan {
+  width:100%; padding:16px; background:#22D3EE;
+  border:none; border-radius:10px; font-weight:700;
 }
 </style>
 </head>
@@ -40,46 +50,64 @@ input {
 
 <!-- HEADER -->
 <header>
-  <img id="avatar">
+  <img id="user-avatar" class="avatar">
   <div>
-    <div id="name">Loading...</div>
+    <div id="user-name">Loading...</div>
     <small>Badge System</small>
   </div>
 </header>
 
 <!-- TAB -->
-<div class="tab">
-  <button class="active" onclick="switchTab('my')">My Badge</button>
-  <button onclick="switchTab('board')">Leaderboard</button>
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('my')">ของฉัน</button>
+  <button class="tab-btn" onclick="switchTab('board')">Leaderboard</button>
 </div>
 
 <!-- MY -->
-<div id="my" class="section">
+<div id="tab-my" class="section">
 
-  <h3>คะแนนของคุณ</h3>
-  <h1 id="total">0</h1>
+  <div class="hero">
+    <div>คะแนนสะสม</div>
+    <div class="hero-total" id="total-count">0</div>
+  </div>
 
-  <input id="code" placeholder="ใส่ Code ที่นี่">
-  <button class="main" onclick="redeem()">ยืนยันรับ Badge</button>
+  <h4>Badge ทั้งหมด</h4>
+  <div class="badges-grid" id="badges-grid"></div>
+
+  <button class="btn-scan" onclick="openScanModal()">
+    กรอกรหัส / รับ Badge
+  </button>
 
 </div>
 
 <!-- LEADERBOARD -->
-<div id="board" class="section" style="display:none;">
+<div id="tab-board" class="section" style="display:none;">
   <h3>Leaderboard</h3>
-  <div id="lb">กำลังโหลด...</div>
+  <div id="leaderboard-list">Loading...</div>
 </div>
+
+<!-- MODAL -->
+<div id="scan-modal" style="display:none;padding:16px;">
+  <input id="qr-token-input" placeholder="ใส่ Code">
+  <button class="btn-scan" onclick="submitCheckin()">ยืนยัน</button>
+  <button onclick="closeScanModal()">ปิด</button>
+</div>
+
+<!-- TOAST -->
+<div id="toast" style="position:fixed;top:10px;left:50%;transform:translateX(-50%);
+background:#1A2235;padding:10px;border-radius:10px;display:none;"></div>
 
 <script>
 
-const GAS = "https://script.google.com/macros/s/AKfycbxYDJk4lB606Hs4yGm4-1xheSXdsX901EnxR4L8KwBqqCORutiU88JELqHwJhDBxz1W/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxYDJk4lB606Hs4yGm4-1xheSXdsX901EnxR4L8KwBqqCORutiU88JELqHwJhDBxz1W/exec";
+const LIFF_ID = "2009815147-aGgIrfPv";
 
 let user = null;
 
 // ================= INIT =================
 window.onload = async () => {
 
-  await liff.init({ liffId: "2009815147-aGgIrfPv" });
+  await liff.init({ liffId: LIFF_ID });
 
   if (!liff.isLoggedIn()) {
     liff.login();
@@ -88,13 +116,14 @@ window.onload = async () => {
 
   user = await liff.getProfile();
 
-  document.getElementById("name").innerText = user.displayName;
-  document.getElementById("avatar").src = user.pictureUrl;
+  document.getElementById("user-name").innerText = user.displayName;
+  document.getElementById("user-avatar").src = user.pictureUrl;
 
-  await api("register", {
-    lineUserId: user.userId,
-    displayName: user.displayName,
-    pictureUrl: user.pictureUrl
+  await api({
+    action:"register",
+    lineUserId:user.userId,
+    displayName:user.displayName,
+    pictureUrl:user.pictureUrl
   });
 
   await loadProfile();
@@ -102,88 +131,122 @@ window.onload = async () => {
 };
 
 // ================= API =================
-async function api(action, data){
-
-  const res = await fetch(GAS, {
-    method: "POST",
-    body: JSON.stringify({ action, ...data })
+async function api(body){
+  const res = await fetch(GAS_URL,{
+    method:"POST",
+    body:JSON.stringify(body)
   });
-
   return res.json();
 }
 
 // ================= PROFILE =================
 async function loadProfile(){
 
-  const res = await api("getProfile", {
-    lineUserId: user.userId
+  const res = await api({
+    action:"getProfile",
+    lineUserId:user.userId
   });
 
-  document.getElementById("total").innerText =
-    res.badges?.total || 0;
+  const total = res.badges?.total || 0;
+
+  document.getElementById("total-count").innerText = total;
+
+  renderBadges(res.badges || {});
+}
+
+// ================= BADGES =================
+function renderBadges(b){
+
+  const list = [
+    "FXC-A","FXC-B",
+    "FXCXO-A","FXCXO-B",
+    "FXCXU-A","FXCXU-B",
+    "FXCXS-A","FXCXS-B",
+    "SinghawayxFOCUS-A","SinghawayxFOCUS-B"
+  ];
+
+  document.getElementById("badges-grid").innerHTML =
+    list.map(x=>`
+      <div class="badge-item ${b[x]? "earned":""}">
+        ${x}
+      </div>
+    `).join("");
 }
 
 // ================= REDEEM =================
-async function redeem(){
+async function submitCheckin(){
 
-  const code = document.getElementById("code").value.trim();
+  const code = document.getElementById("qr-token-input").value.trim();
 
-  if(!code){
-    alert("กรอก Code ก่อน");
-    return;
-  }
-
-  const res = await api("redeemCode", {
-    lineUserId: user.userId,
-    code: code
+  const res = await api({
+    action:"redeemCode",
+    lineUserId:user.userId,
+    code:code
   });
 
   if(res.success){
-    alert("สำเร็จ ได้ Badge แล้ว");
+    toast("สำเร็จ");
     await loadProfile();
     await loadLeaderboard();
   } else {
-    alert(res.message);
+    toast(res.message);
   }
 }
 
-// ================= LEADERBOARD =================
+// ================= LEADERBOARD (FIXED) =================
 async function loadLeaderboard(){
 
-  const res = await api("getLeaderboard", {});
+  const res = await api({action:"getLeaderboard"});
 
-  const el = document.getElementById("lb");
+  const el = document.getElementById("leaderboard-list");
 
   if(!res.success || !res.leaderboard.length){
-    el.innerHTML = "ยังไม่มีข้อมูล";
+    el.innerHTML = "ไม่มีข้อมูล";
     return;
   }
 
   el.innerHTML = res.leaderboard.map((u,i)=>`
-    <div class="card">
-      <b>#${i+1} ${u.displayName}</b><br>
-      Badge: ${u.total}
+    <div class="lb-item">
+      <div>${i+1}</div>
+      <img class="lb-avatar" src="${u.pictureUrl||''}">
+      <div>${u.displayName}</div>
+      <div class="lb-total">${u.total}</div>
     </div>
   `).join("");
 }
 
 // ================= TAB =================
-function switchTab(tab){
+function switchTab(t){
 
-  document.querySelectorAll(".tab button")
-    .forEach(b => b.classList.remove("active"));
+  document.getElementById("tab-my").style.display = t==="my"?"block":"none";
+  document.getElementById("tab-board").style.display = t==="board"?"block":"none";
+
+  document.querySelectorAll(".tab-btn")
+    .forEach(b=>b.classList.remove("active"));
 
   event.target.classList.add("active");
 
-  document.getElementById("my").style.display =
-    tab === "my" ? "block" : "none";
+  if(t==="board") loadLeaderboard();
+}
 
-  document.getElementById("board").style.display =
-    tab === "board" ? "block" : "none";
+// ================= MODAL =================
+function openScanModal(){
+  document.getElementById("scan-modal").style.display="block";
+}
 
-  if(tab === "board") loadLeaderboard();
+function closeScanModal(){
+  document.getElementById("scan-modal").style.display="none";
+}
+
+// ================= TOAST =================
+function toast(msg){
+  const t=document.getElementById("toast");
+  t.innerText=msg;
+  t.style.display="block";
+  setTimeout(()=>t.style.display="none",3000);
 }
 
 </script>
+
 </body>
 </html>
