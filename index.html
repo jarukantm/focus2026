@@ -1,250 +1,112 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-<title>Badge Collection</title>
-
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Badge</title>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 
 <style>
-/* ====== KEEP YOUR ORIGINAL UI ====== */
-body { margin:0; font-family:'Kanit',sans-serif; background:#0A0E1A; color:#E2E8F0; }
-
-header { padding:20px; display:flex; align-items:center; gap:12px; }
-.avatar { width:48px;height:48px;border-radius:50%;border:2px solid #F5C842; }
-.user-name { font-weight:600; }
-
-.tab-nav { display:flex; background:#111827; }
-.tab-btn {
-  flex:1; padding:14px; background:none; border:none;
-  color:#64748B; font-weight:600;
-}
-.tab-btn.active { color:#22D3EE; border-bottom:2px solid #22D3EE; }
-
-.section { padding:16px; }
-
-/* HERO */
-.hero { background:#1E3A5F; padding:20px; border-radius:12px; }
-.hero-total { font-size:42px; font-weight:900; color:#F5C842; }
-
-/* BADGES */
-.badges-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; }
-.badge-item { background:#1A2235; padding:10px; border-radius:10px; text-align:center; }
-.badge-item.earned { border:1px solid #F5C842; }
-
-/* LEADERBOARD */
-.lb-item { display:flex; gap:10px; padding:10px; background:#1A2235; margin:6px 0; border-radius:10px; }
-.lb-avatar { width:36px;height:36px;border-radius:50%; }
-.lb-total { margin-left:auto; color:#F5C842; }
-
-/* SCAN */
-.btn-scan {
-  width:100%; padding:16px; background:#22D3EE;
-  border:none; border-radius:10px; font-weight:700;
-}
+body{background:#0A0E1A;color:#E2E8F0;font-family:Kanit}
+.card{background:#1A2235;border-radius:14px;padding:16px;margin:10px}
+button{padding:12px;width:100%;border-radius:10px;border:0;background:#22D3EE;font-weight:700}
+.badge{display:inline-block;margin:4px;padding:6px 10px;background:#111827;border-radius:8px}
+.tab{display:flex}
+.tab button{flex:1}
+.active{background:#22D3EE;color:#000}
 </style>
-</head>
 
+</head>
 <body>
 
-<!-- HEADER -->
-<header>
-  <img id="user-avatar" class="avatar">
-  <div>
-    <div id="user-name">Loading...</div>
-    <small>Badge System</small>
-  </div>
-</header>
+<h3 id="name">Loading...</h3>
 
-<!-- TAB -->
-<div class="tab-nav">
-  <button class="tab-btn active" onclick="switchTab('my')">ของฉัน</button>
-  <button class="tab-btn" onclick="switchTab('board')">Leaderboard</button>
+<div class="tab">
+  <button onclick="show('my')" class="active" id="t1">My</button>
+  <button onclick="show('lb')" id="t2">Board</button>
 </div>
 
-<!-- MY -->
-<div id="tab-my" class="section">
-
-  <div class="hero">
-    <div>คะแนนสะสม</div>
-    <div class="hero-total" id="total-count">0</div>
+<div id="my">
+  <div class="card">
+    <h2 id="total">0</h2>
+    <div id="badges"></div>
   </div>
 
-  <h4>Badge ทั้งหมด</h4>
-  <div class="badges-grid" id="badges-grid"></div>
-
-  <button class="btn-scan" onclick="openScanModal()">
-    กรอกรหัส / รับ Badge
-  </button>
-
+  <input id="code" placeholder="CODE"/>
+  <button onclick="redeem()">ยืนยันรับ Badge</button>
 </div>
 
-<!-- LEADERBOARD -->
-<div id="tab-board" class="section" style="display:none;">
-  <h3>Leaderboard</h3>
-  <div id="leaderboard-list">Loading...</div>
+<div id="lb" style="display:none">
+  <div id="board">Loading...</div>
 </div>
-
-<!-- MODAL -->
-<div id="scan-modal" style="display:none;padding:16px;">
-  <input id="qr-token-input" placeholder="ใส่ Code">
-  <button class="btn-scan" onclick="submitCheckin()">ยืนยัน</button>
-  <button onclick="closeScanModal()">ปิด</button>
-</div>
-
-<!-- TOAST -->
-<div id="toast" style="position:fixed;top:10px;left:50%;transform:translateX(-50%);
-background:#1A2235;padding:10px;border-radius:10px;display:none;"></div>
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxYDJk4lB606Hs4yGm4-1xheSXdsX901EnxR4L8KwBqqCORutiU88JELqHwJhDBxz1W/exec";
-const LIFF_ID = "2009815147-aGgIrfPv";
+const GAS = "https://script.google.com/macros/s/AKfycbw34Fx2QTMeglkKW3x-dG7vZRqIYkDrB63rBPuA0VIBjm2L5nNsqW1AYS8kBHR8VuPK/exec";
+let user;
 
-let user = null;
-
-// ================= INIT =================
-window.onload = async () => {
-
-  await liff.init({ liffId: LIFF_ID });
-
-  if (!liff.isLoggedIn()) {
-    liff.login();
-    return;
-  }
-
+async function init(){
+  await liff.init({liffId:"YOUR_LIFF"});
   user = await liff.getProfile();
 
-  document.getElementById("user-name").innerText = user.displayName;
-  document.getElementById("user-avatar").src = user.pictureUrl;
+  document.getElementById("name").innerText = user.displayName;
 
-  await api({
-    action:"register",
-    lineUserId:user.userId,
-    displayName:user.displayName,
-    pictureUrl:user.pictureUrl
-  });
+  await fetchProfile();
+}
 
-  await loadProfile();
-  await loadLeaderboard();
-};
-
-// ================= API =================
 async function api(body){
-  const res = await fetch(GAS_URL,{
+  const r = await fetch(GAS,{
     method:"POST",
     body:JSON.stringify(body)
   });
-  return res.json();
+  return r.json();
 }
 
-// ================= PROFILE =================
-async function loadProfile(){
+async function fetchProfile(){
+  const res = await api({action:"getProfile",lineUserId:user.userId});
 
-  const res = await api({
-    action:"getProfile",
-    lineUserId:user.userId
-  });
+  document.getElementById("total").innerText = res.badges.total;
 
-  const total = res.badges?.total || 0;
-
-  document.getElementById("total-count").innerText = total;
-
-  renderBadges(res.badges || {});
+  const wrap = document.getElementById("badges");
+  wrap.innerHTML = Object.keys(res.badges)
+    .filter(k=>k!=="total")
+    .map(k=>`<span class="badge">${k}:${res.badges[k]}</span>`)
+    .join("");
 }
 
-// ================= BADGES =================
-function renderBadges(b){
-
-  const list = [
-    "FXC-A","FXC-B",
-    "FXCXO-A","FXCXO-B",
-    "FXCXU-A","FXCXU-B",
-    "FXCXS-A","FXCXS-B",
-    "SinghawayxFOCUS-A","SinghawayxFOCUS-B"
-  ];
-
-  document.getElementById("badges-grid").innerHTML =
-    list.map(x=>`
-      <div class="badge-item ${b[x]? "earned":""}">
-        ${x}
-      </div>
-    `).join("");
-}
-
-// ================= REDEEM =================
-async function submitCheckin(){
-
-  const code = document.getElementById("qr-token-input").value.trim();
+async function redeem(){
+  const code = document.getElementById("code").value;
 
   const res = await api({
     action:"redeemCode",
     lineUserId:user.userId,
-    code:code
+    code
   });
 
-  if(res.success){
-    toast("สำเร็จ");
-    await loadProfile();
-    await loadLeaderboard();
-  } else {
-    toast(res.message);
-  }
+  alert(res.message || "OK");
+  await fetchProfile();
 }
 
-// ================= LEADERBOARD (FIXED) =================
-async function loadLeaderboard(){
-
+async function loadLB(){
   const res = await api({action:"getLeaderboard"});
 
-  const el = document.getElementById("leaderboard-list");
-
-  if(!res.success || !res.leaderboard.length){
-    el.innerHTML = "ไม่มีข้อมูล";
-    return;
-  }
-
-  el.innerHTML = res.leaderboard.map((u,i)=>`
-    <div class="lb-item">
-      <div>${i+1}</div>
-      <img class="lb-avatar" src="${u.pictureUrl||''}">
-      <div>${u.displayName}</div>
-      <div class="lb-total">${u.total}</div>
-    </div>
-  `).join("");
+  document.getElementById("board").innerHTML =
+    res.leaderboard.map((u,i)=>
+      `<div class="card">${i+1}. ${u.displayName} (${u.total})</div>`
+    ).join("");
 }
 
-// ================= TAB =================
-function switchTab(t){
+function show(t){
+  document.getElementById("my").style.display = t==="my"?"block":"none";
+  document.getElementById("lb").style.display = t==="lb"?"block":"none";
 
-  document.getElementById("tab-my").style.display = t==="my"?"block":"none";
-  document.getElementById("tab-board").style.display = t==="board"?"block":"none";
+  document.getElementById("t1").classList.toggle("active",t==="my");
+  document.getElementById("t2").classList.toggle("active",t==="lb");
 
-  document.querySelectorAll(".tab-btn")
-    .forEach(b=>b.classList.remove("active"));
-
-  event.target.classList.add("active");
-
-  if(t==="board") loadLeaderboard();
+  if(t==="lb") loadLB();
 }
 
-// ================= MODAL =================
-function openScanModal(){
-  document.getElementById("scan-modal").style.display="block";
-}
-
-function closeScanModal(){
-  document.getElementById("scan-modal").style.display="none";
-}
-
-// ================= TOAST =================
-function toast(msg){
-  const t=document.getElementById("toast");
-  t.innerText=msg;
-  t.style.display="block";
-  setTimeout(()=>t.style.display="none",3000);
-}
+init();
 
 </script>
 
