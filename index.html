@@ -4,307 +4,430 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#0d0d14">
-<title>FOCUS Forward 2026 - Badge Collector</title>
+<title>TPKs FOCUS — Badge Collector</title>
 <script src="https://static.line-scdn.net/liff/edge/versions/2.22.3/sdk.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
 <style>
-/* ── RESET & BASE ── */
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html{height:100%}
-body{
-  font-family:'Kanit',sans-serif;font-weight:300;
-  background:#0d0d14;color:#eeeef5;
-  min-height:100vh;display:flex;flex-direction:column;
-  max-width:480px;margin:0 auto;
-  -webkit-font-smoothing:antialiased;
-}
-
-/* ── CSS VARS ── */
 :root{
-  --bg:#0d0d14;
-  --s1:#16161f;--s2:#1e1e2a;--s3:#252535;
-  --b1:rgba(255,255,255,.06);--b2:rgba(255,255,255,.12);--b3:rgba(255,255,255,.2);
+  --bg:#0d0d14;--s1:#16161f;--s2:#1e1e2a;--s3:#252535;
+  --b1:rgba(255,255,255,.06);--b2:rgba(255,255,255,.12);
   --tx:#eeeef5;--mu:#6a6a85;
   --ac:#7c6dfa;--ac2:#a78bfa;
   --gd:#f5c842;--gd2:#ffe082;
   --gn:#34d399;--rd:#f87171;
   --r:14px;--rs:10px;
 }
+body{font-family:'Kanit',sans-serif;font-weight:300;background:var(--bg);color:var(--tx);min-height:100vh;display:flex;flex-direction:column;max-width:480px;margin:0 auto;-webkit-font-smoothing:antialiased;}
 
-/* ── LOADING ── */
-#loading{
-  position:fixed;inset:0;background:var(--bg);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  z-index:9999;gap:16px;
-}
-.spin{
-  width:48px;height:48px;border-radius:50%;
-  border:3px solid var(--b2);border-top-color:var(--ac);
-  animation:rot .75s linear infinite;
-}
+/* LOADING */
+#loading{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:14px;}
+.spin{width:46px;height:46px;border-radius:50%;border:3px solid var(--b2);border-top-color:var(--ac);animation:rot .75s linear infinite;}
 @keyframes rot{to{transform:rotate(360deg)}}
 .ld-t{font-size:13px;color:var(--mu)}
 
-/* ── NAV ── */
-.nav{
-  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
-  width:100%;max-width:480px;z-index:100;
-  background:var(--s1);border-top:1px solid var(--b2);
-  display:flex;
-  padding-bottom:max(env(safe-area-inset-bottom),6px);
-}
-.nb{
-  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:3px;padding:9px 0;
-  background:none;border:none;cursor:pointer;
-  color:var(--mu);font-family:'Kanit',sans-serif;font-size:10px;font-weight:400;
-  transition:color .15s;
-}
+/* NAV */
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;z-index:100;background:var(--s1);border-top:1px solid var(--b2);display:flex;padding-bottom:max(env(safe-area-inset-bottom),6px);}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:9px 0;background:none;border:none;cursor:pointer;color:var(--mu);font-family:'Kanit',sans-serif;font-size:10px;position:relative;transition:color .15s;}
 .nb.on{color:var(--ac2)}
+.nb.on::before{content:'';position:absolute;top:0;width:24px;height:2px;background:var(--ac2);border-radius:2px;}
 .nb-ic{font-size:18px;line-height:1}
-.nb.on::before{
-  content:'';display:block;height:2px;width:24px;
-  background:var(--ac2);border-radius:2px;
-  position:absolute;top:0;
-}
-.nb{position:relative}
 
-/* ── PAGES ── */
-.pg{display:none;flex-direction:column;flex:1;padding:22px 16px 86px;overflow-x:hidden}
+/* PAGES */
+.pg{display:none;flex-direction:column;flex:1;padding:20px 16px 86px;overflow-x:hidden;}
 .pg.on{display:flex;animation:pgIn .2s ease}
-@keyframes pgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes pgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
-/* ── PAGE HEADER ── */
-.ph{margin-bottom:20px}
-.pt{
-  font-size:22px;font-weight:700;letter-spacing:.02em;
-  background:linear-gradient(120deg,#fff 40%,var(--ac2));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-}
+/* HEADER */
+.ph{margin-bottom:18px}
+.pt{font-size:21px;font-weight:700;background:linear-gradient(120deg,#fff 40%,var(--ac2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
 .ps{font-size:12px;color:var(--mu);margin-top:3px}
 
-/* ── USER CHIP ── */
-.uc{
-  display:inline-flex;align-items:center;gap:9px;
-  background:var(--s2);border:1px solid var(--b2);border-radius:50px;
-  padding:5px 14px 5px 5px;margin-bottom:18px;max-width:100%;
-}
+/* USER CHIP */
+.uc{display:inline-flex;align-items:center;gap:9px;background:var(--s2);border:1px solid var(--b2);border-radius:50px;padding:5px 14px 5px 5px;margin-bottom:16px;max-width:100%;}
 .uc img{width:30px;height:30px;border-radius:50%;object-fit:cover;border:1.5px solid var(--ac)}
 .uc-n{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}
 .uc-i{font-size:10px;color:var(--mu)}
 
-.lbl{font-size:10px;color:var(--mu);letter-spacing:.1em;text-transform:uppercase;margin:18px 0 10px}
+.lbl{font-size:10px;color:var(--mu);letter-spacing:.1em;text-transform:uppercase;margin:16px 0 9px}
 
-/* ── REDEEM ── */
-.code-card{
-  background:var(--s2);border:1px solid var(--b2);border-radius:var(--r);
-  padding:20px;margin-bottom:14px;
-}
-.code-lbl{font-size:11px;color:var(--mu);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
-.code-in{
-  width:100%;background:var(--bg);border:1.5px solid var(--b2);border-radius:var(--rs);
-  padding:15px 10px;font-size:28px;font-family:'Space Mono',monospace;font-weight:700;
-  color:var(--tx);text-align:center;letter-spacing:10px;text-transform:uppercase;
-}
-.code-in:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px rgba(124,109,250,.15)}
-.btn-main{
-  width:100%;background:var(--ac);color:#fff;border:none;border-radius:var(--rs);
-  padding:15px;font-size:14px;font-weight:600;cursor:pointer;
-}
+/* ══════════ PAGE 1 — REDEEM ══════════ */
+.code-card{background:var(--s2);border:1px solid var(--b2);border-radius:var(--r);padding:18px;margin-bottom:13px;}
+.code-lbl{font-size:11px;color:var(--mu);letter-spacing:.08em;text-transform:uppercase;margin-bottom:9px}
+.code-in{width:100%;background:var(--bg);border:1.5px solid var(--b2);border-radius:var(--rs);padding:14px 10px;font-size:26px;font-family:'Space Mono',monospace;font-weight:700;color:var(--tx);text-align:center;letter-spacing:9px;text-transform:uppercase;transition:border-color .2s;}
+.code-in:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px rgba(124,109,250,.12)}
+.code-in::placeholder{color:var(--mu);letter-spacing:4px;font-size:16px}
 
-/* Toast */
-.toast{border-radius:var(--rs);padding:13px 15px;margin-top:13px;display:none;border-left:3px solid;animation:up .22s ease;}
+.btn-main{width:100%;background:var(--ac);color:#fff;border:none;border-radius:var(--rs);padding:14px;font-size:14px;font-weight:600;font-family:'Kanit',sans-serif;cursor:pointer;transition:opacity .15s,transform .1s;}
+.btn-main:active{transform:scale(.98);opacity:.85}
+.btn-main:disabled{opacity:.35;cursor:not-allowed;transform:none}
+
+.toast{border-radius:var(--rs);padding:12px 14px;margin-top:12px;display:none;border-left:3px solid;animation:up .22s ease;}
+@keyframes up{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 .toast.ok{background:rgba(52,211,153,.08);border-color:var(--gn)}
 .toast.er{background:rgba(248,113,113,.08);border-color:var(--rd)}
+.toast-t{font-size:14px;font-weight:600;margin-bottom:2px}
+.toast.ok .toast-t{color:var(--gn)}
+.toast.er .toast-t{color:var(--rd)}
+.toast-s{font-size:12px;color:var(--mu)}
 
-/* ── MY BADGES ── */
-.prog-card{
-  background:var(--s2);border:1px solid var(--b2);border-radius:var(--r);
-  padding:18px;margin-bottom:14px;display:flex;align-items:center;gap:16px;
-}
-.pr-n{font-size:30px;font-weight:700;color:var(--gd);font-family:'Space Mono',monospace}
-.pr-n span{font-size:16px;color:var(--mu);font-weight:400}
-.pr-bar-wrap{height:3px;background:var(--s3);border-radius:4px;overflow:hidden;margin-top:10px}
-.pr-bar{height:100%;background:linear-gradient(90deg,var(--ac),var(--gd));transition:width .6s ease;width:0%}
+/* Mini badges 10 grid */
+.mbs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.mb{background:var(--s2);border:1px solid var(--b1);border-radius:var(--rs);padding:9px 3px;text-align:center;transition:border-color .2s,background .2s;}
+.mb.on{border-color:rgba(245,200,66,.45);background:rgba(245,200,66,.05)}
+.mb-ic{font-size:18px}
+.mb-lb{font-size:7.5px;color:var(--mu);margin-top:3px;line-height:1.3;word-break:break-all}
+.mb.on .mb-lb{color:var(--gd2)}
 
-.act-list{display:flex;flex-direction:column;gap:9px}
-.act-card{
-  background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);
-  padding:14px;display:flex;align-items:center;gap:13px;
-}
-.act-card.on{border-color:rgba(245,200,66,.28)}
-.act-ic{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;background:var(--s3);}
-.chip{font-size:10px;padding:3px 9px;border-radius:20px;font-weight:600;border:1px solid var(--b1)}
-.chip-ok{background:rgba(245,200,66,.1);color:var(--gd);border-color:rgba(245,200,66,.28)}
+/* ══════════ PAGE 2 — MY BADGES ══════════ */
+.prog-card{background:var(--s2);border:1px solid var(--b2);border-radius:var(--r);padding:16px;margin-bottom:13px;display:flex;align-items:center;gap:14px;}
+.pr-svg{transform:rotate(-90deg);flex-shrink:0}
+.pr-n{font-size:28px;font-weight:700;color:var(--gd);font-family:'Space Mono',monospace}
+.pr-n span{font-size:15px;color:var(--mu);font-weight:400}
+.pr-msg{font-size:11px;color:var(--mu);margin-top:3px}
+.pr-bar-wrap{height:3px;background:var(--s3);border-radius:4px;overflow:hidden;margin-top:9px}
+.pr-bar{height:100%;background:linear-gradient(90deg,var(--ac),var(--gd));border-radius:4px;transition:width .6s ease;width:0%}
 
-/* ── LEADERBOARD ── */
-.stat-g{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:16px}
-.sc{background:var(--s2);border:1px solid var(--b1);border-radius:var(--rs);padding:13px}
-.sv{font-size:24px;font-weight:700;font-family:'Space Mono',monospace;color:var(--ac2)}
-.lb{display:flex;flex-direction:column;gap:7px}
-.lbr{background:var(--s2);border:1px solid var(--b1);border-radius:var(--rs);padding:11px 13px;display:flex;align-items:center;gap:10px;}
-.ldots{display:flex;gap:2px;align-items:center;flex-wrap:nowrap}
-.ld{width:5px;height:5px;border-radius:50%;background:var(--b2)}
+.done-box{background:linear-gradient(135deg,rgba(124,109,250,.14),rgba(245,200,66,.1));border:1px solid rgba(245,200,66,.3);border-radius:var(--r);padding:13px;text-align:center;margin-bottom:13px;display:none;}
+.done-t{font-size:14px;font-weight:600;color:var(--gd2)}
+.done-s{font-size:11px;color:var(--mu);margin-top:3px}
+
+/* Group cards */
+.group-card{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);overflow:hidden;margin-bottom:9px;transition:border-color .2s;}
+.gc-head{padding:12px 14px;display:flex;align-items:center;gap:10px;}
+.gc-emoji{font-size:20px;flex-shrink:0}
+.gc-info{flex:1}
+.gc-name{font-size:14px;font-weight:600}
+.gc-sub{font-size:11px;color:var(--mu);margin-top:1px}
+.gc-score{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--mu);flex-shrink:0}
+.gc-score.full{color:var(--gd)}
+.gc-divider{height:1px;background:var(--b1);margin:0 14px}
+.gc-acts{padding:10px 14px;display:flex;flex-direction:column;gap:7px}
+
+.act-row{display:flex;align-items:center;gap:10px}
+.act-dot{width:8px;height:8px;border-radius:50%;background:var(--b2);flex-shrink:0}
+.act-dot.on{background:var(--gd)}
+.act-info2{flex:1;min-width:0}
+.act-nm2{font-size:12px;font-weight:500}
+.act-dt2{font-size:10px;color:var(--ac2);margin-top:1px}
+.act-cd2{font-size:9px;color:var(--mu);font-family:'Space Mono',monospace}
+.chip{font-size:9px;padding:2px 8px;border-radius:20px;font-weight:600;flex-shrink:0}
+.chip-ok{background:rgba(245,200,66,.1);color:var(--gd);border:1px solid rgba(245,200,66,.25)}
+.chip-no{background:var(--s3);color:var(--mu);border:1px solid var(--b1)}
+
+/* ══════════ PAGE 3 — LEADERBOARD ══════════ */
+.stat-g{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.sc{background:var(--s2);border:1px solid var(--b1);border-radius:var(--rs);padding:12px}
+.sv{font-size:22px;font-weight:700;font-family:'Space Mono',monospace;color:var(--ac2)}
+.sl{font-size:10px;color:var(--mu);margin-top:3px}
+
+.filt{display:flex;gap:5px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.filt::-webkit-scrollbar{display:none}
+.fb{padding:5px 11px;border:1px solid var(--b2);border-radius:20px;background:transparent;color:var(--mu);font-family:'Kanit',sans-serif;font-size:11px;cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0;}
+.fb.on{background:var(--ac);border-color:var(--ac);color:#fff}
+
+.lb{display:flex;flex-direction:column;gap:6px}
+.lbr{background:var(--s2);border:1px solid var(--b1);border-radius:var(--rs);padding:10px 12px;display:flex;align-items:center;gap:9px;}
+.lbr.r1{border-color:rgba(245,200,66,.5);background:rgba(245,200,66,.04)}
+.lbr.r2{border-color:rgba(192,192,192,.3)}
+.lbr.r3{border-color:rgba(205,127,50,.3)}
+.lbr.me{border-color:var(--ac);background:rgba(124,109,250,.07)}
+.lk{width:22px;text-align:center;flex-shrink:0;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:var(--mu)}
+.r1 .lk{color:var(--gd)}.r2 .lk{color:#c8c8c8}.r3 .lk{color:#cd7f32}
+.lav{width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1.5px solid var(--b2)}
+.lavp{width:32px;height:32px;border-radius:50%;background:var(--s3);border:1.5px solid var(--b2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--ac2);flex-shrink:0;}
+.li{flex:1;min-width:0}
+.ln{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ln.me{color:var(--ac2)}
+.lid{font-size:9px;color:var(--mu);margin-top:1px;font-family:'Space Mono',monospace}
+.me-tag{display:inline-block;font-size:7px;font-weight:600;background:var(--ac);color:#fff;padding:1px 4px;border-radius:20px;letter-spacing:.04em;vertical-align:middle;margin-left:3px;}
+.ldots{display:flex;gap:2px;flex-wrap:wrap;max-width:60px;flex-shrink:0}
+.ld{width:6px;height:6px;border-radius:50%;background:var(--b2)}
 .ld.on{background:var(--gd)}
+.lsc{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;margin-left:4px;flex-shrink:0}
+.empty{text-align:center;padding:26px 0;color:var(--mu);font-size:13px}
 </style>
 </head>
 <body>
 
+<!-- LOADING -->
 <div id="loading">
   <div class="spin"></div>
-  <div class="ld-t">FOCUS Digital Badge Connecting...</div>
+  <div class="ld-t">กำลังเชื่อมต่อ LINE...</div>
 </div>
 
-<!-- PAGE 1: REDEEM -->
+<!-- ══════════════════════════════
+     PAGE 1 — REDEEM
+══════════════════════════════ -->
 <div class="pg on" id="pg-redeem">
-  <div class="ph"><div class="pt">Redeem Badge</div><div class="ps">กรอกรหัส 6 หลักเพื่อรับเข็มกลัดดิจิทัล</div></div>
-  <div class="uc"><img id="p1" src=""><div class="uc-n" id="n1">-</div></div>
+  <div class="ph"><div class="pt">Redeem Code</div><div class="ps">กรอก Code จาก Line OA เพื่อรับ Badge</div></div>
+  <div class="uc" id="uc1"><img id="p1" src="" alt="" onerror="this.style.display='none'"><div><div class="uc-n" id="n1">-</div><div class="uc-i" id="i1">-</div></div></div>
   <div class="code-card">
-    <div class="code-lbl">🎟 Code (เช่น FXC001)</div>
-    <input type="text" id="codeIn" class="code-in" placeholder="XXXNNN" maxlength="6">
+    <div class="code-lbl">🎟 Redeem Code (6 หลัก)</div>
+    <input type="text" id="codeIn" class="code-in" placeholder="XXXNNN" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false">
   </div>
-  <button class="btn-main" id="rBtn" onclick="doRedeem()">สะสม Badge →</button>
+  <button class="btn-main" id="rBtn" onclick="doRedeem()">ยืนยัน Code →</button>
   <div class="toast" id="toast"><div class="toast-t" id="tt"></div><div class="toast-s" id="ts"></div></div>
+  <div class="lbl">สถานะ Badge ทั้ง 10 กิจกรรม</div>
+  <div class="mbs" id="mbs"></div>
 </div>
 
-<!-- PAGE 2: MY BADGES -->
+<!-- ══════════════════════════════
+     PAGE 2 — MY BADGES
+══════════════════════════════ -->
 <div class="pg" id="pg-badges">
-  <div class="ph"><div class="pt">My Progress</div><div class="ps">สะสมให้ครบ 10 กิจกรรม</div></div>
+  <div class="ph"><div class="pt">Badge ของฉัน</div><div class="ps">สรุปกิจกรรมที่เข้าร่วมทั้ง 10 รายการ</div></div>
+  <div class="uc" id="uc2"><img id="p2" src="" alt="" onerror="this.style.display='none'"><div><div class="uc-n" id="n2">-</div><div class="uc-i" id="i2">-</div></div></div>
+  <div class="done-box" id="doneBox"><div class="done-t">🎊 สะสมครบทุกกิจกรรมแล้ว!</div><div class="done-s">ยินดีด้วยครับ/ค่ะ คุณสะสมครบทั้ง 10 กิจกรรม!</div></div>
   <div class="prog-card">
+    <svg width="68" height="68" class="pr-svg">
+      <circle cx="34" cy="34" r="27" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="6"/>
+      <circle id="arc" cx="34" cy="34" r="27" fill="none" stroke="url(#pg)" stroke-width="6" stroke-linecap="round" stroke-dasharray="169.6" stroke-dashoffset="169.6"/>
+      <defs><linearGradient id="pg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#7c6dfa"/><stop offset="100%" stop-color="#f5c842"/></linearGradient></defs>
+    </svg>
     <div style="flex:1">
       <div class="pr-n" id="pn">0<span>/10</span></div>
+      <div class="pr-msg" id="pm">เริ่มสะสม Badge กันเถอะ!</div>
       <div class="pr-bar-wrap"><div class="pr-bar" id="pb"></div></div>
     </div>
   </div>
-  <div class="act-list" id="actList"></div>
+  <div class="lbl">รายละเอียดตามกิจกรรม</div>
+  <div id="actGroups"></div>
 </div>
 
-<!-- PAGE 3: LEADERBOARD -->
+<!-- ══════════════════════════════
+     PAGE 3 — LEADERBOARD
+══════════════════════════════ -->
 <div class="pg" id="pg-dash">
-  <div class="ph"><div class="pt">Leaderboard</div><div class="ps">ทำเนียบผู้สะสมสูงสุด</div></div>
+  <div class="ph"><div class="pt">Leaderboard</div><div class="ps">อันดับผู้สะสม Badge ทั้งหมด</div></div>
   <div class="stat-g">
-    <div class="sc"><div class="sv" id="stU">0</div><div class="sl">ผู้เข้าร่วม</div></div>
-    <div class="sc"><div class="sv" id="stC">0</div><div class="sl">สะสมครบ 10</div></div>
+    <div class="sc"><div class="sv" id="stU">-</div><div class="sl">ผู้เข้าร่วมทั้งหมด</div></div>
+    <div class="sc"><div class="sv" id="stC">-</div><div class="sl">สะสมครบ 10 Badge</div></div>
+  </div>
+  <div class="filt">
+    <button class="fb on" onclick="doFilt('all',this)">ทั้งหมด</button>
+    <button class="fb" onclick="doFilt('FCA',this)">FXC-A</button>
+    <button class="fb" onclick="doFilt('FCB',this)">FXC-B</button>
+    <button class="fb" onclick="doFilt('FOA',this)">FXCXO-A</button>
+    <button class="fb" onclick="doFilt('FOB',this)">FXCXO-B</button>
+    <button class="fb" onclick="doFilt('FUA',this)">FXCXU-A</button>
+    <button class="fb" onclick="doFilt('FUB',this)">FXCXU-B</button>
+    <button class="fb" onclick="doFilt('FSA',this)">FXCXS-A</button>
+    <button class="fb" onclick="doFilt('FSB',this)">FXCXS-B</button>
+    <button class="fb" onclick="doFilt('SGA',this)">SGX-A</button>
+    <button class="fb" onclick="doFilt('SGB',this)">SGX-B</button>
   </div>
   <div class="lb" id="lb"></div>
 </div>
 
+<!-- NAV -->
 <nav class="nav">
   <button class="nb on" id="nv-redeem" onclick="goPage('redeem')"><div class="nb-ic">🎟️</div><span>Redeem</span></button>
-  <button class="nb" id="nv-badges" onclick="goPage('badges')"><div class="nb-ic">🏅</div><span>Badges</span></button>
-  <button class="nb" id="nv-dash" onclick="goPage('dash')"><div class="nb-ic">🏆</div><span>Rank</span></button>
+  <button class="nb" id="nv-badges" onclick="goPage('badges')"><div class="nb-ic">🏅</div><span>Badge ของฉัน</span></button>
+  <button class="nb" id="nv-dash" onclick="goPage('dash')"><div class="nb-ic">🏆</div><span>Leaderboard</span></button>
 </nav>
 
 <script>
-const LIFF_ID = '2009815147-aGgIrfPv'; 
-const GAS_URL = '
-https://script.google.com/macros/s/AKfycbwDmqiqI1pTuHsQ6Z2KpFP7d_kD-kTjHBYwGFVJ7_Bh-fgwF1sNfdbJoaHA92lZrcUi/exec';
+// ════════ CONFIG ════════
+const LIFF_ID = '2009815147-aGgIrfPv';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbxgUkequ1IWqlLCtz-ahXtMu0qmQ5SIHwOFeR_D5ayjuM25GsY3HyzODpDs9Ai1k6Bw/exec'; // ← ใส่ URL จาก Deploy GAS
 
 const ACTS = [
-  {prefix:'FXC-A', name:'Fast A', full:'Activity A', icon:'🥇'},
-  {prefix:'FXC-B', name:'Fast B', full:'Activity B', icon:'🥈'},
-  {prefix:'FXCXO-A', name:'Ownership A', icon:'🥉'},
-  {prefix:'FXCXO-B', name:'Ownership B', icon:'🏅'},
-  {prefix:'FXCXU-A', name:'United A', icon:'💎'},
-  {prefix:'FXCXU-B', name:'United B', icon:'✨'},
-  {prefix:'FXCXS-A', name:'Strong A', icon:'🛡️'},
-  {prefix:'FXCXS-B', name:'Strong B', icon:'⚔️'},
-  {prefix:'SinghawayxFOCUS-A', name:'Sing A', icon:'🏆'},
-  {prefix:'SinghawayxFOCUS-B', name:'Sing B', icon:'🌟'},
+  {prefix:'FCA',name:'FXC-A',  full:'FXC — กิจกรรม A',              icon:'🟣',color:'#7c6dfa',parent:'FXC'},
+  {prefix:'FCB',name:'FXC-B',  full:'FXC — กิจกรรม B',              icon:'🟪',color:'#a78bfa',parent:'FXC'},
+  {prefix:'FOA',name:'FXCXO-A',full:'FXCXO — กิจกรรม A',            icon:'🔵',color:'#2563eb',parent:'FXO'},
+  {prefix:'FOB',name:'FXCXO-B',full:'FXCXO — กิจกรรม B',            icon:'🩵',color:'#60a5fa',parent:'FXO'},
+  {prefix:'FUA',name:'FXCXU-A',full:'FXCXU — กิจกรรม A',            icon:'🟢',color:'#059669',parent:'FXU'},
+  {prefix:'FUB',name:'FXCXU-B',full:'FXCXU — กิจกรรม B',            icon:'💚',color:'#34d399',parent:'FXU'},
+  {prefix:'FSA',name:'FXCXS-A',full:'FXCXS — กิจกรรม A',            icon:'🟡',color:'#d97706',parent:'FXS'},
+  {prefix:'FSB',name:'FXCXS-B',full:'FXCXS — กิจกรรม B',            icon:'🌕',color:'#fbbf24',parent:'FXS'},
+  {prefix:'SGA',name:'SGX-A',  full:'Singhawayx FOCUS — กิจกรรม A', icon:'🔴',color:'#dc2626',parent:'SGX'},
+  {prefix:'SGB',name:'SGX-B',  full:'Singhawayx FOCUS — กิจกรรม B', icon:'❤️',color:'#f87171',parent:'SGX'},
 ];
 
-let profile = null;
+const GROUPS = [
+  {key:'FXC',label:'FXC',            emoji:'⚡',color:'#7c6dfa',prefixes:['FCA','FCB']},
+  {key:'FXO',label:'FXCXO',          emoji:'🌊',color:'#2563eb',prefixes:['FOA','FOB']},
+  {key:'FXU',label:'FXCXU',          emoji:'🌿',color:'#059669',prefixes:['FUA','FUB']},
+  {key:'FXS',label:'FXCXS',          emoji:'🔥',color:'#d97706',prefixes:['FSA','FSB']},
+  {key:'SGX',label:'Singhawayx FOCUS',emoji:'🏆',color:'#dc2626',prefixes:['SGA','SGB']},
+];
 
-async function init() {
-  try {
-    await liff.init({ liffId: LIFF_ID });
-    if (!liff.isLoggedIn()) { liff.login(); return; }
-    profile = await liff.getProfile();
-    document.getElementById('p1').src = profile.pictureUrl;
-    document.getElementById('n1').textContent = profile.displayName;
-    document.getElementById('loading').style.display = 'none';
-    loadData();
-  } catch (e) { console.error(e); }
+const PRMSGS = ['เริ่มสะสม Badge กันเถอะ!','เริ่มต้นแล้ว! สู้ต่อ 🔥','กำลังมาแรง 💪','ครึ่งทางแล้ว! ✨','ใกล้ถึงแล้ว 🎯','เหลืออีกนิดเดียว!','เหลืออีก 4 Badge','เหลืออีก 3 Badge','เหลืออีก 2 Badge','เหลืออีก 1 Badge!','🎊 ครบทั้ง 10 Badge แล้ว!'];
+
+let profile=null, myBadges=[], lbAll=[];
+
+// ════════ INIT ════════
+async function init(){
+  try{
+    await liff.init({liffId:LIFF_ID});
+    if(!liff.isLoggedIn()){liff.login();return;}
+    profile=await liff.getProfile();
+    ['1','2'].forEach(n=>{
+      const p=document.getElementById('p'+n); if(p)p.src=profile.pictureUrl||'';
+      const nm=document.getElementById('n'+n); if(nm)nm.textContent=profile.displayName;
+      const id=document.getElementById('i'+n); if(id)id.textContent=profile.userId.slice(0,16)+'...';
+    });
+    document.getElementById('loading').style.display='none';
+    renderMini([]); renderGroups([]);
+    await Promise.all([loadBadges(),loadLB()]);
+  }catch(e){
+    document.getElementById('loading').innerHTML=`<div style="color:#f87171;text-align:center;font-size:13px;padding:20px">⚠️ ไม่สามารถเชื่อมต่อได้<br><small style="color:#6a6a85">${e.message}</small></div>`;
+  }
 }
 
-function goPage(id) {
-  document.querySelectorAll('.pg').forEach(p => p.classList.remove('on'));
-  document.querySelectorAll('.nb').forEach(b => b.classList.remove('on'));
+// ════════ NAV ════════
+function goPage(id){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
   document.getElementById('pg-'+id).classList.add('on');
   document.getElementById('nv-'+id).classList.add('on');
 }
 
-async function loadData() {
-  const [bRes, lRes] = await Promise.all([
-    callAPI({ action:'getUserBadges', lineUserId:profile.userId }),
-    callAPI({ action:'getLeaderboard' })
-  ]);
-  renderBadges(bRes.badges || []);
-  renderLB(lRes.leaderboard || [], lRes);
+// ════════ BADGES ════════
+async function loadBadges(){
+  if(!profile)return;
+  try{
+    const d=await api({action:'getUserBadges',lineUserId:profile.userId});
+    myBadges=d.badges||[];
+    renderMini(myBadges); renderGroups(myBadges);
+    if(d.completed)document.getElementById('doneBox').style.display='block';
+  }catch(e){}
 }
 
-function renderBadges(badges) {
-  const earned = badges.map(b => b.prefix);
-  document.getElementById('pn').innerHTML = `${earned.length}<span>/10</span>`;
-  document.getElementById('pb').style.width = (earned.length / 10 * 100) + '%';
-  
-  document.getElementById('actList').innerHTML = ACTS.map(a => {
-    const ok = earned.includes(a.prefix);
-    return `<div class="act-card${ok?' on':''}">
-      <div class="act-ic">${a.icon}</div>
-      <div style="flex:1"><div class="act-nm">${a.name}</div></div>
-      <div class="chip ${ok?'chip-ok':''}">${ok?'ได้รับแล้ว':'ยังไม่มี'}</div>
+function renderMini(badges){
+  const earned=badges.map(b=>b.prefix);
+  const el=document.getElementById('mbs'); if(!el)return;
+  el.innerHTML=ACTS.map(a=>`
+    <div class="mb${earned.includes(a.prefix)?' on':''}">
+      <div class="mb-ic">${a.icon}</div>
+      <div class="mb-lb">${a.name}</div>
+    </div>`).join('');
+}
+
+function renderGroups(badges){
+  const earned=badges.map(b=>b.prefix);
+  const n=earned.length;
+  const circ=169.6;
+  const arc=document.getElementById('arc'); if(arc)arc.style.strokeDashoffset=circ-circ*n/10;
+  const pn=document.getElementById('pn'); if(pn)pn.innerHTML=`${n}<span>/10</span>`;
+  const pm=document.getElementById('pm'); if(pm)pm.textContent=PRMSGS[n]||'';
+  const pb=document.getElementById('pb'); if(pb)pb.style.width=(n/10*100)+'%';
+
+  const el=document.getElementById('actGroups'); if(!el)return;
+  el.innerHTML=GROUPS.map(g=>{
+    const gEarned=g.prefixes.filter(p=>earned.includes(p)).length;
+    const isFull=gEarned===2;
+    return `
+    <div class="group-card" style="${isFull?'border-color:rgba(245,200,66,.28)':''}">
+      <div class="gc-head">
+        <div class="gc-emoji">${g.emoji}</div>
+        <div class="gc-info">
+          <div class="gc-name">${g.label}</div>
+          <div class="gc-sub">สะสมได้ ${gEarned}/2 กิจกรรม</div>
+        </div>
+        <div class="gc-score${isFull?' full':''}">
+          ${isFull?'⭐ ครบ':''+gEarned+'/2'}
+        </div>
+      </div>
+      <div class="gc-divider"></div>
+      <div class="gc-acts">
+        ${g.prefixes.map(pfx=>{
+          const a=ACTS.find(x=>x.prefix===pfx);
+          const b=badges.find(x=>x.prefix===pfx);
+          const ok=!!b;
+          const dt=b&&b.earnedAt?new Date(b.earnedAt).toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'}):'';
+          return `
+          <div class="act-row">
+            <div class="act-dot${ok?' on':''}"></div>
+            <div class="act-info2">
+              <div class="act-nm2">${a.icon} ${a.full}</div>
+              ${ok?`<div class="act-dt2">✓ ${dt}</div><div class="act-cd2">${b.code}</div>`:''}
+            </div>
+            <div class="chip ${ok?'chip-ok':'chip-no'}">${ok?'ได้รับ':'รอ'}</div>
+          </div>`;
+        }).join('')}
+      </div>
     </div>`;
   }).join('');
 }
 
-function renderLB(rows, stats) {
-  document.getElementById('stU').textContent = stats.totalUsers || 0;
-  document.getElementById('stC').textContent = stats.totalComplete || 0;
-  document.getElementById('lb').innerHTML = rows.map((u, i) => `
-    <div class="lbr">
-      <div style="width:20px; font-size:12px">${i+1}</div>
-      <div style="flex:1">
-        <div style="font-size:13px; font-weight:600">${u.displayName}</div>
-        <div class="ldots">${ACTS.map(a => `<div class="ld${(u.prefixes||[]).includes(a.prefix)?' on':''}"></div>`).join('')}</div>
+// ════════ LEADERBOARD ════════
+async function loadLB(){
+  try{
+    const d=await api({action:'getLeaderboard'});
+    lbAll=d.leaderboard||[];
+    document.getElementById('stU').textContent=d.totalUsers||0;
+    document.getElementById('stC').textContent=d.totalComplete||0;
+    renderLB('all');
+  }catch(e){document.getElementById('lb').innerHTML='<div class="empty">ไม่สามารถโหลดข้อมูลได้</div>';}
+}
+
+function doFilt(f,btn){
+  document.querySelectorAll('.fb').forEach(b=>b.classList.remove('on')); btn.classList.add('on');
+  renderLB(f);
+}
+
+function renderLB(f){
+  const myId=profile?profile.userId:'';
+  let rows=f==='all'?[...lbAll]:lbAll.filter(u=>u.prefixes&&u.prefixes.includes(f));
+  rows.sort((a,b)=>b.total-a.total);
+  if(!rows.length){document.getElementById('lb').innerHTML='<div class="empty">ไม่มีข้อมูลในส่วนนี้</div>';return;}
+  const RI=['🥇','🥈','🥉'];
+  document.getElementById('lb').innerHTML=rows.map((u,i)=>{
+    const rank=i+1,isMe=u.lineUserId===myId,rcls=rank<=3?'r'+rank:'';
+    const ep=u.prefixes||[],ini=(u.displayName||'?')[0].toUpperCase();
+    const avt=u.pictureUrl?`<img class="lav" src="${u.pictureUrl}" alt="" onerror="this.outerHTML='<div class=\'lavp\'>${ini}</div>'">`:`<div class="lavp">${ini}</div>`;
+    return `
+    <div class="lbr ${rcls}${isMe?' me':''}">
+      <div class="lk">${rank<=3?RI[rank-1]:rank}</div>${avt}
+      <div class="li">
+        <div class="ln${isMe?' me':''}">${esc(u.displayName||'ไม่ระบุชื่อ')}${isMe?'<span class="me-tag">ฉัน</span>':''}</div>
+        <div class="lid">${u.lineUserId.slice(0,14)}...</div>
       </div>
-      <div style="font-weight:700">${u.total}</div>
-    </div>
-  `).join('');
+      <div class="ldots">${ACTS.map(a=>`<div class="ld${ep.includes(a.prefix)?' on':''}" title="${a.name}"></div>`).join('')}</div>
+      <div class="lsc">${u.total}</div>
+    </div>`;
+  }).join('');
 }
 
-async function doRedeem() {
-  const code = document.getElementById('codeIn').value.trim().toUpperCase();
-  if(!code) return;
-  const btn = document.getElementById('rBtn');
-  btn.disabled = true;
-  try {
-    const res = await callAPI({ 
-      action:'redeemCode', 
-      lineUserId:profile.userId, 
-      displayName:profile.displayName, 
-      pictureUrl:profile.pictureUrl,
-      code 
-    });
-    const t = document.getElementById('toast');
-    t.style.display = 'block';
-    t.className = 'toast ' + (res.success?'ok':'er');
-    document.getElementById('tt').textContent = res.success ? 'สำเร็จ!' : 'ขออภัย';
-    document.getElementById('ts').textContent = res.message || 'ได้รับ Badge แล้ว';
-    if(res.success) { document.getElementById('codeIn').value = ''; loadData(); }
-  } catch (e) { console.error(e); }
-  btn.disabled = false;
+// ════════ REDEEM ════════
+async function doRedeem(){
+  const code=document.getElementById('codeIn').value.trim().toUpperCase();
+  if(!/^[A-Z]{3}\d{3}$/.test(code)){showToast(false,'รูปแบบ Code ไม่ถูกต้อง','ต้องเป็นตัวอักษร 3 + ตัวเลข 3 เช่น FCA001');return;}
+  const btn=document.getElementById('rBtn');
+  btn.disabled=true;btn.textContent='⏳ กำลังตรวจสอบ...';hideToast();
+  try{
+    const d=await api({action:'redeemCode',lineUserId:profile.userId,displayName:profile.displayName,pictureUrl:profile.pictureUrl||'',code});
+    if(d.success){
+      showToast(true,d.message,`สะสมแล้ว ${d.totalBadges}/10 Badge`);
+      document.getElementById('codeIn').value='';
+      await Promise.all([loadBadges(),loadLB()]);
+    }else{showToast(false,d.message,'');}
+  }catch(e){showToast(false,'เกิดข้อผิดพลาด กรุณาลองใหม่','');}
+  btn.disabled=false;btn.textContent='ยืนยัน Code →';
 }
 
-async function callAPI(body) {
-  const res = await fetch(GAS_URL, {
-    method: 'POST',
-    body: JSON.stringify(body)
-  });
-  return res.json();
+function showToast(ok,title,sub){
+  const t=document.getElementById('toast');
+  t.className='toast '+(ok?'ok':'er');t.style.display='block';
+  document.getElementById('tt').textContent=title;
+  document.getElementById('ts').textContent=sub;
+}
+function hideToast(){document.getElementById('toast').style.display='none';}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+async function api(body){
+  const r=await fetch(GAS_URL,{method:'POST',redirect:'follow',headers:{'Content-Type':'text/plain'},body:JSON.stringify(body)});
+  if(!r.ok)throw new Error('HTTP '+r.status);
+  return r.json();
 }
 
+document.addEventListener('DOMContentLoaded',()=>{
+  const inp=document.getElementById('codeIn');
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter')doRedeem();});
+  inp.addEventListener('input',e=>{e.target.value=e.target.value.toUpperCase();});
+});
 init();
 </script>
 </body>
