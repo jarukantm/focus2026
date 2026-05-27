@@ -230,7 +230,10 @@ body{font-family:'Kanit',sans-serif;font-weight:300;background:var(--bg);color:v
 <script>
 // ════════ CONFIG ════════
 const LIFF_ID = '2009815147-aGgIrfPv';
-const GAS_URL = 'https://broken-brook-8216.jarukantm.workers.dev'; // ← ใส่ URL จาก Deploy GAS
+
+// ── ใส่ Cloudflare Worker URL ที่นี่ (ไม่ใช่ GAS URL โดยตรง) ──
+// ตัวอย่าง: 'https://badge-webhook.YOUR_NAME.workers.dev'
+const GAS_URL = 'https://broken-brook-8216.jarukantm.workers.dev/';
 
 const ACTS = [
   {prefix:'FCA',name:'FXC-A',  full:'FXC — กิจกรรม A',              icon:'🟣',color:'#7c6dfa',parent:'FXC'},
@@ -394,7 +397,7 @@ function renderLB(f){
 // ════════ REDEEM ════════
 async function doRedeem(){
   const code=document.getElementById('codeIn').value.trim().toUpperCase();
-  if(!/^[A-Z]{3}\d{3}$/.test(code)){showToast(false,'รูปแบบ Code ไม่ถูกต้อง','ต้องเป็นตัวอักษร 3 + ตัวเลข 3 เช่น FCA001');return;}
+  if(!/^[A-Z]{3}\d{3}$/.test(code)){showToast(false,'รูปแบบ Code ไม่ถูกต้อง','Code ต้องมี 6 หลัก เช่น FCA472');return;}
   const btn=document.getElementById('rBtn');
   btn.disabled=true;btn.textContent='⏳ กำลังตรวจสอบ...';hideToast();
   try{
