@@ -48,20 +48,17 @@ body{font-family:'Kanit',sans-serif;font-weight:300;background:var(--bg);color:v
 .uc img{width:30px;height:30px;border-radius:50%;object-fit:cover;border:1.5px solid var(--ac)}
 .uc-n{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}
 .uc-i{font-size:10px;color:var(--mu)}
-
 .lbl{font-size:10px;color:var(--mu);letter-spacing:.1em;text-transform:uppercase;margin:16px 0 9px}
 
-/* ══════════ PAGE 1 — REDEEM ══════════ */
+/* PAGE 1 — REDEEM */
 .code-card{background:var(--s2);border:1px solid var(--b2);border-radius:var(--r);padding:18px;margin-bottom:13px;}
 .code-lbl{font-size:11px;color:var(--mu);letter-spacing:.08em;text-transform:uppercase;margin-bottom:9px}
 .code-in{width:100%;background:var(--bg);border:1.5px solid var(--b2);border-radius:var(--rs);padding:14px 10px;font-size:26px;font-family:'Space Mono',monospace;font-weight:700;color:var(--tx);text-align:center;letter-spacing:9px;text-transform:uppercase;transition:border-color .2s;}
 .code-in:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px rgba(124,109,250,.12)}
 .code-in::placeholder{color:var(--mu);letter-spacing:4px;font-size:16px}
-
 .btn-main{width:100%;background:var(--ac);color:#fff;border:none;border-radius:var(--rs);padding:14px;font-size:14px;font-weight:600;font-family:'Kanit',sans-serif;cursor:pointer;transition:opacity .15s,transform .1s;}
 .btn-main:active{transform:scale(.98);opacity:.85}
 .btn-main:disabled{opacity:.35;cursor:not-allowed;transform:none}
-
 .toast{border-radius:var(--rs);padding:12px 14px;margin-top:12px;display:none;border-left:3px solid;animation:up .22s ease;}
 @keyframes up{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 .toast.ok{background:rgba(52,211,153,.08);border-color:var(--gn)}
@@ -70,8 +67,6 @@ body{font-family:'Kanit',sans-serif;font-weight:300;background:var(--bg);color:v
 .toast.ok .toast-t{color:var(--gn)}
 .toast.er .toast-t{color:var(--rd)}
 .toast-s{font-size:12px;color:var(--mu)}
-
-/* Mini badges 10 grid */
 .mbs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
 .mb{background:var(--s2);border:1px solid var(--b1);border-radius:var(--rs);padding:9px 3px;text-align:center;transition:border-color .2s,background .2s;}
 .mb.on{border-color:rgba(245,200,66,.45);background:rgba(245,200,66,.05)}
@@ -79,7 +74,7 @@ body{font-family:'Kanit',sans-serif;font-weight:300;background:var(--bg);color:v
 .mb-lb{font-size:7.5px;color:var(--mu);margin-top:3px;line-height:1.3;word-break:break-all}
 .mb.on .mb-lb{color:var(--gd2)}
 
-/* ══════════ PAGE 2 — MY BADGES ══════════ */
+/* PAGE 2 — MY BADGES */
 .prog-card{background:var(--s2);border:1px solid var(--b2);border-radius:var(--r);padding:16px;margin-bottom:13px;display:flex;align-items:center;gap:14px;}
 .pr-svg{transform:rotate(-90deg);flex-shrink:0}
 .pr-n{font-size:28px;font-weight:700;color:var(--gd);font-family:'Space Mono',monospace}
@@ -87,13 +82,10 @@ body{font-family:'Kanit',sans-serif;font-weight:300;background:var(--bg);color:v
 .pr-msg{font-size:11px;color:var(--mu);margin-top:3px}
 .pr-bar-wrap{height:3px;background:var(--s3);border-radius:4px;overflow:hidden;margin-top:9px}
 .pr-bar{height:100%;background:linear-gradient(90deg,var(--ac),var(--gd));border-radius:4px;transition:width .6s ease;width:0%}
-
 .done-box{background:linear-gradient(135deg,rgba(124,109,250,.14),rgba(245,200,66,.1));border:1px solid rgba(245,200,66,.3);border-radius:var(--r);padding:13px;text-align:center;margin-bottom:13px;display:none;}
 .done-t{font-size:14px;font-weight:600;color:var(--gd2)}
 .done-s{font-size:11px;color:var(--mu);margin-top:3px}
-
-/* Group cards */
-.group-card{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);overflow:hidden;margin-bottom:9px;transition:border-color .2s;}
+.group-card{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);overflow:hidden;margin-bottom:9px;}
 .gc-head{padding:12px 14px;display:flex;align-items:center;gap:10px;}
 .gc-emoji{font-size:20px;flex-shrink:0}
 .gc-info{flex:1}
@@ -103,7 +95,6 @@ body{font-family:'Kanit',sans-serif;font-weight:300;background:var(--bg);color:v
 .gc-score.full{color:var(--gd)}
 .gc-divider{height:1px;background:var(--b1);margin:0 14px}
 .gc-acts{padding:10px 14px;display:flex;flex-direction:column;gap:7px}
-
 .act-row{display:flex;align-items:center;gap:10px}
 .act-dot{width:8px;height:8px;border-radius:50%;background:var(--b2);flex-shrink:0}
 .act-dot.on{background:var(--gd)}
@@ -115,17 +106,15 @@ body{font-family:'Kanit',sans-serif;font-weight:300;background:var(--bg);color:v
 .chip-ok{background:rgba(245,200,66,.1);color:var(--gd);border:1px solid rgba(245,200,66,.25)}
 .chip-no{background:var(--s3);color:var(--mu);border:1px solid var(--b1)}
 
-/* ══════════ PAGE 3 — LEADERBOARD ══════════ */
+/* PAGE 3 — LEADERBOARD */
 .stat-g{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
 .sc{background:var(--s2);border:1px solid var(--b1);border-radius:var(--rs);padding:12px}
 .sv{font-size:22px;font-weight:700;font-family:'Space Mono',monospace;color:var(--ac2)}
 .sl{font-size:10px;color:var(--mu);margin-top:3px}
-
 .filt{display:flex;gap:5px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
 .filt::-webkit-scrollbar{display:none}
 .fb{padding:5px 11px;border:1px solid var(--b2);border-radius:20px;background:transparent;color:var(--mu);font-family:'Kanit',sans-serif;font-size:11px;cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0;}
 .fb.on{background:var(--ac);border-color:var(--ac);color:#fff}
-
 .lb{display:flex;flex-direction:column;gap:6px}
 .lbr{background:var(--s2);border:1px solid var(--b1);border-radius:var(--rs);padding:10px 12px;display:flex;align-items:center;gap:9px;}
 .lbr.r1{border-color:rgba(245,200,66,.5);background:rgba(245,200,66,.04)}
@@ -156,9 +145,7 @@ body{font-family:'Kanit',sans-serif;font-weight:300;background:var(--bg);color:v
   <div class="ld-t">กำลังเชื่อมต่อ LINE...</div>
 </div>
 
-<!-- ══════════════════════════════
-     PAGE 1 — REDEEM
-══════════════════════════════ -->
+<!-- PAGE 1 — REDEEM -->
 <div class="pg on" id="pg-redeem">
   <div class="ph"><div class="pt">Redeem Code</div><div class="ps">กรอก Code จาก Line OA เพื่อรับ Badge</div></div>
   <div class="uc" id="uc1"><img id="p1" src="" alt="" onerror="this.style.display='none'"><div><div class="uc-n" id="n1">-</div><div class="uc-i" id="i1">-</div></div></div>
@@ -172,9 +159,7 @@ body{font-family:'Kanit',sans-serif;font-weight:300;background:var(--bg);color:v
   <div class="mbs" id="mbs"></div>
 </div>
 
-<!-- ══════════════════════════════
-     PAGE 2 — MY BADGES
-══════════════════════════════ -->
+<!-- PAGE 2 — MY BADGES -->
 <div class="pg" id="pg-badges">
   <div class="ph"><div class="pt">Badge ของฉัน</div><div class="ps">สรุปกิจกรรมที่เข้าร่วมทั้ง 10 รายการ</div></div>
   <div class="uc" id="uc2"><img id="p2" src="" alt="" onerror="this.style.display='none'"><div><div class="uc-n" id="n2">-</div><div class="uc-i" id="i2">-</div></div></div>
@@ -195,9 +180,7 @@ body{font-family:'Kanit',sans-serif;font-weight:300;background:var(--bg);color:v
   <div id="actGroups"></div>
 </div>
 
-<!-- ══════════════════════════════
-     PAGE 3 — LEADERBOARD
-══════════════════════════════ -->
+<!-- PAGE 3 — LEADERBOARD -->
 <div class="pg" id="pg-dash">
   <div class="ph"><div class="pt">Leaderboard</div><div class="ps">อันดับผู้สะสม Badge ทั้งหมด</div></div>
   <div class="stat-g">
@@ -228,11 +211,8 @@ body{font-family:'Kanit',sans-serif;font-weight:300;background:var(--bg);color:v
 </nav>
 
 <script>
-// ════════ CONFIG ════════
+// ── CONFIG ──────────────────────────────────────────────
 const LIFF_ID = '2009815147-aGgIrfPv';
-
-// ── ใส่ Cloudflare Worker URL ที่นี่ (ไม่ใช่ GAS URL โดยตรง) ──
-// ตัวอย่าง: 'https://badge-webhook.YOUR_NAME.workers.dev'
 const GAS_URL = 'https://broken-brook-8216.jarukantm.workers.dev/';
 
 const ACTS = [
@@ -249,43 +229,43 @@ const ACTS = [
 ];
 
 const GROUPS = [
-  {key:'FXC',label:'FXC',            emoji:'⚡',color:'#7c6dfa',prefixes:['FCA','FCB']},
-  {key:'FXO',label:'FXCXO',          emoji:'🌊',color:'#2563eb',prefixes:['FOA','FOB']},
-  {key:'FXU',label:'FXCXU',          emoji:'🌿',color:'#059669',prefixes:['FUA','FUB']},
-  {key:'FXS',label:'FXCXS',          emoji:'🔥',color:'#d97706',prefixes:['FSA','FSB']},
+  {key:'FXC',label:'FXC',             emoji:'⚡',color:'#7c6dfa',prefixes:['FCA','FCB']},
+  {key:'FXO',label:'FXCXO',           emoji:'🌊',color:'#2563eb',prefixes:['FOA','FOB']},
+  {key:'FXU',label:'FXCXU',           emoji:'🌿',color:'#059669',prefixes:['FUA','FUB']},
+  {key:'FXS',label:'FXCXS',           emoji:'🔥',color:'#d97706',prefixes:['FSA','FSB']},
   {key:'SGX',label:'Singhawayx FOCUS',emoji:'🏆',color:'#dc2626',prefixes:['SGA','SGB']},
 ];
 
-const PRMSGS = ['เริ่มสะสม Badge กันเถอะ!','เริ่มต้นแล้ว! สู้ต่อ 🔥','กำลังมาแรง 💪','ครึ่งทางแล้ว! ✨','ใกล้ถึงแล้ว 🎯','เหลืออีกนิดเดียว!','เหลืออีก 4 Badge','เหลืออีก 3 Badge','เหลืออีก 2 Badge','เหลืออีก 1 Badge!','🎊 ครบทั้ง 10 Badge แล้ว!'];
+const PRMSGS = [
+  'เริ่มสะสม Badge กันเถอะ!','เริ่มต้นแล้ว! สู้ต่อ 🔥','กำลังมาแรง 💪',
+  'ครึ่งทางแล้ว! ✨','ใกล้ถึงแล้ว 🎯','เหลืออีกนิดเดียว!',
+  'เหลืออีก 4 Badge','เหลืออีก 3 Badge','เหลืออีก 2 Badge',
+  'เหลืออีก 1 Badge!','🎊 ครบทั้ง 10 Badge แล้ว!'
+];
 
-let profile=null, myBadges=[], lbAll=[];
+let profile = null, myBadges = [], lbAll = [], curFilt = 'all';
 
-// ════════ INIT ════════
+// ── INIT ─────────────────────────────────────────────────
 async function init() {
   try {
     await liff.init({ liffId: LIFF_ID });
 
-    // ตรวจสอบ Token หมดอายุ
-    if (!liff.isLoggedIn()) {
-      liff.login();
-      return;
-    }
+    if (!liff.isLoggedIn()) { liff.login(); return; }
 
-    // ตรวจ Token ยังใช้ได้ไหม
     try {
       profile = await liff.getProfile();
     } catch (e) {
-      // Token expired → logout แล้ว login ใหม่
+      // Token หมดอายุ → login ใหม่
       liff.logout();
       liff.login();
       return;
     }
 
-    // ใส่ข้อมูล User chip
+    // ใส่ข้อมูล User
     ['1','2'].forEach(n => {
-      const pic = document.getElementById('p'+n); if(pic) pic.src = profile.pictureUrl||'';
-      const nm  = document.getElementById('n'+n); if(nm)  nm.textContent = profile.displayName;
-      const id  = document.getElementById('i'+n); if(id)  id.textContent = profile.userId.slice(0,16)+'...';
+      const p  = document.getElementById('p'+n);  if(p)  p.src = profile.pictureUrl || '';
+      const nm = document.getElementById('n'+n);  if(nm) nm.textContent = profile.displayName;
+      const id = document.getElementById('i'+n);  if(id) id.textContent = profile.userId.slice(0,16)+'...';
     });
 
     document.getElementById('loading').style.display = 'none';
@@ -293,168 +273,195 @@ async function init() {
     await Promise.all([loadBadges(), loadLB()]);
 
   } catch (e) {
-    // ถ้า error เกี่ยวกับ token → login ใหม่เลย
     if (e.message && (e.message.includes('expired') || e.message.includes('token'))) {
-      liff.logout();
-      liff.login();
-      return;
+      liff.logout(); liff.login(); return;
     }
     document.getElementById('loading').innerHTML =
-      `<div style="color:#f87171;text-align:center;font-size:13px;padding:20px">
-        ⚠️ ไม่สามารถเชื่อมต่อได้<br>
-        <small style="color:#6a6a85">${e.message}</small><br><br>
-        <button onclick="liff.logout();liff.login()" 
-          style="background:#7c6dfa;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:14px;cursor:pointer">
-          🔄 เข้าสู่ระบบใหม่
-        </button>
-      </div>`;
+      '<div style="color:#f87171;text-align:center;font-size:13px;padding:20px">'
+      + '⚠️ ไม่สามารถเชื่อมต่อได้<br>'
+      + '<small style="color:#6a6a85">' + e.message + '</small><br><br>'
+      + '<button onclick="liff.logout();liff.login()" '
+      + 'style="background:#7c6dfa;color:white;border:none;padding:10px 20px;'
+      + 'border-radius:8px;font-size:14px;cursor:pointer;font-family:Kanit,sans-serif">'
+      + '🔄 เข้าสู่ระบบใหม่</button></div>';
   }
 }
 
-// ════════ BADGES ════════
-async function loadBadges(){
-  if(!profile)return;
-  try{
-    const d=await api({action:'getUserBadges',lineUserId:profile.userId});
-    myBadges=d.badges||[];
-    renderMini(myBadges); renderGroups(myBadges);
-    if(d.completed)document.getElementById('doneBox').style.display='block';
-  }catch(e){}
+// ── NAVIGATION ───────────────────────────────────────────
+function goPage(id) {
+  document.querySelectorAll('.pg').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b => b.classList.remove('on'));
+  document.getElementById('pg-' + id).classList.add('on');
+  document.getElementById('nv-' + id).classList.add('on');
 }
 
-function renderMini(badges){
-  const earned=badges.map(b=>b.prefix);
-  const el=document.getElementById('mbs'); if(!el)return;
-  el.innerHTML=ACTS.map(a=>`
-    <div class="mb${earned.includes(a.prefix)?' on':''}">
+// ── BADGES ───────────────────────────────────────────────
+async function loadBadges() {
+  if (!profile) return;
+  try {
+    const d = await api({ action:'getUserBadges', lineUserId:profile.userId });
+    myBadges = d.badges || [];
+    renderMini(myBadges);
+    renderGroups(myBadges);
+    if (d.completed) document.getElementById('doneBox').style.display = 'block';
+  } catch(e) {}
+}
+
+function renderMini(badges) {
+  const earned = badges.map(b => b.prefix);
+  const el = document.getElementById('mbs'); if (!el) return;
+  el.innerHTML = ACTS.map(a => `
+    <div class="mb${earned.includes(a.prefix) ? ' on' : ''}">
       <div class="mb-ic">${a.icon}</div>
       <div class="mb-lb">${a.name}</div>
     </div>`).join('');
 }
 
-function renderGroups(badges){
-  const earned=badges.map(b=>b.prefix);
-  const n=earned.length;
-  const circ=169.6;
-  const arc=document.getElementById('arc'); if(arc)arc.style.strokeDashoffset=circ-circ*n/10;
-  const pn=document.getElementById('pn'); if(pn)pn.innerHTML=`${n}<span>/10</span>`;
-  const pm=document.getElementById('pm'); if(pm)pm.textContent=PRMSGS[n]||'';
-  const pb=document.getElementById('pb'); if(pb)pb.style.width=(n/10*100)+'%';
+function renderGroups(badges) {
+  const earned = badges.map(b => b.prefix);
+  const n = earned.length;
+  const circ = 169.6;
+  const arc = document.getElementById('arc'); if(arc) arc.style.strokeDashoffset = circ - circ*n/10;
+  const pn  = document.getElementById('pn');  if(pn)  pn.innerHTML = n + '<span>/10</span>';
+  const pm  = document.getElementById('pm');  if(pm)  pm.textContent = PRMSGS[n] || '';
+  const pb  = document.getElementById('pb');  if(pb)  pb.style.width = (n/10*100) + '%';
 
-  const el=document.getElementById('actGroups'); if(!el)return;
-  el.innerHTML=GROUPS.map(g=>{
-    const gEarned=g.prefixes.filter(p=>earned.includes(p)).length;
-    const isFull=gEarned===2;
-    return `
-    <div class="group-card" style="${isFull?'border-color:rgba(245,200,66,.28)':''}">
-      <div class="gc-head">
-        <div class="gc-emoji">${g.emoji}</div>
-        <div class="gc-info">
-          <div class="gc-name">${g.label}</div>
-          <div class="gc-sub">สะสมได้ ${gEarned}/2 กิจกรรม</div>
-        </div>
-        <div class="gc-score${isFull?' full':''}">
-          ${isFull?'⭐ ครบ':''+gEarned+'/2'}
-        </div>
-      </div>
-      <div class="gc-divider"></div>
-      <div class="gc-acts">
-        ${g.prefixes.map(pfx=>{
-          const a=ACTS.find(x=>x.prefix===pfx);
-          const b=badges.find(x=>x.prefix===pfx);
-          const ok=!!b;
-          const dt=b&&b.earnedAt?new Date(b.earnedAt).toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'}):'';
-          return `
-          <div class="act-row">
-            <div class="act-dot${ok?' on':''}"></div>
-            <div class="act-info2">
-              <div class="act-nm2">${a.icon} ${a.full}</div>
-              ${ok?`<div class="act-dt2">✓ ${dt}</div><div class="act-cd2">${b.code}</div>`:''}
-            </div>
-            <div class="chip ${ok?'chip-ok':'chip-no'}">${ok?'ได้รับ':'รอ'}</div>
-          </div>`;
-        }).join('')}
-      </div>
-    </div>`;
+  const el = document.getElementById('actGroups'); if (!el) return;
+  el.innerHTML = GROUPS.map(g => {
+    const gEarned = g.prefixes.filter(p => earned.includes(p)).length;
+    const isFull  = gEarned === 2;
+    return '<div class="group-card" style="' + (isFull ? 'border-color:rgba(245,200,66,.28)' : '') + '">'
+      + '<div class="gc-head">'
+      + '<div class="gc-emoji">' + g.emoji + '</div>'
+      + '<div class="gc-info"><div class="gc-name">' + g.label + '</div>'
+      + '<div class="gc-sub">สะสมได้ ' + gEarned + '/2 กิจกรรม</div></div>'
+      + '<div class="gc-score' + (isFull ? ' full' : '') + '">' + (isFull ? '⭐ ครบ' : gEarned+'/2') + '</div>'
+      + '</div><div class="gc-divider"></div><div class="gc-acts">'
+      + g.prefixes.map(pfx => {
+          const a  = ACTS.find(x => x.prefix === pfx);
+          const b  = badges.find(x => x.prefix === pfx);
+          const ok = !!b;
+          const dt = b && b.earnedAt ? new Date(b.earnedAt).toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'}) : '';
+          return '<div class="act-row">'
+            + '<div class="act-dot' + (ok ? ' on' : '') + '"></div>'
+            + '<div class="act-info2">'
+            + '<div class="act-nm2">' + a.icon + ' ' + a.full + '</div>'
+            + (ok ? '<div class="act-dt2">✓ ' + dt + '</div><div class="act-cd2">' + b.code + '</div>' : '')
+            + '</div>'
+            + '<div class="chip ' + (ok ? 'chip-ok' : 'chip-no') + '">' + (ok ? 'ได้รับ' : 'รอ') + '</div>'
+            + '</div>';
+        }).join('')
+      + '</div></div>';
   }).join('');
 }
 
-// ════════ LEADERBOARD ════════
-async function loadLB(){
-  try{
-    const d=await api({action:'getLeaderboard'});
-    lbAll=d.leaderboard||[];
-    document.getElementById('stU').textContent=d.totalUsers||0;
-    document.getElementById('stC').textContent=d.totalComplete||0;
+// ── LEADERBOARD ──────────────────────────────────────────
+async function loadLB() {
+  try {
+    const d = await api({ action:'getLeaderboard' });
+    lbAll = d.leaderboard || [];
+    document.getElementById('stU').textContent = d.totalUsers    || 0;
+    document.getElementById('stC').textContent = d.totalComplete || 0;
     renderLB('all');
-  }catch(e){document.getElementById('lb').innerHTML='<div class="empty">ไม่สามารถโหลดข้อมูลได้</div>';}
+  } catch(e) {
+    document.getElementById('lb').innerHTML = '<div class="empty">ไม่สามารถโหลดข้อมูลได้</div>';
+  }
 }
 
-function doFilt(f,btn){
-  document.querySelectorAll('.fb').forEach(b=>b.classList.remove('on')); btn.classList.add('on');
+function doFilt(f, btn) {
+  curFilt = f;
+  document.querySelectorAll('.fb').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
   renderLB(f);
 }
 
-function renderLB(f){
-  const myId=profile?profile.userId:'';
-  let rows=f==='all'?[...lbAll]:lbAll.filter(u=>u.prefixes&&u.prefixes.includes(f));
-  rows.sort((a,b)=>b.total-a.total);
-  if(!rows.length){document.getElementById('lb').innerHTML='<div class="empty">ไม่มีข้อมูลในส่วนนี้</div>';return;}
-  const RI=['🥇','🥈','🥉'];
-  document.getElementById('lb').innerHTML=rows.map((u,i)=>{
-    const rank=i+1,isMe=u.lineUserId===myId,rcls=rank<=3?'r'+rank:'';
-    const ep=u.prefixes||[],ini=(u.displayName||'?')[0].toUpperCase();
-    const avt=u.pictureUrl?`<img class="lav" src="${u.pictureUrl}" alt="" onerror="this.outerHTML='<div class=\'lavp\'>${ini}</div>'">`:`<div class="lavp">${ini}</div>`;
-    return `
-    <div class="lbr ${rcls}${isMe?' me':''}">
-      <div class="lk">${rank<=3?RI[rank-1]:rank}</div>${avt}
-      <div class="li">
-        <div class="ln${isMe?' me':''}">${esc(u.displayName||'ไม่ระบุชื่อ')}${isMe?'<span class="me-tag">ฉัน</span>':''}</div>
-        <div class="lid">${u.lineUserId.slice(0,14)}...</div>
-      </div>
-      <div class="ldots">${ACTS.map(a=>`<div class="ld${ep.includes(a.prefix)?' on':''}" title="${a.name}"></div>`).join('')}</div>
-      <div class="lsc">${u.total}</div>
-    </div>`;
+function renderLB(f) {
+  const myId = profile ? profile.userId : '';
+  let rows = f === 'all' ? [...lbAll] : lbAll.filter(u => u.prefixes && u.prefixes.includes(f));
+  rows.sort((a,b) => b.total - a.total);
+  if (!rows.length) { document.getElementById('lb').innerHTML = '<div class="empty">ไม่มีข้อมูลในส่วนนี้</div>'; return; }
+  const RI = ['🥇','🥈','🥉'];
+  document.getElementById('lb').innerHTML = rows.map((u,i) => {
+    const rank  = i + 1;
+    const isMe  = u.lineUserId === myId;
+    const rcls  = rank <= 3 ? 'r'+rank : '';
+    const ep    = u.prefixes || [];
+    const ini   = (u.displayName || '?')[0].toUpperCase();
+    const avt   = u.pictureUrl
+      ? '<img class="lav" src="' + u.pictureUrl + '" alt="" onerror="this.outerHTML=\'<div class=\\\'lavp\\\'>' + ini + '</div>\'">'
+      : '<div class="lavp">' + ini + '</div>';
+    return '<div class="lbr ' + rcls + (isMe ? ' me' : '') + '">'
+      + '<div class="lk">' + (rank<=3 ? RI[rank-1] : rank) + '</div>'
+      + avt
+      + '<div class="li">'
+      + '<div class="ln' + (isMe ? ' me' : '') + '">' + esc(u.displayName||'ไม่ระบุชื่อ') + (isMe ? '<span class="me-tag">ฉัน</span>' : '') + '</div>'
+      + '<div class="lid">' + u.lineUserId.slice(0,14) + '...</div>'
+      + '</div>'
+      + '<div class="ldots">' + ACTS.map(a => '<div class="ld' + (ep.includes(a.prefix) ? ' on' : '') + '" title="' + a.name + '"></div>').join('') + '</div>'
+      + '<div class="lsc">' + u.total + '</div>'
+      + '</div>';
   }).join('');
 }
 
-// ════════ REDEEM ════════
-async function doRedeem(){
-  const code=document.getElementById('codeIn').value.trim().toUpperCase();
-  if(!/^[A-Z]{3}\d{3}$/.test(code)){showToast(false,'รูปแบบ Code ไม่ถูกต้อง','Code ต้องมี 6 หลัก เช่น FCA472');return;}
-  const btn=document.getElementById('rBtn');
-  btn.disabled=true;btn.textContent='⏳ กำลังตรวจสอบ...';hideToast();
-  try{
-    const d=await api({action:'redeemCode',lineUserId:profile.userId,displayName:profile.displayName,pictureUrl:profile.pictureUrl||'',code});
-    if(d.success){
-      showToast(true,d.message,`สะสมแล้ว ${d.totalBadges}/10 Badge`);
-      document.getElementById('codeIn').value='';
-      await Promise.all([loadBadges(),loadLB()]);
-    }else{showToast(false,d.message,'');}
-  }catch(e){showToast(false,'เกิดข้อผิดพลาด กรุณาลองใหม่','');}
-  btn.disabled=false;btn.textContent='ยืนยัน Code →';
+// ── REDEEM ────────────────────────────────────────────────
+async function doRedeem() {
+  const code = document.getElementById('codeIn').value.trim().toUpperCase();
+  if (!/^[A-Z]{3}\d{3}$/.test(code)) {
+    showToast(false, 'รูปแบบ Code ไม่ถูกต้อง', 'Code ต้องมี 6 หลัก เช่น FCA472');
+    return;
+  }
+  const btn = document.getElementById('rBtn');
+  btn.disabled = true; btn.textContent = '⏳ กำลังตรวจสอบ...';
+  hideToast();
+  try {
+    const d = await api({
+      action      : 'redeemCode',
+      lineUserId  : profile.userId,
+      displayName : profile.displayName,
+      pictureUrl  : profile.pictureUrl || '',
+      code
+    });
+    if (d.success) {
+      showToast(true, d.message, 'สะสมแล้ว ' + d.totalBadges + '/10 Badge');
+      document.getElementById('codeIn').value = '';
+      await Promise.all([loadBadges(), loadLB()]);
+    } else {
+      showToast(false, d.message, '');
+    }
+  } catch(e) {
+    showToast(false, 'เกิดข้อผิดพลาด กรุณาลองใหม่', '');
+  }
+  btn.disabled = false; btn.textContent = 'ยืนยัน Code →';
 }
 
-function showToast(ok,title,sub){
-  const t=document.getElementById('toast');
-  t.className='toast '+(ok?'ok':'er');t.style.display='block';
-  document.getElementById('tt').textContent=title;
-  document.getElementById('ts').textContent=sub;
+// ── HELPERS ───────────────────────────────────────────────
+function showToast(ok, title, sub) {
+  const t = document.getElementById('toast');
+  t.className = 'toast ' + (ok ? 'ok' : 'er');
+  t.style.display = 'block';
+  document.getElementById('tt').textContent = title;
+  document.getElementById('ts').textContent = sub;
 }
-function hideToast(){document.getElementById('toast').style.display='none';}
-function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function hideToast() { document.getElementById('toast').style.display = 'none'; }
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-async function api(body){
-  const r=await fetch(GAS_URL,{method:'POST',redirect:'follow',headers:{'Content-Type':'text/plain'},body:JSON.stringify(body)});
-  if(!r.ok)throw new Error('HTTP '+r.status);
+async function api(body) {
+  const r = await fetch(GAS_URL, {
+    method  : 'POST',
+    redirect: 'follow',
+    headers : { 'Content-Type':'text/plain' },
+    body    : JSON.stringify(body)
+  });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
   return r.json();
 }
 
-document.addEventListener('DOMContentLoaded',()=>{
-  const inp=document.getElementById('codeIn');
-  inp.addEventListener('keydown',e=>{if(e.key==='Enter')doRedeem();});
-  inp.addEventListener('input',e=>{e.target.value=e.target.value.toUpperCase();});
+document.addEventListener('DOMContentLoaded', () => {
+  const inp = document.getElementById('codeIn');
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') doRedeem(); });
+  inp.addEventListener('input',   e => { e.target.value = e.target.value.toUpperCase(); });
 });
+
 init();
 </script>
 </body>
