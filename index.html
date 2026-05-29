@@ -249,19 +249,9 @@ let profile = null, myBadges = [], lbAll = [], curFilt = 'all';
 async function init() {
   try {
     await liff.init({ liffId: LIFF_ID });
-
     if (!liff.isLoggedIn()) { liff.login(); return; }
+    profile = await liff.getProfile();
 
-    try {
-      profile = await liff.getProfile();
-    } catch (e) {
-      // Token หมดอายุ → login ใหม่
-      liff.logout();
-      liff.login();
-      return;
-    }
-
-    // ใส่ข้อมูล User
     ['1','2'].forEach(n => {
       const p  = document.getElementById('p'+n);  if(p)  p.src = profile.pictureUrl || '';
       const nm = document.getElementById('n'+n);  if(nm) nm.textContent = profile.displayName;
@@ -273,19 +263,26 @@ async function init() {
     await Promise.all([loadBadges(), loadLB()]);
 
   } catch (e) {
-    if (e.message && (e.message.includes('expired') || e.message.includes('token'))) {
-      liff.logout(); liff.login(); return;
-    }
+    // แสดงปุ่มให้กด เพื่อไม่ให้วน Loop อัตโนมัติ
     document.getElementById('loading').innerHTML =
-      '<div style="color:#f87171;text-align:center;font-size:13px;padding:20px">'
-      + '⚠️ ไม่สามารถเชื่อมต่อได้<br>'
-      + '<small style="color:#6a6a85">' + e.message + '</small><br><br>'
-      + '<button onclick="liff.logout();liff.login()" '
-      + 'style="background:#7c6dfa;color:white;border:none;padding:10px 20px;'
-      + 'border-radius:8px;font-size:14px;cursor:pointer;font-family:Kanit,sans-serif">'
-      + '🔄 เข้าสู่ระบบใหม่</button></div>';
+      '<div style="text-align:center;padding:30px 20px">'
+      + '<div style="font-size:40px;margin-bottom:12px">⚠️</div>'
+      + '<div style="color:#f87171;font-size:14px;font-weight:600;margin-bottom:6px">ไม่สามารถเชื่อมต่อได้</div>'
+      + '<div style="color:#6a6a85;font-size:12px;margin-bottom:20px">' + e.message + '</div>'
+      + '<button onclick="window.location.reload()" '
+      + 'style="background:#7c6dfa;color:white;border:none;padding:12px 24px;'
+      + 'border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;'
+      + 'font-family:Kanit,sans-serif;display:block;width:100%;margin-bottom:10px">'
+      + '🔄 ลองใหม่อีกครั้ง</button>'
+      + '<button onclick="liff.closeWindow()" '
+      + 'style="background:transparent;color:#6a6a85;border:1px solid #333;padding:10px 24px;'
+      + 'border-radius:10px;font-size:13px;cursor:pointer;'
+      + 'font-family:Kanit,sans-serif;display:block;width:100%">'
+      + 'ปิดหน้าต่าง</button>'
+      + '</div>';
   }
 }
+
 
 // ── NAVIGATION ───────────────────────────────────────────
 function goPage(id) {
