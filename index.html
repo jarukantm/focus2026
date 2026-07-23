@@ -246,18 +246,29 @@ let profile=null, myBadges=[], lbData=[], curLBPart=2;
 // ── INIT ─────────────────────────────────────────────────
 async function init() {
   try {
+    // 1. Init LIFF
     await liff.init({ liffId: LIFF_ID });
     if (!liff.isLoggedIn()) { liff.login(); return; }
+
+    // 2. Get profile (เร็วมาก cache อยู่ใน LIFF)
     profile = await liff.getProfile();
+
+    // 3. ซ่อน loading ทันทีหลังได้ profile — ไม่รอ data
     ['1','2'].forEach(n => {
       const p=document.getElementById('p'+n); if(p) p.src=profile.pictureUrl||'';
       const nm=document.getElementById('n'+n); if(nm) nm.textContent=profile.displayName;
       const id=document.getElementById('i'+n); if(id) id.textContent=profile.userId.slice(0,16)+'...';
     });
     document.getElementById('loading').style.display='none';
+
+    // 4. Render หน้าว่างก่อน (เห็น UI ทันที)
     renderMini([],[]);
     renderBadges([],[]);
-    await Promise.all([loadBadges(), loadLB(2)]);
+
+    // 5. โหลด data แบบ background — ไม่บล็อก UI
+    loadBadges();   // ไม่ await
+    loadLB(2);      // ไม่ await
+
   } catch(e) {
     document.getElementById('loading').innerHTML =
       '<div style="text-align:center;padding:30px 20px">'
@@ -333,6 +344,9 @@ function renderBadges(b1, b2) {
 // ── LEADERBOARD ──────────────────────────────────────────
 async function loadLB(part) {
   curLBPart = part;
+  // แสดง loading spinner เล็กๆ ขณะรอ
+  document.getElementById('lb').innerHTML =
+    '<div class="empty"><div style="width:24px;height:24px;border-radius:50%;border:2px solid #DCEBFF;border-top-color:#0D66E7;animation:rot .75s linear infinite;margin:0 auto 8px"></div>กำลังโหลด...</div>';
   try {
     const d = await api({action:'getLeaderboard', part});
     lbData = d.leaderboard || [];
@@ -414,7 +428,7 @@ async function doRedeem() {
     if (d.success) {
       showToast(true, d.message, 'พาร์ท '+(d.part===1?'1 ('+d.total1+'/2)':'2 ('+d.total2+'/4)'));
       document.getElementById('codeIn').value='';
-      await Promise.all([loadBadges(), loadLB(curLBPart)]);
+      loadBadges(); loadLB(curLBPart); // background reload
     } else { showToast(false, d.message, ''); }
   } catch(e) { showToast(false,'เกิดข้อผิดพลาด กรุณาลองใหม่',''); }
   btn.disabled=false; btn.textContent='ยืนยัน Code →';
