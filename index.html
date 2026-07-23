@@ -159,7 +159,7 @@ body{font-family:'Kanit',sans-serif;font-weight:300;background:var(--bg);color:v
 
   <div class="lbl">⭐ TPKs FOCUS Challenge</div>
   <div class="mb4" id="mini2" style="margin-bottom:12px"></div>
-  <div class="lbl">🤝 Collaboration Activity</div>
+  <div class="lbl">🤝 Collaboration Activities</div>
   <div class="mbs" id="mini1"></div>
 </div>
 
@@ -179,11 +179,11 @@ body{font-family:'Kanit',sans-serif;font-weight:300;background:var(--bg);color:v
     <div class="badge-list" id="bl2"></div>
   </div>
 
-  <!-- Collaboration Activity -->
+  <!-- Collaboration Activities -->
   <div class="part-card">
     <div class="part-head">
       <div class="part-emoji">🤝</div>
-      <div class="part-title">Collaboration Activity</div>
+      <div class="part-title">Collaboration Activities</div>
       <div class="part-score" id="ps1">0/2</div>
     </div>
     <div class="part-bar-wrap"><div class="part-bar p1" id="pb1" style="width:0%"></div></div>
@@ -433,7 +433,7 @@ async function doRedeem() {
   try {
     var d = await api({action:'redeemCode',lineUserId:profile.userId,displayName:profile.displayName,pictureUrl:profile.pictureUrl||'',code:code});
     if (d.success) {
-      showToast(true, d.message, 'ประเภท '+(d.part===2?'TPKs FOCUS Challenge':'Collaboration Activity'));
+      showToast(true, d.message, 'ประเภท '+(d.part===2?'TPKs FOCUS Challenge':'Collaboration Activities'));
       document.getElementById('codeIn').value='';
       loadBadges();
       loadLB(curLBPart);
