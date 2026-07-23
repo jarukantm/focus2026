@@ -135,6 +135,12 @@ body{font-family:'Kanit',sans-serif;font-weight:300;background:var(--bg);color:v
 .dot.no{background:var(--s3)}
 .lsc{font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:var(--tx);flex-shrink:0;align-self:center}
 .empty{text-align:center;padding:26px 0;color:var(--mu);font-size:13px}
+.skel{background:linear-gradient(90deg,var(--s3) 25%,#EDF4FF 50%,var(--s3) 75%);background-size:200% 100%;animation:shimmer 1.2s infinite;border-radius:var(--rs);}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.skel-row{display:flex;align-items:center;gap:9px;padding:10px 12px;background:#fff;border:1px solid var(--b2);border-radius:var(--rs);margin-bottom:6px}
+.skel-av{width:32px;height:32px;border-radius:50%;flex-shrink:0}
+.skel-line{height:10px;border-radius:6px}
+.skel-sm{height:7px;border-radius:6px;margin-top:5px}
 .mini-spin{width:20px;height:20px;border-radius:50%;border:2px solid var(--s3);border-top-color:var(--ac);animation:rot .75s linear infinite;margin:0 auto 8px}
 </style>
 </head>
