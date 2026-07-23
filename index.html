@@ -3,62 +3,61 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#0d0d14">
+<meta name="theme-color" content="#F4F8FF">
 <title>TPKs FOCUS — Badge Collector</title>
 <script src="https://static.line-scdn.net/liff/edge/versions/2.22.3/sdk.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  /* Color System */
-  --bg:#F4F8FF;         /* Ice Background */
-  --bg2:#ffffff;        /* White Surface */
-  --s1:#ffffff;         /* Card/Surface */
-  --s2:#F4F8FF;         /* Ice Background */
-  --s3:#DCEBFF;         /* Light Sky Blue */
+  --bg:#F4F8FF;
+  --s1:#ffffff;
+  --s2:#F4F8FF;
+  --s3:#DCEBFF;
   --b1:rgba(13,102,231,.08);
   --b2:rgba(13,102,231,.15);
-  --b3:rgba(13,102,231,.25);
-  --tx:#081F4D;         /* Navy Text */
-  --mu:#5B6F95;         /* Soft Gray Blue */
-  --ac:#0D66E7;         /* Primary Blue */
-  --ac2:#0746B8;        /* Deep Blue */
-  --ac3:#DCEBFF;        /* Light Sky Blue */
-  --gd:#0D66E7;
-  --gd2:#0746B8;
+  --tx:#081F4D;
+  --mu:#5B6F95;
+  --ac:#0D66E7;
+  --ac2:#0746B8;
   --gn:#059669;
   --rd:#dc2626;
   --r:14px;--rs:10px;
 }
 body{font-family:'Kanit',sans-serif;font-weight:300;background:var(--bg);color:var(--tx);min-height:100vh;display:flex;flex-direction:column;max-width:480px;margin:0 auto;-webkit-font-smoothing:antialiased;}
 
+/* LOADING */
 #loading{position:fixed;inset:0;background:linear-gradient(160deg,#F7FBFF,#DCEBFF,#A9D3FF);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:14px;}
-.spin{width:46px;height:46px;border-radius:50%;border:3px solid var(--b2);border-top-color:var(--ac);animation:rot .75s linear infinite;}
+.spin{width:46px;height:46px;border-radius:50%;border:3px solid #DCEBFF;border-top-color:var(--ac);animation:rot .75s linear infinite;}
 @keyframes rot{to{transform:rotate(360deg)}}
 .ld-t{font-size:13px;color:var(--ac)}
 
-.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;z-index:100;background:#ffffff;border-top:1px solid var(--b2);display:flex;padding-bottom:max(env(safe-area-inset-bottom),6px);box-shadow:0 -2px 12px rgba(13,102,231,.08);}
+/* NAV */
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;z-index:100;background:#fff;border-top:1px solid var(--b2);display:flex;padding-bottom:max(env(safe-area-inset-bottom),6px);box-shadow:0 -2px 12px rgba(13,102,231,.08);}
 .nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:9px 0;background:none;border:none;cursor:pointer;color:var(--mu);font-family:'Kanit',sans-serif;font-size:10px;position:relative;transition:color .15s;}
 .nb.on{color:var(--ac)}
 .nb.on::before{content:'';position:absolute;top:0;width:24px;height:2px;background:var(--ac);border-radius:2px;}
 .nb-ic{font-size:18px;line-height:1}
 
-.pg{display:none;flex-direction:column;flex:1;padding:20px 16px 86px;overflow-x:hidden;background:linear-gradient(180deg,#F7FBFF 0%,#F4F8FF 100%);min-height:100vh;}
+/* PAGES */
+.pg{display:none;flex-direction:column;flex:1;padding:20px 16px 86px;background:linear-gradient(180deg,#F7FBFF 0%,#F4F8FF 100%);min-height:100vh;}
 .pg.on{display:flex;animation:pgIn .2s ease}
 @keyframes pgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
+/* HEADER */
 .ph{margin-bottom:18px}
 .pt{font-size:21px;font-weight:700;color:var(--tx);}
 .ps{font-size:12px;color:var(--mu);margin-top:3px}
 
-.uc{display:inline-flex;align-items:center;gap:9px;background:#ffffff;border:1px solid var(--b2);border-radius:50px;padding:5px 14px 5px 5px;margin-bottom:16px;max-width:100%;box-shadow:0 1px 6px rgba(13,102,231,.08);}
+/* USER CHIP */
+.uc{display:inline-flex;align-items:center;gap:9px;background:#fff;border:1px solid var(--b2);border-radius:50px;padding:5px 14px 5px 5px;margin-bottom:16px;max-width:100%;box-shadow:0 1px 6px rgba(13,102,231,.08);}
 .uc img{width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid var(--ac)}
 .uc-n{font-size:13px;font-weight:600;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}
 .uc-i{font-size:10px;color:var(--mu)}
 .lbl{font-size:10px;color:var(--ac);letter-spacing:.1em;text-transform:uppercase;margin:16px 0 9px;font-weight:600}
 
-/* REDEEM */
-.code-card{background:#ffffff;border:1px solid var(--b2);border-radius:var(--r);padding:18px;margin-bottom:13px;box-shadow:0 2px 8px rgba(13,102,231,.07);}
+/* PAGE 1 — REDEEM */
+.code-card{background:#fff;border:1px solid var(--b2);border-radius:var(--r);padding:18px;margin-bottom:13px;box-shadow:0 2px 8px rgba(13,102,231,.07);}
 .code-lbl{font-size:11px;color:var(--mu);letter-spacing:.08em;text-transform:uppercase;margin-bottom:9px}
 .code-in{width:100%;background:var(--s2);border:1.5px solid var(--b2);border-radius:var(--rs);padding:14px 10px;font-size:26px;font-family:'Space Mono',monospace;font-weight:700;color:var(--tx);text-align:center;letter-spacing:9px;text-transform:uppercase;transition:border-color .2s;}
 .code-in:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px rgba(13,102,231,.12)}
@@ -68,80 +67,80 @@ body{font-family:'Kanit',sans-serif;font-weight:300;background:var(--bg);color:v
 .btn-main:disabled{opacity:.35;cursor:not-allowed;transform:none}
 .toast{border-radius:var(--rs);padding:12px 14px;margin-top:12px;display:none;border-left:3px solid;animation:up .22s ease;}
 @keyframes up{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-.toast.ok{background:rgba(5,150,105,.08);border-color:var(--gn);border-radius:var(--rs);}
-.toast.er{background:rgba(220,38,38,.08);border-color:var(--rd);border-radius:var(--rs);}
+.toast.ok{background:rgba(5,150,105,.08);border-color:var(--gn)}
+.toast.er{background:rgba(220,38,38,.08);border-color:var(--rd)}
 .toast-t{font-size:14px;font-weight:600;margin-bottom:2px}
 .toast.ok .toast-t{color:var(--gn)}
 .toast.er .toast-t{color:var(--rd)}
 .toast-s{font-size:12px;color:var(--mu)}
+.mbs{display:flex;gap:8px;margin-bottom:12px}
+.mb{flex:1;background:#fff;border:1px solid var(--b2);border-radius:var(--rs);padding:10px 4px;text-align:center;transition:border-color .2s,background .2s;box-shadow:0 1px 4px rgba(13,102,231,.06);}
+.mb.on{border-color:var(--ac);background:rgba(13,102,231,.06)}
+.mb-ic{font-size:20px}
+.mb-lb{font-size:7.5px;color:var(--mu);margin-top:4px;line-height:1.3;word-break:break-all;font-weight:500}
+.mb.on .mb-lb{color:var(--ac);font-weight:700}
+.mb4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 
-/* PART TABS */
-.part-tabs{display:flex;gap:8px;margin-bottom:14px;}
-.pt-btn{flex:1;padding:10px;border:1px solid var(--b2);border-radius:var(--rs);background:#ffffff;color:var(--mu);font-family:'Kanit',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;text-align:center;box-shadow:0 1px 4px rgba(13,102,231,.06);}
-.pt-btn.on{background:linear-gradient(135deg,#2E8DF5,#0D66E7);border-color:var(--ac);color:#fff;box-shadow:0 3px 10px rgba(13,102,231,.25);}
-
-/* PART CARD */
-.part-card{background:#ffffff;border:1px solid var(--b2);border-radius:var(--r);padding:14px;margin-bottom:12px;box-shadow:0 2px 8px rgba(13,102,231,.07);}
-.part-head{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+/* PAGE 2 — MY BADGES */
+.part-card{background:#fff;border:1px solid var(--b2);border-radius:var(--r);padding:14px;margin-bottom:12px;box-shadow:0 2px 8px rgba(13,102,231,.07);}
+.part-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
 .part-emoji{font-size:22px}
-.part-title{font-size:15px;font-weight:700;flex:1}
-.part-score{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--mu);background:var(--s3);padding:3px 10px;border-radius:20px}
-.part-score.full{color:#ffffff;background:var(--ac)}
+.part-title{font-size:14px;font-weight:700;flex:1;color:var(--tx)}
+.part-score{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--mu);background:var(--s3);padding:3px 10px;border-radius:20px}
+.part-score.full{color:#fff;background:var(--ac)}
 .part-bar-wrap{height:5px;background:var(--s3);border-radius:4px;overflow:hidden;margin-bottom:12px}
 .part-bar{height:100%;border-radius:4px;transition:width .6s ease}
-.part-bar.p1{background:linear-gradient(90deg,#6BAAAE,#8ECAE6);border-radius:4px}
-.part-bar.p2{background:linear-gradient(90deg,#FFB703,#D1470B);border-radius:4px}
-
-/* BADGE ITEMS */
-.badge-list{display:flex;flex-direction:column;gap:8px;}
-.badge-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--b1);}
+.part-bar.p1{background:linear-gradient(90deg,#6BAAAE,#8ECAE6)}
+.part-bar.p2{background:linear-gradient(90deg,#FFB703,#D1470B)}
+.badge-list{display:flex;flex-direction:column;gap:8px}
+.badge-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--b1);}
 .badge-row:last-child{border-bottom:none}
 .bdot{width:9px;height:9px;border-radius:50%;background:var(--b2);flex-shrink:0}
 .bdot.on{background:var(--ac)}
 .binfo{flex:1;min-width:0}
-.bnm{font-size:13px;font-weight:500}
-.bdt{font-size:10px;color:var(--ac2);margin-top:2px}
+.bnm{font-size:12px;font-weight:500;color:var(--tx)}
+.bdt{font-size:10px;color:var(--ac);margin-top:2px}
 .bcd{font-size:9px;color:var(--mu);font-family:'Space Mono',monospace}
 .chip{font-size:9px;padding:2px 8px;border-radius:20px;font-weight:600;flex-shrink:0}
 .chip-ok{background:rgba(13,102,231,.1);color:var(--ac);border:1px solid rgba(13,102,231,.25)}
-.chip-no{background:var(--s3);color:var(--mu);border:1px solid var(--b1)}
+.chip-no{background:var(--s2);color:var(--mu);border:1px solid var(--b1)}
+.total-card{background:#fff;border:1px solid var(--b2);border-radius:var(--r);padding:14px;text-align:center;box-shadow:0 2px 8px rgba(13,102,231,.07);}
 
-/* LEADERBOARD */
+/* PAGE 3 — LEADERBOARD */
 .stat-g{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
-.sc{background:#ffffff;border:1px solid var(--b2);border-radius:var(--rs);padding:12px;box-shadow:0 2px 6px rgba(13,102,231,.06)}
+.sc{background:#fff;border:1px solid var(--b2);border-radius:var(--rs);padding:12px;box-shadow:0 2px 6px rgba(13,102,231,.06)}
 .sv{font-size:22px;font-weight:700;font-family:'Space Mono',monospace;color:var(--ac)}
 .sl{font-size:10px;color:var(--mu);margin-top:3px}
-.lb{display:flex;flex-direction:column;gap:6px}
-.lbr{background:#ffffff;border:1px solid var(--b2);border-radius:var(--rs);padding:10px 12px;display:flex;align-items:flex-start;gap:9px;box-shadow:0 1px 4px rgba(13,102,231,.05);}
+.part-tabs{display:flex;gap:8px;margin-bottom:14px}
+.pt-btn{flex:1;padding:10px;border:1px solid var(--b2);border-radius:var(--rs);background:#fff;color:var(--mu);font-family:'Kanit',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;text-align:center;box-shadow:0 1px 4px rgba(13,102,231,.06);}
+.pt-btn.on{background:linear-gradient(135deg,#2E8DF5,#0D66E7);border-color:var(--ac);color:#fff;box-shadow:0 3px 10px rgba(13,102,231,.25);}
+.lb{display:flex;flex-direction:column;gap:7px}
+.lbr{background:#fff;border:1px solid var(--b2);border-radius:var(--rs);padding:11px 13px;display:flex;align-items:flex-start;gap:10px;box-shadow:0 1px 4px rgba(13,102,231,.05);}
 .lbr.r1{border-color:var(--ac);background:rgba(13,102,231,.04)}
 .lbr.r2{border-color:var(--s3)}
 .lbr.r3{border-color:var(--s3)}
 .lbr.me{border-color:var(--ac);background:rgba(13,102,231,.07)}
 .lk{width:22px;text-align:center;flex-shrink:0;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:var(--mu);margin-top:2px}
 .r1 .lk{color:var(--ac)}.r2 .lk{color:var(--mu)}.r3 .lk{color:var(--mu)}
-.lav{width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1.5px solid var(--b2);margin-top:2px}
-.lavp{width:32px;height:32px;border-radius:50%;background:var(--s3);border:1.5px solid var(--b2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--ac);flex-shrink:0;margin-top:2px}
+.lav{width:34px;height:34px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid var(--b2);margin-top:2px}
+.lavp{width:34px;height:34px;border-radius:50%;background:var(--s3);border:2px solid var(--b2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--ac);flex-shrink:0;margin-top:2px}
 .li{flex:1;min-width:0}
-.ln{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ln{font-size:13px;font-weight:600;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ln.me{color:var(--ac)}
 .lid{font-size:9px;color:var(--mu);margin-top:1px;font-family:'Space Mono',monospace}
-.me-tag{display:inline-block;font-size:7px;font-weight:600;background:var(--ac);color:#fff;padding:1px 5px;border-radius:20px;vertical-align:middle;margin-left:3px;}
-.lsc{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;margin-left:4px;flex-shrink:0}
-.empty{text-align:center;padding:26px 0;color:var(--mu);font-size:13px}
-
-/* LB dot indicators */
-.lb-dots-wrap{margin-top:5px;display:flex;flex-direction:column;gap:4px}
-.lb-dot-row{display:flex;align-items:center;gap:4px}
-.lb-dot-label{font-size:8px;color:var(--mu);width:18px;flex-shrink:0}
-.lb-dots{display:flex;gap:4px;align-items:center}
-.dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;transition:background .2s}
+.me-tag{display:inline-block;font-size:8px;font-weight:600;background:var(--ac);color:#fff;padding:1px 5px;border-radius:20px;vertical-align:middle;margin-left:3px;}
+.lb-dots{display:flex;gap:5px;margin-top:5px}
+.dot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
 .dot.got{background:var(--ac)}
 .dot.no{background:var(--s3)}
-.dot-tip{font-size:7px;color:var(--mu);margin-left:1px}
+.lsc{font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:var(--tx);flex-shrink:0;align-self:center}
+.empty{text-align:center;padding:26px 0;color:var(--mu);font-size:13px}
+.mini-spin{width:20px;height:20px;border-radius:50%;border:2px solid var(--s3);border-top-color:var(--ac);animation:rot .75s linear infinite;margin:0 auto 8px}
 </style>
 </head>
 <body>
 
+<!-- LOADING -->
 <div id="loading">
   <div class="spin"></div>
   <div class="ld-t">กำลังเชื่อมต่อ LINE...</div>
@@ -158,33 +157,21 @@ body{font-family:'Kanit',sans-serif;font-weight:300;background:var(--bg);color:v
   <button class="btn-main" id="rBtn" onclick="doRedeem()">ยืนยัน Code →</button>
   <div class="toast" id="toast"><div class="toast-t" id="tt"></div><div class="toast-s" id="ts"></div></div>
 
-  <!-- Mini status -->
-  <div class="lbl">TPKs FOCUS Challenge</div>
-  <div id="mini1" style="display:flex;gap:8px;margin-bottom:12px"></div>
-  <div class="lbl">TPKs FOCUS Challenge</div>
-  <div id="mini2" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px"></div>
+  <div class="lbl">⭐ TPKs FOCUS Challenge</div>
+  <div class="mb4" id="mini2" style="margin-bottom:12px"></div>
+  <div class="lbl">🤝 Collaboration Activity</div>
+  <div class="mbs" id="mini1"></div>
 </div>
 
 <!-- PAGE 2 — MY BADGES -->
 <div class="pg" id="pg-badges">
-  <div class="ph"><div class="pt">Badge ของฉัน</div><div class="ps">สรุปคะแนนสะสมทั้ง 2 พาร์ท</div></div>
+  <div class="ph"><div class="pt">Badge ของฉัน</div><div class="ps">สรุปคะแนนสะสมทั้ง 2 ประเภท</div></div>
   <div class="uc" id="uc2"><img id="p2" src="" alt="" onerror="this.style.display='none'"><div><div class="uc-n" id="n2">-</div><div class="uc-i" id="i2">-</div></div></div>
 
-  <!-- Part 1 Card -->
+  <!-- TPKs FOCUS Challenge -->
   <div class="part-card">
     <div class="part-head">
-      <div class="part-emoji">🏅</div>
-      <div class="part-title">TPKs FOCUS Challenge</div>
-      <div class="part-score" id="ps1">0/2</div>
-    </div>
-    <div class="part-bar-wrap"><div class="part-bar p1" id="pb1" style="width:0%"></div></div>
-    <div class="badge-list" id="bl1"></div>
-  </div>
-
-  <!-- Part 2 Card -->
-  <div class="part-card">
-    <div class="part-head">
-      <div class="part-emoji">📅</div>
+      <div class="part-emoji">⭐</div>
       <div class="part-title">TPKs FOCUS Challenge</div>
       <div class="part-score" id="ps2">0/4</div>
     </div>
@@ -192,10 +179,21 @@ body{font-family:'Kanit',sans-serif;font-weight:300;background:var(--bg);color:v
     <div class="badge-list" id="bl2"></div>
   </div>
 
+  <!-- Collaboration Activity -->
+  <div class="part-card">
+    <div class="part-head">
+      <div class="part-emoji">🤝</div>
+      <div class="part-title">Collaboration Activity</div>
+      <div class="part-score" id="ps1">0/2</div>
+    </div>
+    <div class="part-bar-wrap"><div class="part-bar p1" id="pb1" style="width:0%"></div></div>
+    <div class="badge-list" id="bl1"></div>
+  </div>
+
   <!-- Total -->
-  <div style="background:var(--s2);border:1px solid var(--b2);border-radius:var(--r);padding:14px;text-align:center">
+  <div class="total-card">
     <div style="font-size:11px;color:var(--mu);margin-bottom:6px">คะแนนรวมทั้งหมด</div>
-    <div style="font-size:32px;font-weight:700;font-family:'Space Mono',monospace;color:var(--gd)" id="totalScore">0</div>
+    <div style="font-size:32px;font-weight:700;font-family:'Space Mono',monospace;color:var(--ac)" id="totalScore">0</div>
     <div style="font-size:12px;color:var(--mu)">จาก 6 คะแนน</div>
   </div>
 </div>
@@ -203,22 +201,18 @@ body{font-family:'Kanit',sans-serif;font-weight:300;background:var(--bg);color:v
 <!-- PAGE 3 — LEADERBOARD -->
 <div class="pg" id="pg-dash">
   <div class="ph"><div class="pt">Leaderboard</div><div class="ps">อันดับผู้สะสม Badge</div></div>
-
-  <!-- Part Tabs -->
   <div class="part-tabs">
-    <button class="pt-btn on" id="lt1" onclick="switchLB(1,this)">🏅 TPKs FOCUS Challenge</button>
-    <button class="pt-btn" id="lt2" onclick="switchLB(2,this)">📅 TPKs FOCUS Challenge</button>
+    <button class="pt-btn on" id="lt2" onclick="switchLB(2,this)">⭐ TPKs FOCUS Challenge</button>
+    <button class="pt-btn" id="lt1" onclick="switchLB(1,this)">🤝 Collaboration</button>
   </div>
-
-  <!-- Stats -->
   <div class="stat-g">
     <div class="sc"><div class="sv" id="stU">-</div><div class="sl">ผู้เข้าร่วม</div></div>
     <div class="sc"><div class="sv" id="stC">-</div><div class="sl" id="stCLabel">สะสมครบ</div></div>
   </div>
-
-  <div class="lb" id="lb"></div>
+  <div class="lb" id="lb"><div class="empty"><div class="mini-spin"></div>กำลังโหลด...</div></div>
 </div>
 
+<!-- NAV -->
 <nav class="nav">
   <button class="nb on" id="nv-redeem" onclick="goPage('redeem')"><div class="nb-ic">🎟️</div><span>Redeem</span></button>
   <button class="nb" id="nv-badges" onclick="goPage('badges')"><div class="nb-ic">🏅</div><span>Badge ของฉัน</span></button>
@@ -229,62 +223,73 @@ body{font-family:'Kanit',sans-serif;font-weight:300;background:var(--bg);color:v
 const LIFF_ID = '2009815147-aGgIrfPv';
 const GAS_URL = 'https://broken-brook-8216.jarukantm.workers.dev/';
 
-const PART1 = [
-  {prefix:'FCA', name:'FXC-A',   full:'FXC — กิจกรรม A',   icon:'🟦', color:'#6BAAAE'},
-  {prefix:'FOB', name:'FXCXO-B', full:'FXCXO — กิจกรรม B', icon:'🔷', color:'#8ECAE6'},
+const CHALLENGE = [
+  {prefix:'JUL',name:'กรกฎาคม',full:'กิจกรรมเดือนกรกฎาคม',icon:'🌟',color:'#FFB703'},
+  {prefix:'AUG',name:'สิงหาคม',full:'กิจกรรมเดือนสิงหาคม',icon:'🔶',color:'#E97700'},
+  {prefix:'SEP',name:'กันยายน',full:'กิจกรรมเดือนกันยายน',icon:'🍁',color:'#D1470B'},
+  {prefix:'OCT',name:'ตุลาคม', full:'กิจกรรมเดือนตุลาคม', icon:'🔵',color:'#2671BC'},
 ];
-const PART2 = [
-  {prefix:'JUL', name:'กรกฎาคม', full:'กิจกรรมเดือนกรกฎาคม', icon:'🌟', color:'#FFB703'},
-  {prefix:'AUG', name:'สิงหาคม', full:'กิจกรรมเดือนสิงหาคม', icon:'🔶', color:'#E97700'},
-  {prefix:'SEP', name:'กันยายน', full:'กิจกรรมเดือนกันยายน', icon:'🍁', color:'#D1470B'},
-  {prefix:'OCT', name:'ตุลาคม',  full:'กิจกรรมเดือนตุลาคม',  icon:'🔵', color:'#2671BC'},
+const COLLAB = [
+  {prefix:'FCA',name:'FXC-A',   full:'FXC — กิจกรรม A',   icon:'🟦',color:'#6BAAAE'},
+  {prefix:'FOB',name:'FXCXO-B', full:'FXCXO — กิจกรรม B', icon:'🔷',color:'#8ECAE6'},
 ];
-const ALL_ACTS = [...PART1, ...PART2];
+
+// dot colors per prefix
+const DOT_COLOR = {
+  JUL:'#FFB703',AUG:'#E97700',SEP:'#D1470B',OCT:'#2671BC',
+  FCA:'#6BAAAE',FOB:'#8ECAE6'
+};
 
 let profile=null, myBadges=[], lbData=[], curLBPart=2;
 
 // ── INIT ─────────────────────────────────────────────────
 async function init() {
   try {
-    // 1. Init LIFF
     await liff.init({ liffId: LIFF_ID });
     if (!liff.isLoggedIn()) { liff.login(); return; }
-
-    // 2. Get profile (เร็วมาก cache อยู่ใน LIFF)
     profile = await liff.getProfile();
 
-    // 3. ซ่อน loading ทันทีหลังได้ profile — ไม่รอ data
     ['1','2'].forEach(n => {
-      const p=document.getElementById('p'+n); if(p) p.src=profile.pictureUrl||'';
-      const nm=document.getElementById('n'+n); if(nm) nm.textContent=profile.displayName;
-      const id=document.getElementById('i'+n); if(id) id.textContent=profile.userId.slice(0,16)+'...';
+      const p  = document.getElementById('p'+n);  if(p)  p.src = profile.pictureUrl||'';
+      const nm = document.getElementById('n'+n);  if(nm) nm.textContent = profile.displayName;
+      const id = document.getElementById('i'+n);  if(id) id.textContent = profile.userId.slice(0,16)+'...';
     });
-    document.getElementById('loading').style.display='none';
 
-    // 4. Render หน้าว่างก่อน (เห็น UI ทันที)
-    renderMini([],[]);
+    // ซ่อน loading ทันทีหลังได้ profile
+    document.getElementById('loading').style.display = 'none';
+    renderMini([],[]); renderGroups ? null : null;
     renderBadges([],[]);
 
-    // 5. โหลด data แบบ background — ไม่บล็อก UI
-    loadBadges();   // ไม่ await
-    loadLB(2);      // ไม่ await
+    // โหลด data background
+    loadBadges();
+    loadLB(2);
 
   } catch(e) {
+    // แสดง error + ปุ่มลองใหม่ ไม่ redirect
     document.getElementById('loading').innerHTML =
       '<div style="text-align:center;padding:30px 20px">'
       +'<div style="font-size:40px;margin-bottom:12px">⚠️</div>'
-      +'<div style="color:#f87171;font-size:14px;font-weight:600;margin-bottom:6px">ไม่สามารถเชื่อมต่อได้</div>'
-      +'<div style="color:#6a6a85;font-size:12px;margin-bottom:20px">'+e.message+'</div>'
-      +'<button onclick="window.location.reload()" style="background:#7c6dfa;color:white;border:none;padding:12px 24px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:Kanit,sans-serif;display:block;width:100%;margin-bottom:10px">🔄 ลองใหม่อีกครั้ง</button>'
-      +'<button onclick="liff.closeWindow()" style="background:transparent;color:#6a6a85;border:1px solid #333;padding:10px 24px;border-radius:10px;font-size:13px;cursor:pointer;font-family:Kanit,sans-serif;display:block;width:100%">ปิดหน้าต่าง</button>'
+      +'<div style="color:#D1470B;font-size:14px;font-weight:600;margin-bottom:6px">ไม่สามารถเชื่อมต่อได้</div>'
+      +'<div style="color:#5B6F95;font-size:12px;margin-bottom:20px">'+e.message+'</div>'
+      +'<button onclick="window.location.reload()" '
+      +'style="background:linear-gradient(135deg,#2E8DF5,#0D66E7);color:white;border:none;'
+      +'padding:12px 24px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;'
+      +'font-family:Kanit,sans-serif;display:block;width:100%;margin-bottom:10px">'
+      +'🔄 ลองใหม่อีกครั้ง</button>'
+      +'<button onclick="liff.closeWindow()" '
+      +'style="background:transparent;color:#5B6F95;border:1px solid #DCEBFF;'
+      +'padding:10px 24px;border-radius:10px;font-size:13px;cursor:pointer;'
+      +'font-family:Kanit,sans-serif;display:block;width:100%">'
+      +'ปิดหน้าต่าง</button>'
       +'</div>';
   }
 }
 
+
 // ── NAVIGATION ───────────────────────────────────────────
 function goPage(id) {
-  document.querySelectorAll('.pg').forEach(p => p.classList.remove('on'));
-  document.querySelectorAll('.nb').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('on');});
   document.getElementById('pg-'+id).classList.add('on');
   document.getElementById('nv-'+id).classList.add('on');
 }
@@ -293,167 +298,171 @@ function goPage(id) {
 async function loadBadges() {
   if (!profile) return;
   try {
-    const d = await api({action:'getUserBadges', lineUserId:profile.userId});
+    var d = await api({action:'getUserBadges', lineUserId:profile.userId});
     myBadges = d.badges || [];
     renderMini(d.badges1||[], d.badges2||[]);
     renderBadges(d.badges1||[], d.badges2||[]);
-    document.getElementById('totalScore').textContent = (d.total||0);
+    document.getElementById('totalScore').textContent = d.total||0;
   } catch(e) {}
 }
 
 function renderMini(b1, b2) {
-  const e1=b1.map(b=>b.prefix), e2=b2.map(b=>b.prefix);
-  document.getElementById('mini1').innerHTML = PART1.map(a =>
-    '<div style="flex:1;background:var(--s2);border:1px solid '+(e1.includes(a.prefix)?'rgba(245,200,66,.45)':'var(--b1)')+';border-radius:var(--rs);padding:10px 4px;text-align:center;background:'+(e1.includes(a.prefix)?'rgba(245,200,66,.05)':'var(--s2)')+';">'
-    +'<div style="font-size:20px">'+a.icon+'</div>'
-    +'<div style="font-size:8px;color:'+(e1.includes(a.prefix)?'#ffe082':'var(--mu)')+';margin-top:4px">'+a.name+'</div>'
-    +'</div>'
-  ).join('');
-  document.getElementById('mini2').innerHTML = PART2.map(a =>
-    '<div style="background:var(--s2);border:1px solid '+(e2.includes(a.prefix)?'rgba(245,200,66,.45)':'var(--b1)')+';border-radius:var(--rs);padding:8px 3px;text-align:center;background:'+(e2.includes(a.prefix)?'rgba(245,200,66,.05)':'var(--s2)')+';">'
-    +'<div style="font-size:18px">'+a.icon+'</div>'
-    +'<div style="font-size:7px;color:'+(e2.includes(a.prefix)?'#ffe082':'var(--mu)')+';margin-top:3px">'+a.name+'</div>'
-    +'</div>'
-  ).join('');
+  var e1=b1.map(function(b){return b.prefix;}),
+      e2=b2.map(function(b){return b.prefix;});
+
+  // Challenge (4 dots)
+  var el2=document.getElementById('mini2');
+  if(el2) el2.innerHTML=CHALLENGE.map(function(a){
+    var on=e2.indexOf(a.prefix)>=0;
+    return '<div class="mb'+(on?' on':'')+'">'
+      +'<div class="mb-ic">'+a.icon+'</div>'
+      +'<div class="mb-lb">'+a.name+'</div>'
+      +'</div>';
+  }).join('');
+
+  // Collab (2)
+  var el1=document.getElementById('mini1');
+  if(el1) el1.innerHTML=COLLAB.map(function(a){
+    var on=e1.indexOf(a.prefix)>=0;
+    return '<div class="mb'+(on?' on':'')+'">'
+      +'<div class="mb-ic">'+a.icon+'</div>'
+      +'<div class="mb-lb">'+a.name+'</div>'
+      +'</div>';
+  }).join('');
 }
 
 function renderBadges(b1, b2) {
-  const e1=b1.map(b=>b.prefix), e2=b2.map(b=>b.prefix);
-
-  // Part 1
-  const s1=document.getElementById('ps1'); if(s1){ s1.textContent=b1.length+'/2'; s1.className='part-score'+(b1.length===2?' full':''); }
-  const pb1=document.getElementById('pb1'); if(pb1) pb1.style.width=(b1.length/2*100)+'%';
-  const bl1=document.getElementById('bl1');
-  if(bl1) bl1.innerHTML = PART1.map(a => {
-    const b=b1.find(x=>x.prefix===a.prefix), ok=!!b;
-    const dt=b&&b.earnedAt?new Date(b.earnedAt).toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'}):'';
-    return '<div class="badge-row"><div class="bdot'+(ok?' on':'')+'"></div><div class="binfo"><div class="bnm">'+a.icon+' '+a.full+'</div>'+(ok?'<div class="bdt">✓ '+dt+'</div><div class="bcd">'+b.code+'</div>':'')+'</div><div class="chip '+(ok?'chip-ok':'chip-no')+'">'+(ok?'ได้รับ':'รอ')+'</div></div>';
+  // Challenge
+  var s2=document.getElementById('ps2');
+  if(s2){s2.textContent=b2.length+'/4';s2.className='part-score'+(b2.length===4?' full':'');}
+  var pb2=document.getElementById('pb2');
+  if(pb2) pb2.style.width=(b2.length/4*100)+'%';
+  var bl2=document.getElementById('bl2');
+  if(bl2) bl2.innerHTML=CHALLENGE.map(function(a){
+    var b=b2.find(function(x){return x.prefix===a.prefix;}), ok=!!b;
+    var dt=b&&b.earnedAt?new Date(b.earnedAt).toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'}):'';
+    return '<div class="badge-row"><div class="bdot'+(ok?' on':'')+'"></div>'
+      +'<div class="binfo"><div class="bnm">'+a.icon+' '+a.full+'</div>'
+      +(ok?'<div class="bdt">✓ '+dt+'</div><div class="bcd">'+b.code+'</div>':'')
+      +'</div><div class="chip '+(ok?'chip-ok':'chip-no')+'">'+(ok?'ได้รับ':'รอ')+'</div></div>';
   }).join('');
 
-  // Part 2
-  const s2=document.getElementById('ps2'); if(s2){ s2.textContent=b2.length+'/4'; s2.className='part-score'+(b2.length===4?' full':''); }
-  const pb2=document.getElementById('pb2'); if(pb2) pb2.style.width=(b2.length/4*100)+'%';
-  const bl2=document.getElementById('bl2');
-  if(bl2) bl2.innerHTML = PART2.map(a => {
-    const b=b2.find(x=>x.prefix===a.prefix), ok=!!b;
-    const dt=b&&b.earnedAt?new Date(b.earnedAt).toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'}):'';
-    return '<div class="badge-row"><div class="bdot'+(ok?' on':'')+'"></div><div class="binfo"><div class="bnm">'+a.icon+' '+a.full+'</div>'+(ok?'<div class="bdt">✓ '+dt+'</div><div class="bcd">'+b.code+'</div>':'')+'</div><div class="chip '+(ok?'chip-ok':'chip-no')+'">'+(ok?'ได้รับ':'รอ')+'</div></div>';
+  // Collab
+  var s1=document.getElementById('ps1');
+  if(s1){s1.textContent=b1.length+'/2';s1.className='part-score'+(b1.length===2?' full':'');}
+  var pb1=document.getElementById('pb1');
+  if(pb1) pb1.style.width=(b1.length/2*100)+'%';
+  var bl1=document.getElementById('bl1');
+  if(bl1) bl1.innerHTML=COLLAB.map(function(a){
+    var b=b1.find(function(x){return x.prefix===a.prefix;}), ok=!!b;
+    var dt=b&&b.earnedAt?new Date(b.earnedAt).toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'}):'';
+    return '<div class="badge-row"><div class="bdot'+(ok?' on':'')+'"></div>'
+      +'<div class="binfo"><div class="bnm">'+a.icon+' '+a.full+'</div>'
+      +(ok?'<div class="bdt">✓ '+dt+'</div><div class="bcd">'+b.code+'</div>':'')
+      +'</div><div class="chip '+(ok?'chip-ok':'chip-no')+'">'+(ok?'ได้รับ':'รอ')+'</div></div>';
   }).join('');
 }
 
 // ── LEADERBOARD ──────────────────────────────────────────
 async function loadLB(part) {
   curLBPart = part;
-  // แสดง loading spinner เล็กๆ ขณะรอ
   document.getElementById('lb').innerHTML =
-    '<div class="empty"><div style="width:24px;height:24px;border-radius:50%;border:2px solid #DCEBFF;border-top-color:#0D66E7;animation:rot .75s linear infinite;margin:0 auto 8px"></div>กำลังโหลด...</div>';
+    '<div class="empty"><div class="mini-spin"></div>กำลังโหลด...</div>';
   try {
-    const d = await api({action:'getLeaderboard', part});
+    var d = await api({action:'getLeaderboard', part:part});
     lbData = d.leaderboard || [];
-    document.getElementById('stU').textContent = d.totalUsers || 0;
-    document.getElementById('stC').textContent = d.totalComplete || 0;
-    document.getElementById('stCLabel').textContent = 'สะสมครบ '+(part===1?'2':'4')+' Badge';
+    document.getElementById('stU').textContent = d.totalUsers||0;
+    document.getElementById('stC').textContent = d.totalComplete||0;
+    document.getElementById('stCLabel').textContent = 'สะสมครบ '+(part===1?'2':'4');
     renderLB();
   } catch(e) {
-    document.getElementById('lb').innerHTML = '<div class="empty">ไม่สามารถโหลดข้อมูลได้</div>';
+    document.getElementById('lb').innerHTML='<div class="empty">ไม่สามารถโหลดได้</div>';
   }
 }
 
 function switchLB(part, btn) {
-  document.querySelectorAll('.pt-btn').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('.pt-btn').forEach(function(b){b.classList.remove('on');});
   btn.classList.add('on');
   loadLB(part);
 }
 
 function renderLB() {
-  const myId = profile ? profile.userId : '';
-  const rows = [...lbData].sort((a,b) => b.total - a.total);
+  var myId = profile ? profile.userId : '';
+  var rows = lbData.slice().sort(function(a,b){return b.total-a.total;});
   if (!rows.length) {
     document.getElementById('lb').innerHTML='<div class="empty">ยังไม่มีข้อมูล</div>';
     return;
   }
-  const RI = ['🥇','🥈','🥉'];
+  var RI = ['🥇','🥈','🥉'];
 
-  // Dot config แยกตาม Tab
-  const DOTS_CHALLENGE = [
-    {key:'hasJUL', tip:'ก.ค.', color:'#FFB703'},
-    {key:'hasAUG', tip:'ส.ค.', color:'#E97700'},
-    {key:'hasSEP', tip:'ก.ย.', color:'#D1470B'},
-    {key:'hasOCT', tip:'ต.ค.', color:'#2671BC'},
-  ];
-  const DOTS_COLLAB = [
-    {key:'hasFCA', tip:'FXC-A',   color:'#6BAAAE'},
-    {key:'hasFOB', tip:'FXCXO-B', color:'#8ECAE6'},
-  ];
+  var DOTS = curLBPart===2
+    ? [{key:'hasJUL',color:'#FFB703'},{key:'hasAUG',color:'#E97700'},{key:'hasSEP',color:'#D1470B'},{key:'hasOCT',color:'#2671BC'}]
+    : [{key:'hasFCA',color:'#6BAAAE'},{key:'hasFOB',color:'#8ECAE6'}];
 
-  const dots = curLBPart === 2 ? DOTS_CHALLENGE : DOTS_COLLAB;
+  document.getElementById('lb').innerHTML = rows.map(function(u,i){
+    var rank=i+1, isMe=u.lineUserId===myId, rcls=rank<=3?'r'+rank:'';
+    var ini=(u.displayName||'?')[0].toUpperCase();
+    var avt=u.pictureUrl
+      ?'<img class="lav" src="'+u.pictureUrl+'" alt="" onerror="this.style.display=\'none\'">'
+      :'<div class="lavp">'+ini+'</div>';
 
-  document.getElementById('lb').innerHTML = rows.map((u,i) => {
-    const rank  = i + 1;
-    const isMe  = u.lineUserId === myId;
-    const rcls  = rank <= 3 ? 'r'+rank : '';
-    const ini   = (u.displayName||'?')[0].toUpperCase();
-    const avt   = u.pictureUrl
-      ? '<img class="lav" src="'+u.pictureUrl+'" alt="" onerror="this.outerHTML='<div class=\'lavp\'>'+ini+'</div>'">'
-      : '<div class="lavp">'+ini+'</div>';
+    var dotHtml='<div class="lb-dots">'+DOTS.map(function(d){
+      var got=!!u[d.key];
+      return '<div class="dot '+(got?'got':'no')+'" style="'+(got?'background:'+d.color:'')+'"></div>';
+    }).join('')+'</div>';
 
-    // dots เฉพาะ Tab ปัจจุบัน
-    const dotHtml = '<div class="lb-dots" style="margin-top:5px">'
-      + dots.map(d =>
-          '<div class="dot '+(u[d.key]?'got':'no')+'"'
-          +(u[d.key]?' style="background:'+d.color+'"':'')+' title="'+d.tip+'"></div>'
-        ).join('')
-      + '</div>';
-
-    // คะแนนเฉพาะ Tab
-    const score = curLBPart === 2 ? u.total2 : u.total1;
+    var score = curLBPart===2 ? (u.total2||0) : (u.total1||0);
 
     return '<div class="lbr '+rcls+(isMe?' me':'')+'"><div class="lk">'+(rank<=3?RI[rank-1]:rank)+'</div>'+avt
       +'<div class="li"><div class="ln'+(isMe?' me':'')+'">'+esc(u.displayName||'ไม่ระบุชื่อ')+(isMe?'<span class="me-tag">ฉัน</span>':'')+'</div>'
+      +'<div class="lid">'+u.lineUserId.slice(0,14)+'...</div>'
       +dotHtml+'</div>'
       +'<div class="lsc">'+score+'</div></div>';
   }).join('');
 }
 
-
-
 // ── REDEEM ────────────────────────────────────────────────
 async function doRedeem() {
-  const code = document.getElementById('codeIn').value.trim().toUpperCase();
-  if (!/^[A-Z]{3}\d{3}$/.test(code)) { showToast(false,'รูปแบบ Code ไม่ถูกต้อง','Code ต้องมี 6 หลัก เช่น FCA472'); return; }
-  const btn=document.getElementById('rBtn');
+  var code = document.getElementById('codeIn').value.trim().toUpperCase();
+  if (!/^[A-Z]{3}\d{3}$/.test(code)) {
+    showToast(false,'รูปแบบ Code ไม่ถูกต้อง','Code ต้องมี 6 หลัก เช่น FCA472');
+    return;
+  }
+  var btn=document.getElementById('rBtn');
   btn.disabled=true; btn.textContent='⏳ กำลังตรวจสอบ...'; hideToast();
   try {
-    const d = await api({action:'redeemCode', lineUserId:profile.userId, displayName:profile.displayName, pictureUrl:profile.pictureUrl||'', code});
+    var d = await api({action:'redeemCode',lineUserId:profile.userId,displayName:profile.displayName,pictureUrl:profile.pictureUrl||'',code:code});
     if (d.success) {
-      showToast(true, d.message, 'พาร์ท '+(d.part===1?'1 ('+d.total1+'/2)':'2 ('+d.total2+'/4)'));
+      showToast(true, d.message, 'ประเภท '+(d.part===2?'TPKs FOCUS Challenge':'Collaboration Activity'));
       document.getElementById('codeIn').value='';
-      loadBadges(); loadLB(curLBPart); // background reload
+      loadBadges();
+      loadLB(curLBPart);
     } else { showToast(false, d.message, ''); }
   } catch(e) { showToast(false,'เกิดข้อผิดพลาด กรุณาลองใหม่',''); }
   btn.disabled=false; btn.textContent='ยืนยัน Code →';
 }
 
 function showToast(ok,title,sub){
-  const t=document.getElementById('toast');
+  var t=document.getElementById('toast');
   t.className='toast '+(ok?'ok':'er'); t.style.display='block';
   document.getElementById('tt').textContent=title;
   document.getElementById('ts').textContent=sub;
 }
-function hideToast(){ document.getElementById('toast').style.display='none'; }
-function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function hideToast(){document.getElementById('toast').style.display='none';}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
 async function api(body){
-  const r=await fetch(GAS_URL,{method:'POST',redirect:'follow',headers:{'Content-Type':'text/plain'},body:JSON.stringify(body)});
+  var r=await fetch(GAS_URL,{method:'POST',redirect:'follow',headers:{'Content-Type':'text/plain'},body:JSON.stringify(body)});
   if(!r.ok) throw new Error('HTTP '+r.status);
   return r.json();
 }
 
-document.addEventListener('DOMContentLoaded',()=>{
-  const inp=document.getElementById('codeIn');
-  inp.addEventListener('keydown',e=>{ if(e.key==='Enter') doRedeem(); });
-  inp.addEventListener('input',e=>{ e.target.value=e.target.value.toUpperCase(); });
+document.addEventListener('DOMContentLoaded',function(){
+  var inp=document.getElementById('codeIn');
+  inp.addEventListener('keydown',function(e){if(e.key==='Enter')doRedeem();});
+  inp.addEventListener('input',function(e){e.target.value=e.target.value.toUpperCase();});
 });
+
 init();
 </script>
 </body>
