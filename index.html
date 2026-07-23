@@ -77,8 +77,8 @@ body{font-family:'Kanit',sans-serif;font-weight:300;background:var(--bg);color:v
 .part-score.full{color:var(--gd)}
 .part-bar-wrap{height:3px;background:var(--s3);border-radius:4px;overflow:hidden;margin-bottom:12px}
 .part-bar{height:100%;border-radius:4px;transition:width .6s ease}
-.part-bar.p1{background:linear-gradient(90deg,var(--ac),var(--ac2))}
-.part-bar.p2{background:linear-gradient(90deg,#059669,#34d399)}
+.part-bar.p1{background:linear-gradient(90deg,#6BAAAE,#8ECAE6)}
+.part-bar.p2{background:linear-gradient(90deg,#FFB703,#D1470B)}
 
 /* BADGE ITEMS */
 .badge-list{display:flex;flex-direction:column;gap:8px;}
@@ -137,9 +137,9 @@ body{font-family:'Kanit',sans-serif;font-weight:300;background:var(--bg);color:v
   <div class="toast" id="toast"><div class="toast-t" id="tt"></div><div class="toast-s" id="ts"></div></div>
 
   <!-- Mini status -->
-  <div class="lbl">พาร์ท 1 — กิจกรรมเดิม</div>
+  <div class="lbl">Collaboration Activity</div>
   <div id="mini1" style="display:flex;gap:8px;margin-bottom:12px"></div>
-  <div class="lbl">พาร์ท 2 — รายเดือน</div>
+  <div class="lbl">Main Activity</div>
   <div id="mini2" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px"></div>
 </div>
 
@@ -152,7 +152,7 @@ body{font-family:'Kanit',sans-serif;font-weight:300;background:var(--bg);color:v
   <div class="part-card">
     <div class="part-head">
       <div class="part-emoji">🏅</div>
-      <div class="part-title">พาร์ท 1 — กิจกรรมเดิม</div>
+      <div class="part-title">Collaboration Activity</div>
       <div class="part-score" id="ps1">0/2</div>
     </div>
     <div class="part-bar-wrap"><div class="part-bar p1" id="pb1" style="width:0%"></div></div>
@@ -163,7 +163,7 @@ body{font-family:'Kanit',sans-serif;font-weight:300;background:var(--bg);color:v
   <div class="part-card">
     <div class="part-head">
       <div class="part-emoji">📅</div>
-      <div class="part-title">พาร์ท 2 — รายเดือน</div>
+      <div class="part-title">Main Activity</div>
       <div class="part-score" id="ps2">0/4</div>
     </div>
     <div class="part-bar-wrap"><div class="part-bar p2" id="pb2" style="width:0%"></div></div>
@@ -184,8 +184,8 @@ body{font-family:'Kanit',sans-serif;font-weight:300;background:var(--bg);color:v
 
   <!-- Part Tabs -->
   <div class="part-tabs">
-    <button class="pt-btn on" id="lt1" onclick="switchLB(1,this)">🏅 พาร์ท 1</button>
-    <button class="pt-btn" id="lt2" onclick="switchLB(2,this)">📅 พาร์ท 2</button>
+    <button class="pt-btn on" id="lt1" onclick="switchLB(1,this)">🏅 Collaboration Activity</button>
+    <button class="pt-btn" id="lt2" onclick="switchLB(2,this)">📅 Main Activity</button>
   </div>
 
   <!-- Stats -->
@@ -208,14 +208,14 @@ const LIFF_ID = '2009815147-aGgIrfPv';
 const GAS_URL = 'https://broken-brook-8216.jarukantm.workers.dev/';
 
 const PART1 = [
-  {prefix:'FCA', name:'FXC-A',   full:'FXC — กิจกรรม A',   icon:'🟣', color:'#7c6dfa'},
-  {prefix:'FOB', name:'FXCXO-B', full:'FXCXO — กิจกรรม B', icon:'🩵', color:'#60a5fa'},
+  {prefix:'FCA', name:'FXC-A',   full:'FXC — กิจกรรม A',   icon:'🟦', color:'#6BAAAE'},
+  {prefix:'FOB', name:'FXCXO-B', full:'FXCXO — กิจกรรม B', icon:'🔷', color:'#8ECAE6'},
 ];
 const PART2 = [
-  {prefix:'JUL', name:'กรกฎาคม', full:'กิจกรรมเดือนกรกฎาคม', icon:'🌿', color:'#059669'},
-  {prefix:'AUG', name:'สิงหาคม', full:'กิจกรรมเดือนสิงหาคม', icon:'🔥', color:'#d97706'},
-  {prefix:'SEP', name:'กันยายน', full:'กิจกรรมเดือนกันยายน', icon:'🌊', color:'#2563eb'},
-  {prefix:'OCT', name:'ตุลาคม',  full:'กิจกรรมเดือนตุลาคม',  icon:'🍂', color:'#dc2626'},
+  {prefix:'JUL', name:'กรกฎาคม', full:'กิจกรรมเดือนกรกฎาคม', icon:'🌟', color:'#FFB703'},
+  {prefix:'AUG', name:'สิงหาคม', full:'กิจกรรมเดือนสิงหาคม', icon:'🔶', color:'#E97700'},
+  {prefix:'SEP', name:'กันยายน', full:'กิจกรรมเดือนกันยายน', icon:'🍁', color:'#D1470B'},
+  {prefix:'OCT', name:'ตุลาคม',  full:'กิจกรรมเดือนตุลาคม',  icon:'🔵', color:'#2671BC'},
 ];
 const ALL_ACTS = [...PART1, ...PART2];
 
