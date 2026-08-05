@@ -263,7 +263,7 @@ async function init() {
 
     // ซ่อน loading ทันทีหลังได้ profile
     document.getElementById('loading').style.display = 'none';
-    renderMini([],[]); renderGroups ? null : null;
+    renderMini([],[]);
     renderBadges([],[]);
 
     // โหลด data background
@@ -309,7 +309,18 @@ async function loadBadges() {
     renderMini(d.badges1||[], d.badges2||[]);
     renderBadges(d.badges1||[], d.badges2||[]);
     document.getElementById('totalScore').textContent = d.total||0;
-  } catch(e) {}
+  } catch(e) {
+    // retry ครั้งเดียวถ้า error (GAS cold start)
+    setTimeout(async function() {
+      try {
+        var d2 = await api({action:'getUserBadges', lineUserId:profile.userId});
+        myBadges = d2.badges || [];
+        renderMini(d2.badges1||[], d2.badges2||[]);
+        renderBadges(d2.badges1||[], d2.badges2||[]);
+        document.getElementById('totalScore').textContent = d2.total||0;
+      } catch(e2) {}
+    }, 3000);
+  }
 }
 
 function renderMini(b1, b2) {
