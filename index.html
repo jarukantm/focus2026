@@ -6,66 +6,69 @@
 <title>FOCUS 2026</title>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <style>
-:root{--blue:#3b82f6; --green:#22c55e; --orange:#f59e0b; --bg:#eff6ff; --tx:#1e293b;}
-body{background:var(--bg); font-family:'Kanit', sans-serif; margin:0; padding-bottom:40px; color:var(--tx);}
+:root{--blue:#3b82f6; --green:#22c55e; --bg:#eff6ff; --tx:#1e293b;}
+body{background:var(--bg); font-family:'Kanit', sans-serif; margin:0; padding-bottom:100px; color:var(--tx);}
 
-/* Header */
 .header{background:linear-gradient(135deg, #60a5fa, #3b82f6); color:white; padding:40px 20px; text-align:center; border-radius:0 0 30px 30px;}
-.header h1{margin:0; font-size:32px; text-shadow:0 2px 4px rgba(0,0,0,0.1);}
-
-/* Card */
 .wrap{padding:15px;}
-.row{background:#fff; border-radius:24px; padding:20px; margin-bottom:15px; box-shadow:0 8px 16px -4px rgba(0,0,0,0.08); transition:0.3s;}
+.row{background:#fff; border-radius:24px; padding:20px; margin-bottom:15px; box-shadow:0 8px 16px -4px rgba(0,0,0,0.08);}
 .main{display:flex; align-items:center; gap:12px; cursor:pointer;}
-.rank{font-size:22px; font-weight:800; color:#fbbf24; width:40px; text-align:center;}
-.pts{font-weight:900; color:var(--blue); font-size:20px; background:#dbeafe; padding:4px 12px; border-radius:12px;}
+.pts{font-weight:900; color:var(--blue); background:#dbeafe; padding:4px 12px; border-radius:12px;}
 
-/* Details */
-.details{display:none; margin-top:20px; padding-top:15px; border-top:2px dashed #e2e8f0;}
-.cat{font-size:13px; font-weight:700; color:#64748b; margin:12px 0 8px; display:flex; align-items:center; gap:6px;}
-.dots{display:flex; gap:12px; margin-bottom:10px;}
-.dot{width:20px; height:20px; border-radius:50%; border:3px solid var(--blue); transition:0.3s;}
-.dot.on{background:var(--blue); transform:scale(1.1);}
-.dot.green{border-color:var(--green);}
-.dot.green.on{background:var(--green);}
+/* Sticky Footer */
+.sticky-me{position:fixed; bottom:0; width:100%; background:#fff; padding:15px 20px; border-top:2px solid #e2e8f0; box-shadow:0 -4px 12px rgba(0,0,0,0.1); display:none; align-items:center; gap:10px; z-index:100;}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <h1>🎯 FOCUS 2026</h1>
-  <p>Collection Badge Leaderboard</p>
-</div>
-
+<div class="header"><h1>🎯 FOCUS 2026</h1></div>
 <div class="wrap" id="list"></div>
+
+<!-- Sticky Bar -->
+<div id="sticky-bar" class="sticky-me">
+  <div style="flex:1">
+    <div style="font-weight:700">คุณ (Rank #<span id="my-rank"></span>)</div>
+    <div id="my-name" style="font-size:14px; color:#64748b"></div>
+  </div>
+  <div class="pts" id="my-pts"></div>
+</div>
 
 <script>
 const LIFF_ID = '2009815147-aGgIrfPv';
-const API = 'https://script.google.com/macros/s/AKfycbwE4Mp0w-xeFGksjw6sQsoqdDdVh78tO-EXGr_ULxHEzlQJBKa-TcRtV4oSpR4zkzPsHg/exec';
+const API = 'https://script.google.com/macros/s/AKfycbxt6OHnqzWgwoNbFmN3i0LH8MZQ6zKsGVCMf8rNBXmbjbAd6AcC_QkS1rI5-u6Z5Su-3g/exec';
 
 (async function init(){
   await liff.init({liffId:LIFF_ID});
   const res = await fetch(API, {method:'POST', body:JSON.stringify({action:'board', idToken:liff.getIDToken()})});
   const data = await res.json();
   render(data.list);
+  
+  // ตรวจหาตัวเราเพื่อทำ Sticky
+  const me = data.list.find(u => u.isMe);
+  if(me) {
+    document.getElementById('sticky-bar').style.display = 'flex';
+    document.getElementById('my-rank').innerText = me.rank;
+    document.getElementById('my-name').innerText = me.name;
+    document.getElementById('my-pts').innerText = me.score + ' ✨';
+  }
 })();
 
 function render(list){
   document.getElementById('list').innerHTML = list.map((u,i) => `
     <div class="row">
       <div class="main" onclick="toggle(${i})">
-        <div class="rank">#${u.rank}</div>
+        <div style="width:40px; font-weight:800; color:#fbbf24">#${u.rank}</div>
         <div style="flex:1">
-          <div style="font-weight:700; font-size:16px;">${u.name}</div>
-          <div style="font-size:14px; color:#64748b">💬 ${u.nick||'ไม่มีชื่อเล่น'}</div>
+          <div style="font-weight:700">${u.name}</div>
+          <div style="font-size:13px; color:#64748b">💬 ${u.nick||'-'}</div>
         </div>
         <div class="pts">${u.score} ✨</div>
       </div>
-      <div class="details" id="d${i}">
-        <div class="cat">🤝 COLLABORATION</div>
-        <div class="dots">${u.collab.map(c => `<div class="dot ${c.on?'on':''}"></div>`).join('')}</div>
-        <div class="cat">🏆 OWNERSHIP</div>
-        <div class="dots">${u.owner.map(o => `<div class="dot green ${o.on?'on':''}"></div>`).join('')}</div>
+      <div id="d${i}" style="display:none; padding-top:15px; border-top:2px dashed #eee; margin-top:15px;">
+        <div style="font-size:12px; font-weight:700; color:#64748b">🤝 COLLAB</div>
+        <div style="display:flex; gap:10px; margin-bottom:10px;">${u.collab.map(c=>`<div style="width:16px; height:16px; border-radius:50%; border:2px solid var(--blue); ${c.on?'background:var(--blue)':''}"></div>`).join('')}</div>
+        <div style="font-size:12px; font-weight:700; color:#64748b">🏆 OWNERSHIP</div>
+        <div style="display:flex; gap:10px;">${u.owner.map(o=>`<div style="width:16px; height:16px; border-radius:50%; border:2px solid var(--green); ${o.on?'background:var(--green)':''}"></div>`).join('')}</div>
       </div>
     </div>`).join('');
 }
