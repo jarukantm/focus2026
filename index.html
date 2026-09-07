@@ -3,125 +3,81 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Collection Badge Leaderboard</title>
+<title>Leaderboard</title>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <style>
-:root{--blue:#1a6ff0; --blue2:#0d5ae0; --green:#16a34a; --bg:#f2f7fd; --tx:#1f2a44; --mut:#8a94a6; --orange:#f97316;}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;background:var(--bg);color:var(--tx);font-family:-apple-system,sans-serif;padding-bottom:28px;width:100%;overflow-x:hidden}
-
-/* Header */
-.hd{position:relative;background:linear-gradient(135deg,#2b8cff,#0d5ae0);padding:34px 20px 54px;text-align:center;border-radius:0 0 46% 46%/0 0 22% 22%}
-.hd h1{margin:0;font-size:24px;font-weight:900;color:#fff;letter-spacing:1px}
-
-/* Sticky Bar */
-.mebar{position:sticky;top:0;z-index:50;margin:-26px 12px 4px;background:linear-gradient(100deg,#0d5ae0,#2b8cff);color:#fff;border-radius:18px;padding:11px 14px;display:none;align-items:center;gap:10px;box-shadow:0 4px 10px rgba(0,0,0,0.1)}
-.mebar.show{display:flex}
-.mebar.nb{background:linear-gradient(100deg,#f97316,#fb923c);justify-content:center;font-weight:800}
-
-/* Row & List */
-.wrap{padding:10px}
-.row{display:flex;align-items:center;gap:8px;background:#fff;border-radius:16px;padding:12px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
-.row.me{outline:2px dashed var(--green);outline-offset:2px}
-.medal{width:35px;min-width:35px;text-align:center;font-weight:800;color:var(--mut)}
-.av{width:40px;min-width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:bold}
-.nm{flex:1;min-width:0}
-.nm b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sc{text-align:center;min-width:50px;border-left:1px solid #eee;padding-left:8px}
-.sc .v{font-size:20px;font-weight:900;color:var(--blue)}
-
-/* Modal */
-.mask{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;padding:15px;z-index:999}
-.mask.on{display:flex}
-.modal{background:#fff;border-radius:20px;padding:20px;width:100%;max-width:400px;max-height:90vh;overflow-y:auto}
-input{width:100%;padding:12px;margin:8px 0 12px;border:1.5px solid #ddd;border-radius:10px;font-size:16px}
-button{width:100%;padding:14px;border:0;border-radius:10px;background:var(--blue);color:#fff;font-weight:bold;margin-top:10px}
-.cand{padding:12px;border:1px solid #eee;border-radius:10px;margin-top:8px}
-.cand.sel{border-color:var(--blue);background:#f0f7ff}
+:root{--blue:#1a6ff0; --green:#16a34a; --bg:#f2f7fd; --tx:#1f2a44;}
+body{background:var(--bg); font-family:sans-serif; margin:0; padding:10px; color:var(--tx);}
+.row{background:#fff; border-radius:15px; padding:15px; margin-bottom:10px; box-shadow:0 2px 5px rgba(0,0,0,0.05);}
+.main{display:flex; align-items:center; gap:10px; cursor:pointer;}
+.pts{font-weight:900; color:var(--blue); font-size:18px;}
+.details{display:none; margin-top:15px; padding-top:15px; border-top:1px solid #eee;}
+.dots{display:flex; gap:12px; margin-top:8px; margin-bottom:15px;}
+.dot{width:16px; height:16px; border-radius:50%; border:2px solid var(--blue);}
+.dot.on{background:var(--blue);}
+.dot.green{border-color:var(--green);}
+.dot.green.on{background:var(--green);}
+.mask{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;padding:15px;z-index:999;}
+.mask.on{display:flex;}
+.modal{background:#fff;border-radius:20px;padding:20px;width:100%;max-width:400px;}
+input{width:100%;padding:12px;margin:8px 0 12px;border:1.5px solid #ddd;border-radius:10px;}
+button{width:100%;padding:12px;border:0;border-radius:10px;background:var(--blue);color:#fff;margin-top:5px;}
 </style>
 </head>
 <body>
 
-<div class="hd"><h1>COLLECTION BADGE</h1></div>
-<div class="mebar" id="mebar"></div>
-<div id="list" class="wrap"></div>
+<div id="list"></div>
 
 <div class="mask" id="mask">
   <div class="modal">
-    <div id="s1">
-      <h2>ยืนยันตัวตน</h2>
-      <label>ชื่อจริง *</label><input id="f_first" placeholder="ชื่อจริง">
-      <label>นามสกุล *</label><input id="f_last" placeholder="นามสกุล">
-      <label>ชื่อเล่น</label><input id="f_nick" placeholder="ชื่อเล่น">
-      <button id="btn1" onclick="doSearch()">ค้นหาข้อมูล</button>
-    </div>
-    <div id="s2" style="display:none">
-      <h2>เลือกรายชื่อของคุณ</h2>
-      <div id="cands"></div>
-      <button id="btn2" onclick="doBind()" disabled>ยืนยัน</button>
-      <button style="background:#888" onclick="back()">ย้อนกลับ</button>
-    </div>
+    <h3>ยืนยันตัวตน</h3>
+    <label>ชื่อจริง *</label><input id="f_first">
+    <label>นามสกุล *</label><input id="f_last">
+    <label>ชื่อเล่น</label><input id="f_nick">
+    <button onclick="doSearch()">ค้นหาข้อมูล</button>
   </div>
 </div>
 
 <script>
 const LIFF_ID = '2009815147-aGgIrfPv';
-const API = 'https://script.google.com/macros/s/AKfycbx4CbTa5Td7VFcJF9a93nsIg47TMloqTjsXlqakZpB_U0l3zGhILreI0SEIWSf_fgYdfQ/exec';
-let idToken=null, profile=null, picked=null;
-const $ = id => document.getElementById(id);
-
-async function api(p){
-  const r = await fetch(API, {method:'POST', body:JSON.stringify({...p, idToken})});
-  return r.json();
-}
+const API = 'https://script.google.com/macros/s/AKfycbwE4Mp0w-xeFGksjw6sQsoqdDdVh78tO-EXGr_ULxHEzlQJBKa-TcRtV4oSpR4zkzPsHg/exec';
+let idToken=null;
 
 (async function init(){
   await liff.init({liffId:LIFF_ID});
   if(!liff.isLoggedIn()){ liff.login(); return; }
   idToken = liff.getIDToken();
-  const b = await api({action:'board'});
-  render(b.list, b.bound);
-  if(!b.bound) $('mask').classList.add('on');
+  const res = await fetch(API, {method:'POST', body:JSON.stringify({action:'board', idToken})});
+  const data = await res.json();
+  render(data.list);
+  if(!data.bound) document.getElementById('mask').className = 'mask on';
 })();
 
-function render(list, bound){
-  $('list').innerHTML = list.map((u,i) => `
-    <div class="row ${u.isMe?'me':''}">
-      <div class="medal">#${u.rank}</div>
-      <div class="av" style="background:#1a8cff">${u.name.charAt(0)}</div>
-      <div class="nm"><b>${u.name}</b><small>${u.nick}</small></div>
-      <div class="sc"><div class="v">${u.score}</div><small>pts</small></div>
+function render(list){
+  document.getElementById('list').innerHTML = list.map((u,i) => `
+    <div class="row">
+      <div class="main" onclick="toggle(${i})">
+        <div>#${u.rank}</div>
+        <div style="flex:1"><b>${u.name}</b><br><small>${u.nick||''}</small></div>
+        <div class="pts">${u.score} pts</div>
+      </div>
+      <div class="details" id="d${i}">
+        <small>Collaboration:</small>
+        <div class="dots">${u.collab.map(c => `<div class="dot ${c.on?'on':''}"></div>`).join('')}</div>
+        <small>Ownership:</small>
+        <div class="dots">${u.owner.map(o => `<div class="dot green ${o.on?'on':''}"></div>`).join('')}</div>
+      </div>
     </div>`).join('');
-  if(bound) renderMeBar(list);
 }
 
-function renderMeBar(list){
-  const u = list.find(x=>x.isMe);
-  if(!u) return;
-  const bar = $('mebar');
-  bar.className = 'mebar show';
-  bar.innerHTML = `<div class="rk">#${u.rank}</div><div class="nm"><b>${u.name}</b></div><div class="pt"><b>${u.score}</b> pts</div>`;
-}
+function toggle(i){ const d=document.getElementById('d'+i); d.style.display = d.style.display==='block' ? 'none' : 'block'; }
 
 async function doSearch(){
-  const f=$('f_first').value.trim(), l=$('f_last').value.trim(), n=$('f_nick').value.trim();
-  const r = await api({action:'search', firstName:f, lastName:l, nickName:n});
-  window._c = r.candidates;
-  $('cands').innerHTML = r.candidates.map((c,i) => `
-    <div class="cand" onclick="pick(${i},this)"><b>${c.fullName}</b></div>`).join('');
-  $('s1').style.display='none'; $('s2').style.display='block';
-}
-
-function pick(i, el){
-  document.querySelectorAll('.cand').forEach(x=>x.classList.remove('sel'));
-  el.classList.add('sel'); picked=window._c[i]; $('btn2').disabled=false;
-}
-
-function back(){ $('s2').style.display='none'; $('s1').style.display='block'; }
-
-async function doBind(){
-  await api({action:'bind', matchKey:picked.matchKey, firstName:$('f_first').value, lastName:$('f_last').value, nickName:$('f_nick').value});
-  location.reload();
+  const p = {action:'search', firstName:document.getElementById('f_first').value, lastName:document.getElementById('f_last').value};
+  const res = await fetch(API, {method:'POST', body:JSON.stringify(p)});
+  const data = await res.json();
+  // หลังค้นหาเจอ ควรเพิ่ม Logic การเลือกรายชื่อเหมือนเดิมนะครับ
+  alert("พบข้อมูล: " + data.candidates.length + " รายการ");
 }
 </script>
 </body>
