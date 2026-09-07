@@ -2,82 +2,77 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Leaderboard</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>FOCUS 2026</title>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <style>
-:root{--blue:#1a6ff0; --green:#16a34a; --bg:#f2f7fd; --tx:#1f2a44;}
-body{background:var(--bg); font-family:sans-serif; margin:0; padding:10px; color:var(--tx);}
-.row{background:#fff; border-radius:15px; padding:15px; margin-bottom:10px; box-shadow:0 2px 5px rgba(0,0,0,0.05);}
-.main{display:flex; align-items:center; gap:10px; cursor:pointer;}
-.pts{font-weight:900; color:var(--blue); font-size:18px;}
-.details{display:none; margin-top:15px; padding-top:15px; border-top:1px solid #eee;}
-.dots{display:flex; gap:12px; margin-top:8px; margin-bottom:15px;}
-.dot{width:16px; height:16px; border-radius:50%; border:2px solid var(--blue);}
-.dot.on{background:var(--blue);}
+:root{--blue:#3b82f6; --green:#22c55e; --orange:#f59e0b; --bg:#eff6ff; --tx:#1e293b;}
+body{background:var(--bg); font-family:'Kanit', sans-serif; margin:0; padding-bottom:40px; color:var(--tx);}
+
+/* Header */
+.header{background:linear-gradient(135deg, #60a5fa, #3b82f6); color:white; padding:40px 20px; text-align:center; border-radius:0 0 30px 30px;}
+.header h1{margin:0; font-size:32px; text-shadow:0 2px 4px rgba(0,0,0,0.1);}
+
+/* Card */
+.wrap{padding:15px;}
+.row{background:#fff; border-radius:24px; padding:20px; margin-bottom:15px; box-shadow:0 8px 16px -4px rgba(0,0,0,0.08); transition:0.3s;}
+.main{display:flex; align-items:center; gap:12px; cursor:pointer;}
+.rank{font-size:22px; font-weight:800; color:#fbbf24; width:40px; text-align:center;}
+.pts{font-weight:900; color:var(--blue); font-size:20px; background:#dbeafe; padding:4px 12px; border-radius:12px;}
+
+/* Details */
+.details{display:none; margin-top:20px; padding-top:15px; border-top:2px dashed #e2e8f0;}
+.cat{font-size:13px; font-weight:700; color:#64748b; margin:12px 0 8px; display:flex; align-items:center; gap:6px;}
+.dots{display:flex; gap:12px; margin-bottom:10px;}
+.dot{width:20px; height:20px; border-radius:50%; border:3px solid var(--blue); transition:0.3s;}
+.dot.on{background:var(--blue); transform:scale(1.1);}
 .dot.green{border-color:var(--green);}
 .dot.green.on{background:var(--green);}
-.mask{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;padding:15px;z-index:999;}
-.mask.on{display:flex;}
-.modal{background:#fff;border-radius:20px;padding:20px;width:100%;max-width:400px;}
-input{width:100%;padding:12px;margin:8px 0 12px;border:1.5px solid #ddd;border-radius:10px;}
-button{width:100%;padding:12px;border:0;border-radius:10px;background:var(--blue);color:#fff;margin-top:5px;}
 </style>
 </head>
 <body>
 
-<div id="list"></div>
-
-<div class="mask" id="mask">
-  <div class="modal">
-    <h3>ยืนยันตัวตน</h3>
-    <label>ชื่อจริง *</label><input id="f_first">
-    <label>นามสกุล *</label><input id="f_last">
-    <label>ชื่อเล่น</label><input id="f_nick">
-    <button onclick="doSearch()">ค้นหาข้อมูล</button>
-  </div>
+<div class="header">
+  <h1>🎯 FOCUS 2026</h1>
+  <p>Collection Badge Leaderboard</p>
 </div>
+
+<div class="wrap" id="list"></div>
 
 <script>
 const LIFF_ID = '2009815147-aGgIrfPv';
 const API = 'https://script.google.com/macros/s/AKfycbwE4Mp0w-xeFGksjw6sQsoqdDdVh78tO-EXGr_ULxHEzlQJBKa-TcRtV4oSpR4zkzPsHg/exec';
-let idToken=null;
 
 (async function init(){
   await liff.init({liffId:LIFF_ID});
-  if(!liff.isLoggedIn()){ liff.login(); return; }
-  idToken = liff.getIDToken();
-  const res = await fetch(API, {method:'POST', body:JSON.stringify({action:'board', idToken})});
+  const res = await fetch(API, {method:'POST', body:JSON.stringify({action:'board', idToken:liff.getIDToken()})});
   const data = await res.json();
   render(data.list);
-  if(!data.bound) document.getElementById('mask').className = 'mask on';
 })();
 
 function render(list){
   document.getElementById('list').innerHTML = list.map((u,i) => `
     <div class="row">
       <div class="main" onclick="toggle(${i})">
-        <div>#${u.rank}</div>
-        <div style="flex:1"><b>${u.name}</b><br><small>${u.nick||''}</small></div>
-        <div class="pts">${u.score} pts</div>
+        <div class="rank">#${u.rank}</div>
+        <div style="flex:1">
+          <div style="font-weight:700; font-size:16px;">${u.name}</div>
+          <div style="font-size:14px; color:#64748b">💬 ${u.nick||'ไม่มีชื่อเล่น'}</div>
+        </div>
+        <div class="pts">${u.score} ✨</div>
       </div>
       <div class="details" id="d${i}">
-        <small>Collaboration:</small>
+        <div class="cat">🤝 COLLABORATION</div>
         <div class="dots">${u.collab.map(c => `<div class="dot ${c.on?'on':''}"></div>`).join('')}</div>
-        <small>Ownership:</small>
+        <div class="cat">🏆 OWNERSHIP</div>
         <div class="dots">${u.owner.map(o => `<div class="dot green ${o.on?'on':''}"></div>`).join('')}</div>
       </div>
     </div>`).join('');
 }
 
-function toggle(i){ const d=document.getElementById('d'+i); d.style.display = d.style.display==='block' ? 'none' : 'block'; }
-
-async function doSearch(){
-  const p = {action:'search', firstName:document.getElementById('f_first').value, lastName:document.getElementById('f_last').value};
-  const res = await fetch(API, {method:'POST', body:JSON.stringify(p)});
-  const data = await res.json();
-  // หลังค้นหาเจอ ควรเพิ่ม Logic การเลือกรายชื่อเหมือนเดิมนะครับ
-  alert("พบข้อมูล: " + data.candidates.length + " รายการ");
+function toggle(i){ 
+  const d = document.getElementById('d'+i); 
+  d.style.display = d.style.display === 'block' ? 'none' : 'block'; 
 }
 </script>
 </body>
