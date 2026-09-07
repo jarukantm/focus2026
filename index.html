@@ -2,100 +2,101 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>FOCUS 360</title>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <style>
-:root{--blue:#3b82f6; --green:#22c55e; --bg:#f0f7ff; --tx:#1e293b;}
-body{background:var(--bg); font-family:'Kanit', sans-serif; margin:0; padding-top:160px; color:var(--tx);}
+:root{--bg:#f8f9fe; --blue:#2563eb; --card:#ffffff; --tx:#1e293b;}
+body{background:var(--bg); font-family:'Kanit', sans-serif; color:var(--tx); margin:0; padding:20px;}
 
-/* Header แบบ Confetti สนุกสนาน */
-.header{
-  position:fixed; top:0; width:100%; z-index:200;
-  background: linear-gradient(135deg, #4f46e5, #3b82f6);
-  color:white; padding:15px 20px; text-align:center;
-  border-radius:0 0 25px 25px;
-  /* เพิ่มเอฟเฟกต์ Confetti พื้นหลัง */
-  background-image: 
-    radial-gradient(circle at 10% 20%, #fbbf24 2px, transparent 0),
-    radial-gradient(circle at 30% 80%, #f472b6 3px, transparent 0),
-    radial-gradient(circle at 80% 30%, #22d3ee 2px, transparent 0),
-    radial-gradient(circle at 90% 90%, #f87171 3px, transparent 0),
-    radial-gradient(circle at 50% 50%, #a78bfa 2px, transparent 0);
-  background-size: 100px 100px;
-}
-.header h1{margin:0; font-size:22px; font-weight:800; text-shadow: 0 2px 4px rgba(0,0,0,0.2);}
-.header h2{margin:0; font-size:14px; opacity:0.9; font-weight:400;}
-
-/* Sticky ตัวเองไว้ด้านบน */
-.sticky-me{position:fixed; top:120px; width:92%; left:4%; z-index:100; background:#fff; border:2px solid #fbbf24; border-radius:20px; padding:15px; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1);}
-
-.wrap{padding:15px;}
-.row{background:#fff; border-radius:24px; padding:18px; margin-bottom:12px; box-shadow:0 4px 6px rgba(0,0,0,0.05);}
-.main{display:flex; align-items:center; gap:12px; cursor:pointer;}
-.pts{font-weight:900; color:var(--blue); background:#dbeafe; padding:4px 12px; border-radius:12px;}
-
-.dot{width:18px; height:18px; border-radius:50%; border:3px solid var(--blue); transition:0.3s;}
-.dot.on{background:var(--blue); box-shadow: 0 0 8px var(--blue);}
-.dot.green{border-color:var(--green);}
-.dot.green.on{background:var(--green); box-shadow: 0 0 8px var(--green);}
+.profile-card{background:var(--card); padding:20px; border-radius:24px; display:flex; align-items:center; gap:15px; margin-bottom:20px; box-shadow:0 4px 6px rgba(0,0,0,0.05);}
+.avatar{width:60px; height:60px; border-radius:50%; object-fit:cover; border:3px solid var(--blue);}
+.stats-card{background:linear-gradient(135deg, #1e3a8a, #3b82f6); color:white; padding:25px; border-radius:24px; margin-bottom:20px;}
+.list-item{background:white; padding:15px; border-radius:18px; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 2px 4px rgba(0,0,0,0.03);}
+.mask{position:fixed; inset:0; background:rgba(0,0,0,0.7); display:none; align-items:center; justify-content:center; z-index:999; padding:20px;}
+.modal{background:white; padding:20px; border-radius:24px; width:100%; max-width:400px; text-align:center;}
+.avatar-option{width:60px; height:60px; border-radius:50%; cursor:pointer; border:3px solid transparent; object-fit:cover;}
+.avatar-option.selected{border-color:var(--blue);}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <h1>FOCUS 360</h1>
-  <div>Collection Badge</div>
-  <div style="font-size:11px; margin-top:2px; font-weight:bold; opacity:0.8;">LEADERBOARD</div>
+<div class="profile-card">
+  <img id="my-avatar" src="https://i.imgur.com/8K5S1lP.png" class="avatar" onerror="this.src='https://via.placeholder.com/60'">
+  <div>
+    <div style="font-size:14px; color:#64748b">สวัสดี!</div>
+    <div id="my-name" style="font-size:18px; font-weight:700">กำลังโหลด...</div>
+    <div style="font-size:12px">มาบู้สพลังไปด้วยกันนะ! 🚀</div>
+  </div>
 </div>
 
-<div id="sticky-bar" class="sticky-me" style="display:none;"></div>
-<div class="wrap" id="list" style="margin-top:20px;"></div>
+<div class="stats-card">
+  <div style="opacity:0.8">คะแนนรวมของฉัน</div>
+  <div id="my-score" style="font-size:32px; font-weight:800">0 pts</div>
+</div>
+
+<div id="list-area"></div>
+
+<div class="mask" id="mask">
+  <div class="modal">
+    <h3>เลือกรูปโปรไฟล์ของคุณ</h3>
+    <div id="profile-picker" style="display:flex; gap:10px; justify-content:center; margin-bottom:20px; flex-wrap:wrap;">
+      <img src="https://i.imgur.com/R38M5h9.jpeg" class="avatar-option" onclick="selectAvatar(this.src, this)">
+      <img src="https://i.imgur.com/U8HwYvF.jpeg" class="avatar-option" onclick="selectAvatar(this.src, this)">
+      <img src="https://i.imgur.com/k6uY9kG.jpeg" class="avatar-option" onclick="selectAvatar(this.src, this)">
+      <img src="https://i.imgur.com/H1X0BvL.jpeg" class="avatar-option" onclick="selectAvatar(this.src, this)">
+      <img src="https://i.imgur.com/z4O9f6R.jpeg" class="avatar-option" onclick="selectAvatar(this.src, this)">
+    </div>
+    <input id="f_first" placeholder="ชื่อจริง" style="width:80%; padding:10px; margin-bottom:10px;">
+    <input id="f_last" placeholder="นามสกุล" style="width:80%; padding:10px; margin-bottom:10px;">
+    <input id="f_nick" placeholder="ชื่อเล่น" style="width:80%; padding:10px; margin-bottom:10px;">
+    <button onclick="doBind()" style="width:90%; padding:12px; background:var(--blue); color:white; border:none; border-radius:12px; margin-top:10px;">ยืนยันตัวตน</button>
+  </div>
+</div>
 
 <script>
 const LIFF_ID = '2009815147-aGgIrfPv';
-const API = 'https://script.google.com/macros/s/AKfycbwE4Mp0w-xeFGksjw6sQsoqdDdVh78tO-EXGr_ULxHEzlQJBKa-TcRtV4oSpR4zkzPsHg/exec';
+const API = 'https://script.google.com/macros/s/AKfycbwp1GQwEuAsXP7PmZ0aOQXDS5lCcLs9DSjad1K6o4637R58dgXIZ-cyx0HVgjwnu8AJAw/exec';
+let selectedAvatar = '';
+
+function selectAvatar(url, el) {
+  document.querySelectorAll('.avatar-option').forEach(img => img.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedAvatar = url;
+}
+
+async function doBind(){
+  const p = {
+    action:'bind', 
+    firstName:document.getElementById('f_first').value, 
+    lastName:document.getElementById('f_last').value, 
+    nickName:document.getElementById('f_nick').value,
+    avatar: selectedAvatar
+  };
+  await fetch(API, {method:'POST', body:JSON.stringify(p)});
+  location.reload();
+}
 
 (async function init(){
   await liff.init({liffId:LIFF_ID});
   const res = await fetch(API, {method:'POST', body:JSON.stringify({action:'board', idToken:liff.getIDToken()})});
   const data = await res.json();
-  render(data.list);
-})();
-
-function render(list){
-  const me = list.find(u => u.isMe);
-  if(me) {
-    document.getElementById('sticky-bar').style.display = 'block';
-    document.getElementById('sticky-bar').innerHTML = createRowHTML(me, 'me', true);
+  
+  if(!data.bound) document.getElementById('mask').style.display = 'flex';
+  else {
+    const me = data.list.find(u => u.isMe);
+    if(me) {
+      document.getElementById('my-name').innerText = me.nick;
+      document.getElementById('my-avatar').src = me.avatarUrl || 'https://via.placeholder.com/60';
+      document.getElementById('my-score').innerText = me.score + ' pts';
+    }
+    document.getElementById('list-area').innerHTML = data.list.map(u => `
+      <div class="list-item">
+        <div>#${u.rank} <b>${u.name}</b></div>
+        <div>${u.score} pts</div>
+      </div>`).join('');
   }
-  document.getElementById('list').innerHTML = list.map((u,i) => createRowHTML(u, i)).join('');
-}
-
-function createRowHTML(u, id, isSticky=false) {
-  return `
-    <div class="row">
-      <div class="main" onclick="toggle('${id}')">
-        <div style="width:40px; font-weight:800; color:#fbbf24">${isSticky?'⭐':'#'+u.rank}</div>
-        <div style="flex:1">
-          <div style="font-weight:700">${isSticky?'คุณ: ':''}${u.name}</div>
-          <div style="font-size:13px; color:#64748b">💬 ${u.nick||'-'}</div>
-        </div>
-        <div class="pts">${u.score} ✨</div>
-      </div>
-      <div id="d${id}" style="display:none; padding-top:15px; border-top:2px dashed #eee; margin-top:15px;">
-        <div style="font-size:12px; font-weight:700; color:#64748b">🤝 COLLABORATION</div>
-        <div style="display:flex; gap:10px; margin-bottom:10px;">${u.collab.map(c=>`<div class="dot ${c.on?'on':''}"></div>`).join('')}</div>
-        <div style="font-size:12px; font-weight:700; color:#64748b">🏆 OWNERSHIP</div>
-        <div style="display:flex; gap:10px;">${u.owner.map(o=>`<div class="dot green ${o.on?'on':''}"></div>`).join('')}</div>
-      </div>
-    </div>`;
-}
-
-function toggle(id){ 
-  const d = document.getElementById('d'+id); 
-  d.style.display = d.style.display === 'block' ? 'none' : 'block'; 
-}
+})();
 </script>
 </body>
 </html>
