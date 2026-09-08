@@ -17,6 +17,8 @@ body{background:var(--bg); font-family:'Kanit', sans-serif; color:var(--tx); mar
 
 .mask{position:fixed; inset:0; background:rgba(0,0,0,0.7); display:none; align-items:center; justify-content:center; z-index:999; padding:20px;}
 .modal{background:white; padding:25px; border-radius:24px; width:100%; max-width:400px; text-align:center;}
+
+#profile-picker{display:flex; overflow-x:auto; gap:15px; padding:10px 0; margin-bottom:20px; scrollbar-width:none;}
 .avatar-option{flex:0 0 65px; width:65px; height:65px; border-radius:50%; cursor:pointer; border:3px solid transparent; object-fit:cover;}
 .avatar-option.selected{border-color:var(--blue); transform:scale(1.1);}
 </style>
@@ -24,7 +26,7 @@ body{background:var(--bg); font-family:'Kanit', sans-serif; color:var(--tx); mar
 <body>
 
 <div class="profile-card">
-  <img id="my-avatar" src="https://i.imgur.com/kS9wP7r.jpeg" class="avatar">
+  <img id="my-avatar" src="https://i.ibb.co/6HhN4tP/flash.jpg" class="avatar">
   <div>
     <div style="font-size:14px; color:#64748b">สวัสดี!</div>
     <div id="my-name" style="font-size:18px; font-weight:700">กำลังโหลด...</div>
@@ -42,12 +44,12 @@ body{background:var(--bg); font-family:'Kanit', sans-serif; color:var(--tx); mar
 <div class="mask" id="mask">
   <div class="modal">
     <h3 style="margin-top:0;">เลือกรูปโปรไฟล์ของคุณ</h3>
-    <div id="profile-picker" style="display:flex; overflow-x:auto; gap:15px; padding:10px 0; margin-bottom:20px; scrollbar-width:none;">
-      <img src="https://i.imgur.com/kS9wP7r.jpeg" class="avatar-option" onclick="selectAvatar(this.src, this)">
-      <img src="https://i.imgur.com/P5o3XqG.jpeg" class="avatar-option" onclick="selectAvatar(this.src, this)">
-      <img src="https://i.imgur.com/qLhQWjT.jpeg" class="avatar-option" onclick="selectAvatar(this.src, this)">
-      <img src="https://i.imgur.com/S9sJ1wY.jpeg" class="avatar-option" onclick="selectAvatar(this.src, this)">
-      <img src="https://i.imgur.com/B7yT8zV.jpeg" class="avatar-option" onclick="selectAvatar(this.src, this)">
+    <div id="profile-picker">
+      <img src="https://i.ibb.co/6HhN4tP/flash.jpg" class="avatar-option" onclick="selectAvatar(this.src, this)">
+      <img src="https://i.ibb.co/hK2z7Xn/bellwether.jpg" class="avatar-option" onclick="selectAvatar(this.src, this)">
+      <img src="https://i.ibb.co/Wz2mQ6r/gazelle.jpg" class="avatar-option" onclick="selectAvatar(this.src, this)">
+      <img src="https://i.ibb.co/S3yJ5wN/nick.jpg" class="avatar-option" onclick="selectAvatar(this.src, this)">
+      <img src="https://i.ibb.co/G9vB4Lp/judy.jpg" class="avatar-option" onclick="selectAvatar(this.src, this)">
     </div>
     <input id="f_first" placeholder="ชื่อจริง" style="width:85%; padding:12px; margin-bottom:10px; border:1px solid #ddd; border-radius:10px;">
     <input id="f_last" placeholder="นามสกุล" style="width:85%; padding:12px; margin-bottom:10px; border:1px solid #ddd; border-radius:10px;">
@@ -59,7 +61,7 @@ body{background:var(--bg); font-family:'Kanit', sans-serif; color:var(--tx); mar
 <script>
 const LIFF_ID = '2009815147-aGgIrfPv';
 const API = 'https://script.google.com/macros/s/AKfycbyxDcfchbb80J61eFB-rbrSRkHNCnO37Vq1GDFGStUDFaVOONQNLZhGsNsRyaXFIWnPLw/exec';
-let selectedAvatar = 'https://i.imgur.com/kS9wP7r.jpeg';
+let selectedAvatar = 'https://i.ibb.co/6HhN4tP/flash.jpg';
 
 function selectAvatar(url, el) {
   document.querySelectorAll('.avatar-option').forEach(img => img.classList.remove('selected'));
@@ -94,7 +96,10 @@ async function doBind(){
     }
     document.getElementById('list-area').innerHTML = data.list.map(u => `
       <div class="list-item">
-        <div>#${u.rank} <b>${u.name}</b></div>
+        <div style="display:flex; align-items:center; gap:10px;">
+           <img src="${u.avatarUrl}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;">
+           <div>#${u.rank} <b>${u.name}</b></div>
+        </div>
         <div>${u.score} pts</div>
       </div>`).join('');
   }
