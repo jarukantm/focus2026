@@ -5,48 +5,111 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>FOCUS 360</title>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#f8f9fe; --blue:#2563eb; --card:#ffffff; --tx:#1e293b;}
-body{background:var(--bg); font-family:sans-serif; color:var(--tx); margin:0; padding:20px;}
+body{background:var(--bg); font-family:'Kanit', sans-serif; color:var(--tx); margin:0; padding:20px;}
+
 .profile-card{background:var(--card); padding:20px; border-radius:24px; display:flex; align-items:center; gap:15px; margin-bottom:20px; box-shadow:0 4px 6px rgba(0,0,0,0.05);}
 .avatar{width:60px; height:60px; border-radius:50%; object-fit:cover; border:3px solid var(--blue);}
-.avatar-option{flex:0 0 65px; width:65px; height:65px; border-radius:50%; cursor:pointer; border:3px solid transparent; object-fit:cover; background:#ddd;}
+.stats-card{background:linear-gradient(135deg, #1e3a8a, #3b82f6); color:white; padding:25px; border-radius:24px; margin-bottom:20px;}
+.list-item{background:white; padding:15px; border-radius:18px; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 2px 4px rgba(0,0,0,0.03);}
+
+.mask{position:fixed; inset:0; background:rgba(0,0,0,0.7); display:none; align-items:center; justify-content:center; z-index:999; padding:20px;}
+.modal{background:white; padding:25px; border-radius:24px; width:100%; max-width:400px; text-align:center;}
+
+#profile-picker{display:flex; overflow-x:auto; gap:15px; padding:10px 0; margin-bottom:20px; scrollbar-width:none;}
+.avatar-option{flex:0 0 65px; width:65px; height:65px; border-radius:50%; cursor:pointer; border:3px solid transparent; object-fit:cover;}
 .avatar-option.selected{border-color:var(--blue); transform:scale(1.1);}
 </style>
 </head>
 <body>
 
 <div class="profile-card">
-  <img id="my-avatar" src="" class="avatar">
+  <img id="my-avatar" src="https://i.ibb.co/6HhN4tP/flash.jpg" class="avatar">
   <div>
-    <div id="my-name" style="font-weight:700">ยินดีต้อนรับ</div>
+    <div style="font-size:14px; color:#64748b">สวัสดี!</div>
+    <div id="my-name" style="font-size:18px; font-weight:700">กำลังโหลด...</div>
+    <div style="font-size:12px">มาบู้สพลังไปด้วยกันนะ! 🚀</div>
   </div>
 </div>
 
-<div id="mask" style="position:fixed; inset:0; background:rgba(0,0,0,0.8); display:none; align-items:center; justify-content:center; z-index:999;">
-  <div style="background:white; padding:20px; border-radius:20px; width:85%; text-align:center;">
-    <h3>เลือกตัวละคร</h3>
-    <div id="profile-picker" style="display:flex; overflow-x:auto; gap:10px; padding:10px 0; margin-bottom:20px;">
-        <!-- ใช้ตัวอักษรย่อแทนรูปชั่วคราว เพื่อทดสอบการโหลด -->
-        <div class="avatar-option" onclick="selectAvatar('Flash', this)" style="display:flex; align-items:center; justify-content:center; background:#ffcccb;">F</div>
-        <div class="avatar-option" onclick="selectAvatar('Bellwether', this)" style="display:flex; align-items:center; justify-content:center; background:#ccffcc;">B</div>
-        <div class="avatar-option" onclick="selectAvatar('Gazelle', this)" style="display:flex; align-items:center; justify-content:center; background:#ccccff;">G</div>
-        <div class="avatar-option" onclick="selectAvatar('Nick', this)" style="display:flex; align-items:center; justify-content:center; background:#ffffcc;">N</div>
-        <div class="avatar-option" onclick="selectAvatar('Judy', this)" style="display:flex; align-items:center; justify-content:center; background:#ffccff;">J</div>
-    </div>
-    <input id="f_first" placeholder="ชื่อ" style="width:90%; padding:10px; margin-bottom:10px;"><br>
-    <button onclick="doBind()" style="width:95%; padding:15px; background:var(--blue); color:white; border:none; border-radius:10px;">ตกลง</button>
+<div class="stats-card">
+  <div style="opacity:0.8">คะแนนรวมของฉัน</div>
+  <div id="my-score" style="font-size:32px; font-weight:800">0 pts</div>
+</div>
+
+<div id="list-area"></div>
+
+<div class="mask" id="mask">
+  <div class="modal">
+    <h3 style="margin-top:0;">เลือกรูปโปรไฟล์ของคุณ</h3>
+    <div id="profile-picker" style="display:flex; overflow-x:auto; gap:15px; padding:10px 0; margin-bottom:20px; scrollbar-width: none;">
+
+  <img src="https://lh3.googleusercontent.com/d/1JF16hRZHdIN_xxqYXOuiVQpNum_Dqe1a" class="avatar-option" onclick="selectAvatar(this.src, this)">
+
+  <img src="https://lh3.googleusercontent.com/d/1D-LOdXN_KoKiTSQK84YSRjIBR2e2l7Hv" class="avatar-option" onclick="selectAvatar(this.src, this)">
+
+  <img src="https://lh3.googleusercontent.com/d/1HkmbI2dkWFCNPzotMp_LafJeqHdN-n0W" class="avatar-option" onclick="selectAvatar(this.src, this)">
+
+  <img src="https://lh3.googleusercontent.com/d/19Mpua59egcHR-i_LdpSFTYAf_R-2q23Z" class="avatar-option" onclick="selectAvatar(this.src, this)">
+
+  <img src="https://lh3.googleusercontent.com/d/1yQ6Ydp7rbLr6sgradMC32c-nkaFqfny6" class="avatar-option" onclick="selectAvatar(this.src, this)">
+
+</div>
+    <input id="f_first" placeholder="ชื่อจริง" style="width:85%; padding:12px; margin-bottom:10px; border:1px solid #ddd; border-radius:10px;">
+    <input id="f_last" placeholder="นามสกุล" style="width:85%; padding:12px; margin-bottom:10px; border:1px solid #ddd; border-radius:10px;">
+    <input id="f_nick" placeholder="ชื่อเล่น" style="width:85%; padding:12px; margin-bottom:15px; border:1px solid #ddd; border-radius:10px;">
+    <button onclick="doBind()" style="width:90%; padding:14px; background:var(--blue); color:white; border:none; border-radius:12px; font-weight:bold;">ยืนยันตัวตน</button>
   </div>
 </div>
 
 <script>
-let selectedAvatar = 'Flash';
-function selectAvatar(name, el) {
-  document.querySelectorAll('.avatar-option').forEach(i => i.classList.remove('selected'));
+const LIFF_ID = '2009815147-aGgIrfPv';
+const API = 'https://script.google.com/macros/s/AKfycbyxDcfchbb80J61eFB-rbrSRkHNCnO37Vq1GDFGStUDFaVOONQNLZhGsNsRyaXFIWnPLw/exec';
+let selectedAvatar = 'https://i.ibb.co/6HhN4tP/flash.jpg';
+
+function selectAvatar(url, el) {
+  document.querySelectorAll('.avatar-option').forEach(img => img.classList.remove('selected'));
   el.classList.add('selected');
-  selectedAvatar = name;
+  selectedAvatar = url;
 }
-// ... ส่วนของ init และ doBind ให้คงเดิมตาม Script ของคุณ ...
+
+async function doBind(){
+  const p = {
+    action:'bind', 
+    firstName:document.getElementById('f_first').value, 
+    lastName:document.getElementById('f_last').value, 
+    nickName:document.getElementById('f_nick').value,
+    avatar: selectedAvatar
+  };
+  await fetch(API, {method:'POST', body:JSON.stringify(p)});
+  location.reload();
+}
+
+(async function init(){
+  await liff.init({liffId:LIFF_ID});
+  const res = await fetch(API, {method:'POST', body:JSON.stringify({action:'board', idToken:liff.getIDToken()})});
+  const data = await res.json();
+  
+  if(!data.bound) document.getElementById('mask').style.display = 'flex';
+  else {
+    const me = data.list.find(u => u.isMe);
+    if(me) {
+      document.getElementById('my-name').innerText = me.nick;
+      document.getElementById('my-avatar').src = me.avatarUrl;
+      document.getElementById('my-score').innerText = me.score + ' pts';
+    }
+    document.getElementById('list-area').innerHTML = data.list.map(u => `
+      <div class="list-item">
+        <div style="display:flex; align-items:center; gap:10px;">
+           <img src="${u.avatarUrl}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;">
+           <div>#${u.rank} <b>${u.name}</b></div>
+        </div>
+        <div>${u.score} pts</div>
+      </div>`).join('');
+  }
+})();
 </script>
 </body>
 </html>
