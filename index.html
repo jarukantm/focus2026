@@ -33,25 +33,30 @@ body{background:var(--bg); font-family:sans-serif; color:var(--tx); margin:0; pa
 .avatar-option.selected{border-color:var(--blue); transform:scale(1.1);}
 input{width:88%; padding:12px; margin-bottom:10px; border:1px solid #ddd; border-radius:10px; font-family:inherit;}
 button{cursor:pointer;}
+#loading{text-align:center; padding:40px; color:#94a3b8;}
 </style>
 </head>
 <body>
 
-<div class="profile-card">
-  <img id="my-avatar" src="" class="avatar">
-  <div>
-    <div style="font-size:14px; color:#64748b">สวัสดี!</div>
-    <div id="my-name" style="font-size:18px; font-weight:700">กำลังโหลด...</div>
-    <div style="font-size:12px">มาบู้สพลังไปด้วยกันนะ! 🚀</div>
+<div id="loading">กำลังโหลดข้อมูล...</div>
+
+<div id="main-content" style="display:none;">
+  <div class="profile-card">
+    <img id="my-avatar" src="" class="avatar">
+    <div>
+      <div style="font-size:14px; color:#64748b">สวัสดี!</div>
+      <div id="my-name" style="font-size:18px; font-weight:700">-</div>
+      <div style="font-size:12px">มาบู้สพลังไปด้วยกันนะ! 🚀</div>
+    </div>
   </div>
-</div>
 
-<div class="stats-card">
-  <div style="opacity:0.8">คะแนนรวมของฉัน</div>
-  <div id="my-score" style="font-size:32px; font-weight:800">0 pts</div>
-</div>
+  <div class="stats-card">
+    <div style="opacity:0.8">คะแนนรวมของฉัน</div>
+    <div id="my-score" style="font-size:32px; font-weight:800">0 pts</div>
+  </div>
 
-<div id="list-area"></div>
+  <div id="list-area"></div>
+</div>
 
 <div class="mask" id="mask">
   <div class="modal">
@@ -82,19 +87,29 @@ function selectAvatar(url, el) {
 }
 
 async function doBind(){
-  const p = {
-    action:'bind',
-    idToken: liff.getIDToken(),
-    firstName: document.getElementById('f_first').value.trim(),
-    lastName: document.getElementById('f_last').value.trim(),
-    nickName: document.getElementById('f_nick').value.trim(),
-    avatar: selectedAvatar
-  };
-  if(!p.firstName || !p.lastName){ alert('กรุณากรอกชื่อและนามสกุล'); return; }
-  const res = await fetch(API, {method:'POST', body:JSON.stringify(p)});
-  const result = await res.json();
-  if(result.ok) location.reload();
-  else alert('เกิดข้อผิดพลาด: ' + result.error);
+  try{
+    const p = {
+      action:'bind',
+      idToken: liff.getIDToken(),
+      firstName: document.getElementById('f_first').value.trim(),
+      lastName: document.getElementById('f_last').value.trim(),
+      nickName: document.getElementById('f_nick').value.trim(),
+      avatar: selectedAvatar
+    };
+    if(!p.firstName || !p.lastName){ alert('กรุณากรอกชื่อและนามสกุล'); return; }
+
+    const res = await fetch(API, {method:'POST', body:JSON.stringify(p)});
+    const text = await res.text();
+    let result;
+    try{ result = JSON.parse(text); }
+    catch(e){ throw new Error('API ไม่ตอบกลับเป็น JSON: ' + text.substring(0,200)); }
+
+    if(result.ok) location.reload();
+    else alert('เกิดข้อผิดพลาด: ' + result.error);
+  }catch(err){
+    alert('บันทึกไม่สำเร็จ: ' + err.message);
+    console.error(err);
+  }
 }
 
 function toggleDetail(id){
@@ -102,46 +117,68 @@ function toggleDetail(id){
 }
 
 (async function init(){
-  await liff.init({liffId:LIFF_ID});
-  const idToken = liff.getIDToken();
-  const res = await fetch(API, {method:'POST', body:JSON.stringify({action:'board', idToken})});
-  const data = await res.json();
+  try{
+    await liff.init({liffId:LIFF_ID});
 
-  if(!data.ok){ alert('โหลดข้อมูลผิดพลาด: '+data.error); return; }
-  if(!data.bound){ document.getElementById('mask').style.display = 'flex'; return; }
+    if(!liff.isLoggedIn()){
+      liff.login();
+      return;
+    }
 
-  document.getElementById('my-name').innerText = data.myNick || '-';
-  if(data.myAvatar) document.getElementById('my-avatar').src = data.myAvatar;
+    const idToken = liff.getIDToken();
 
-  const me = data.list.find(u => u.isMe);
-  document.getElementById('my-score').innerText = (me ? me.score : 0) + ' pts';
+    const res = await fetch(API, {method:'POST', body:JSON.stringify({action:'board', idToken})});
+    const text = await res.text();
+    let data;
+    try{ data = JSON.parse(text); }
+    catch(e){ throw new Error('API ไม่ได้ตอบกลับเป็น JSON (เช็คการตั้งค่า Deploy ว่าเป็น Anyone หรือยัง) → ' + text.substring(0,300)); }
 
-  document.getElementById('list-area').innerHTML = data.list.map((u,i) => `
-    <div class="rank-item ${u.isMe?'me-highlight':''}">
-      <div class="rank-head" onclick="toggleDetail('detail-${i}')">
-        <div class="rank-left">
-          <div class="rank-num">#${u.rank}</div>
-          <img class="rank-avatar" src="${u.avatarUrl||''}" onerror="this.style.visibility='hidden'">
-          <div>
-            <div class="rank-name">${u.name}</div>
-            ${u.nick ? `<div style="font-size:11px;color:#94a3b8">${u.nick}</div>` : ''}
+    if(!data.ok){ throw new Error(data.error); }
+
+    document.getElementById('loading').style.display = 'none';
+
+    if(!data.bound){
+      document.getElementById('mask').style.display = 'flex';
+      return;
+    }
+
+    document.getElementById('main-content').style.display = 'block';
+    document.getElementById('my-name').innerText = data.myNick || '-';
+    if(data.myAvatar) document.getElementById('my-avatar').src = data.myAvatar;
+
+    const me = data.list.find(u => u.isMe);
+    document.getElementById('my-score').innerText = (me ? me.score : 0) + ' pts';
+
+    document.getElementById('list-area').innerHTML = data.list.map((u,i) => `
+      <div class="rank-item ${u.isMe?'me-highlight':''}">
+        <div class="rank-head" onclick="toggleDetail('detail-${i}')">
+          <div class="rank-left">
+            <div class="rank-num">#${u.rank}</div>
+            <img class="rank-avatar" src="${u.avatarUrl||''}" onerror="this.style.visibility='hidden'">
+            <div>
+              <div class="rank-name">${u.name}</div>
+              ${u.nick ? `<div style="font-size:11px;color:#94a3b8">${u.nick}</div>` : ''}
+            </div>
+          </div>
+          <div class="rank-score">${u.score} pts</div>
+        </div>
+        <div class="rank-detail" id="detail-${i}">
+          <div class="detail-row">
+            <span>Collaboration</span>
+            <span class="badge">${u.collab.detail.map(d=>`<span class="dot ${d.on?'on':''}"></span>`).join('')}</span>
+            <b>${u.collab.score}/${u.collab.max}</b>
+          </div>
+          <div class="detail-row">
+            <span>Ownership</span>
+            <span class="badge">${u.owner.detail.map(d=>`<span class="dot ${d.on?'on':''}"></span>`).join('')}</span>
+            <b>${u.owner.score}/${u.owner.max}</b>
           </div>
         </div>
-        <div class="rank-score">${u.score} pts</div>
-      </div>
-      <div class="rank-detail" id="detail-${i}">
-        <div class="detail-row">
-          <span>Collaboration</span>
-          <span class="badge">${u.collab.detail.map(d=>`<span class="dot ${d.on?'on':''}"></span>`).join('')}</span>
-          <b>${u.collab.score}/${u.collab.max}</b>
-        </div>
-        <div class="detail-row">
-          <span>Ownership</span>
-          <span class="badge">${u.owner.detail.map(d=>`<span class="dot ${d.on?'on':''}"></span>`).join('')}</span>
-          <b>${u.owner.score}/${u.owner.max}</b>
-        </div>
-      </div>
-    </div>`).join('');
+      </div>`).join('');
+  }catch(err){
+    document.getElementById('loading').innerText = 'เกิดข้อผิดพลาด: ' + err.message;
+    console.error(err);
+  }
 })();
 </script>
 </body>
