@@ -2,68 +2,459 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>FOCUS 360</title>
+<!-- Google Fonts: Prompt -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <style>
-:root{--bg:#f8f9fe; --blue:#2563eb; --card:#ffffff; --tx:#1e293b;}
-*{box-sizing:border-box;}
-body{background:var(--bg); font-family:sans-serif; color:var(--tx); margin:0; padding:20px;}
-.profile-card{background:var(--card); padding:20px; border-radius:24px; display:flex; align-items:center; gap:15px; margin-bottom:20px; box-shadow:0 4px 6px rgba(0,0,0,0.05);}
-.avatar{width:60px; height:60px; border-radius:50%; object-fit:cover; border:3px solid var(--blue); background:#eee;}
-.stats-card{background:linear-gradient(135deg, #1e3a8a, #3b82f6); color:white; padding:25px; border-radius:24px; margin-bottom:20px;}
-.detail-card{background:white; border-radius:18px; margin-bottom:10px; box-shadow:0 2px 4px rgba(0,0,0,0.05); overflow:hidden; padding:16px;}
-.detail-title{font-weight:700; font-size:14px; margin-bottom:10px; color:#64748b;}
-.detail-row{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:13px;}
-.badge{display:inline-flex; gap:4px;}
-.dot{width:16px; height:16px; border-radius:50%; background:#e2e8f0;}
-.dot.on{background:var(--blue);}
-.mask{position:fixed; inset:0; background:rgba(0,0,0,0.7); display:none; align-items:center; justify-content:center; z-index:999; padding:20px;}
-.modal{background:white; padding:25px; border-radius:24px; width:100%; max-width:400px; text-align:center;}
-#profile-picker{display:flex; overflow-x:auto; gap:15px; padding:10px 0; margin-bottom:20px; scrollbar-width:none;}
-.avatar-option{flex:0 0 65px; width:65px; height:65px; border-radius:50%; cursor:pointer; border:3px solid transparent; object-fit:cover;}
-.avatar-option.selected{border-color:var(--blue); transform:scale(1.1);}
-input{width:88%; padding:12px; margin-bottom:10px; border:1px solid #ddd; border-radius:10px; font-family:inherit;}
-button{cursor:pointer;}
-#loading{text-align:center; padding:40px; color:#94a3b8;}
+:root {
+  --primary: #2563eb;
+  --primary-gradient: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%);
+  --bg-gradient: linear-gradient(180deg, #f0f4ff 0%, #f8fafc 100%);
+  --card-bg: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border-light: #e2e8f0;
+  --shadow-md: 0 10px 25px -5px rgba(30, 58, 138, 0.08), 0 8px 10px -6px rgba(30, 58, 138, 0.04);
+  --shadow-card: 0 12px 30px -10px rgba(37, 99, 235, 0.28);
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-gradient);
+  font-family: 'Prompt', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+}
+
+.app-container {
+  width: 100%;
+  max-width: 440px;
+  min-height: 100vh;
+  padding: calc(20px + env(safe-area-inset-top, 0px)) 18px calc(30px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+}
+
+/* Loading State */
+#loading {
+  margin: auto;
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  font-size: 15px;
+}
+
+.spinner {
+  width: 42px;
+  height: 42px;
+  border: 3.5px solid #e2e8f0;
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.9s cubic-bezier(0.55, 0.15, 0.45, 0.85) infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Profile Card */
+.profile-card {
+  background: var(--card-bg);
+  padding: 18px 20px;
+  border-radius: 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.avatar-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.avatar {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #ffffff;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+  background: #f1f5f9;
+  display: block;
+}
+
+.avatar-badge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 17px;
+  height: 17px;
+  background: #10b981;
+  border: 2.5px solid #ffffff;
+  border-radius: 50%;
+}
+
+.greeting-text {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.user-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.3;
+  margin: 1px 0 4px;
+}
+
+.subtitle-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #2563eb;
+  background: #eff6ff;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+/* Stats Card */
+.stats-card {
+  background: var(--primary-gradient);
+  color: #ffffff;
+  padding: 24px;
+  border-radius: 26px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+}
+
+.stats-card::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -30px;
+  width: 140px;
+  height: 140px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.stats-card::after {
+  content: '';
+  position: absolute;
+  bottom: -30px;
+  left: 30%;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.stats-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.88);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.score-display {
+  font-size: 38px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-top: 6px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+/* Detail Card */
+.detail-card {
+  background: var(--card-bg);
+  border-radius: 22px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  padding: 20px;
+}
+
+.detail-title {
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 16px;
+  color: #334155;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  font-size: 13.5px;
+  background: #f8fafc;
+  border-radius: 14px;
+  border: 1px solid #f1f5f9;
+}
+
+.detail-row:last-child {
+  margin-bottom: 0;
+}
+
+.detail-row span:first-child {
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.detail-row b {
+  font-weight: 700;
+  color: #0f172a;
+  min-width: 44px;
+  text-align: right;
+  font-size: 14px;
+}
+
+.badge {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  transition: all 0.25s ease;
+}
+
+.dot.on {
+  background: #2563eb;
+  box-shadow: 0 0 8px rgba(37, 99, 235, 0.45);
+  transform: scale(1.05);
+}
+
+/* Modal Mask */
+.mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  padding: 20px;
+  animation: fadeIn 0.25s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal {
+  background: #ffffff;
+  padding: 28px 24px;
+  border-radius: 28px;
+  width: 100%;
+  max-width: 380px;
+  text-align: center;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px) scale(0.96); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.modal h3 {
+  margin: 0 0 6px;
+  font-size: 19px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.modal-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+#profile-picker {
+  display: flex;
+  overflow-x: auto;
+  gap: 14px;
+  padding: 10px 4px 16px;
+  margin-bottom: 18px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+}
+
+#profile-picker::-webkit-scrollbar {
+  display: none;
+}
+
+.avatar-option {
+  flex: 0 0 66px;
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid transparent;
+  object-fit: cover;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  background: #f1f5f9;
+  padding: 2px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  scroll-snap-align: center;
+}
+
+.avatar-option.selected {
+  border-color: var(--primary);
+  transform: scale(1.12);
+  box-shadow: 0 8px 16px rgba(37, 99, 235, 0.35);
+  background: #ffffff;
+}
+
+input {
+  width: 100%;
+  padding: 13px 16px;
+  margin-bottom: 12px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  font-family: inherit;
+  font-size: 15px;
+  color: #0f172a;
+  background: #f8fafc;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+input:focus {
+  border-color: var(--primary);
+  background: #ffffff;
+  box-shadow: 0 0 0 3.5px rgba(37, 99, 235, 0.15);
+}
+
+input::placeholder {
+  color: #94a3b8;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 14px;
+  background: var(--primary-gradient);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 15px;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
+  transition: all 0.2s ease;
+  margin-top: 4px;
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+}
 </style>
 </head>
 <body>
 
-<div id="loading">กำลังโหลดข้อมูล...</div>
+<div class="app-container">
+  <div id="loading">
+    <div class="spinner"></div>
+    <div>กำลังโหลดข้อมูล...</div>
+  </div>
 
-<div id="main-content" style="display:none;">
-  <div class="profile-card">
-    <img id="my-avatar" src="" class="avatar">
-    <div>
-      <div style="font-size:14px; color:#64748b">สวัสดี!</div>
-      <div id="my-name" style="font-size:18px; font-weight:700">-</div>
-      <div style="font-size:12px">มาบูสพลังไปด้วยกันนะ! 🚀</div>
+  <div id="main-content" style="display:none;">
+    <div class="profile-card">
+      <div class="avatar-wrapper">
+        <img id="my-avatar" src="" class="avatar" alt="Avatar">
+        <div class="avatar-badge"></div>
+      </div>
+      <div>
+        <div class="greeting-text">สวัสดี! 👋</div>
+        <div id="my-name" class="user-name">-</div>
+        <div class="subtitle-badge">มาบูสพลังไปด้วยกันนะ! 🚀</div>
+      </div>
     </div>
-  </div>
 
-  <div class="stats-card">
-    <div style="opacity:0.8">คะแนนรวมของฉัน</div>
-    <div id="my-score" style="font-size:32px; font-weight:800">0 pts</div>
-  </div>
+    <div class="stats-card">
+      <div class="stats-label">คะแนนรวมของฉัน</div>
+      <div id="my-score" class="score-display">0 pts</div>
+    </div>
 
-  <div id="my-detail-area"></div>
+    <div id="my-detail-area"></div>
+  </div>
 </div>
 
 <div class="mask" id="mask">
   <div class="modal">
-    <h3 style="margin-top:0;">ตั้งค่าโปรไฟล์ของคุณ</h3>
+    <h3>ตั้งค่าโปรไฟล์ของคุณ</h3>
+    <div class="modal-sub">เลือกรูปและระบุชื่อเพื่อเริ่มใช้งาน</div>
+
     <div id="profile-picker">
-      <img src="https://lh3.googleusercontent.com/d/1JF16hRZHdIN_xxqYXOuiVQpNum_Dqe1a" class="avatar-option selected" onclick="selectAvatar(this.src, this)">
-      <img src="https://lh3.googleusercontent.com/d/1D-LOdXN_KoKiTSQK84YSRjIBR2e2l7Hv" class="avatar-option" onclick="selectAvatar(this.src, this)">
-      <img src="https://lh3.googleusercontent.com/d/1HkmbI2dkWFCNPzotMp_LafJeqHdN-n0W" class="avatar-option" onclick="selectAvatar(this.src, this)">
-      <img src="https://lh3.googleusercontent.com/d/19Mpua59egcHR-i_LdpSFTYAf_R-2q23Z" class="avatar-option" onclick="selectAvatar(this.src, this)">
-      <img src="https://lh3.googleusercontent.com/d/1yQ6Ydp7rbLr6sgradMC32c-nkaFqfny6" class="avatar-option" onclick="selectAvatar(this.src, this)">
+      <img src="https://lh3.googleusercontent.com/d/1JF16hRZHdIN_xxqYXOuiVQpNum_Dqe1a" class="avatar-option selected" onclick="selectAvatar(this.src, this)" alt="Avatar 1">
+      <img src="https://lh3.googleusercontent.com/d/1D-LOdXN_KoKiTSQK84YSRjIBR2e2l7Hv" class="avatar-option" onclick="selectAvatar(this.src, this)" alt="Avatar 2">
+      <img src="https://lh3.googleusercontent.com/d/1HkmbI2dkWFCNPzotMp_LafJeqHdN-n0W" class="avatar-option" onclick="selectAvatar(this.src, this)" alt="Avatar 3">
+      <img src="https://lh3.googleusercontent.com/d/19Mpua59egcHR-i_LdpSFTYAf_R-2q23Z" class="avatar-option" onclick="selectAvatar(this.src, this)" alt="Avatar 4">
+      <img src="https://lh3.googleusercontent.com/d/1yQ6Ydp7rbLr6sgradMC32c-nkaFqfny6" class="avatar-option" onclick="selectAvatar(this.src, this)" alt="Avatar 5">
     </div>
+
     <input id="f_first" placeholder="ชื่อจริง">
     <input id="f_last" placeholder="นามสกุล">
     <input id="f_nick" placeholder="ชื่อเล่น">
-    <button onclick="doBind()" style="width:90%; padding:14px; background:var(--blue); color:white; border:none; border-radius:12px; font-weight:bold;">ยืนยันตัวตน</button>
+    <button class="btn-primary" onclick="doBind()">ยืนยันตัวตน</button>
   </div>
 </div>
 
