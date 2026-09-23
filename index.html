@@ -12,20 +12,12 @@ body{background:var(--bg); font-family:sans-serif; color:var(--tx); margin:0; pa
 .profile-card{background:var(--card); padding:20px; border-radius:24px; display:flex; align-items:center; gap:15px; margin-bottom:20px; box-shadow:0 4px 6px rgba(0,0,0,0.05);}
 .avatar{width:60px; height:60px; border-radius:50%; object-fit:cover; border:3px solid var(--blue); background:#eee;}
 .stats-card{background:linear-gradient(135deg, #1e3a8a, #3b82f6); color:white; padding:25px; border-radius:24px; margin-bottom:20px;}
-.rank-item{background:white; border-radius:18px; margin-bottom:10px; box-shadow:0 2px 4px rgba(0,0,0,0.05); overflow:hidden;}
-.rank-head{display:flex; align-items:center; justify-content:space-between; padding:14px 16px; cursor:pointer;}
-.rank-left{display:flex; align-items:center; gap:10px;}
-.rank-num{font-weight:800; color:#94a3b8; width:24px; text-align:center;}
-.rank-avatar{width:38px; height:38px; border-radius:50%; object-fit:cover; background:#eee;}
-.rank-name{font-weight:600; font-size:14px;}
-.rank-score{font-weight:800; color:var(--blue);}
-.rank-detail{max-height:0; overflow:hidden; transition:max-height .25s ease; background:#f8fafc; padding:0 16px;}
-.rank-detail.open{max-height:200px; padding:12px 16px;}
+.detail-card{background:white; border-radius:18px; margin-bottom:10px; box-shadow:0 2px 4px rgba(0,0,0,0.05); overflow:hidden; padding:16px;}
+.detail-title{font-weight:700; font-size:14px; margin-bottom:10px; color:#64748b;}
 .detail-row{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:13px;}
 .badge{display:inline-flex; gap:4px;}
 .dot{width:16px; height:16px; border-radius:50%; background:#e2e8f0;}
 .dot.on{background:var(--blue);}
-.me-highlight{border:2px solid var(--blue);}
 .mask{position:fixed; inset:0; background:rgba(0,0,0,0.7); display:none; align-items:center; justify-content:center; z-index:999; padding:20px;}
 .modal{background:white; padding:25px; border-radius:24px; width:100%; max-width:400px; text-align:center;}
 #profile-picker{display:flex; overflow-x:auto; gap:15px; padding:10px 0; margin-bottom:20px; scrollbar-width:none;}
@@ -55,7 +47,7 @@ button{cursor:pointer;}
     <div id="my-score" style="font-size:32px; font-weight:800">0 pts</div>
   </div>
 
-  <div id="list-area"></div>
+  <div id="my-detail-area"></div>
 </div>
 
 <div class="mask" id="mask">
@@ -77,7 +69,7 @@ button{cursor:pointer;}
 
 <script>
 const LIFF_ID = '2009815147-aGgIrfPv';
-const API = 'https://script.google.com/macros/s/AKfycbyDkk2PiiOoAQFoEYCan9O8sEwpD1WFf6XeDNxQ8L4K1zuzLWtStKqw_Y4LAue5yu9XIA/exec';
+const API = 'https://script.google.com/macros/s/AKfycbxptrmTuI65fCje113gOz9jdko6ijy_wjKu8fh6MM77GdCOHrmEsY_vEE59Y-tU_IrOGw/exec';
 let selectedAvatar = 'https://lh3.googleusercontent.com/d/1JF16hRZHdIN_xxqYXOuiVQpNum_Dqe1a';
 
 function selectAvatar(url, el) {
@@ -112,10 +104,6 @@ async function doBind(){
   }
 }
 
-function toggleDetail(id){
-  document.getElementById(id).classList.toggle('open');
-}
-
 (async function init(){
   try{
     await liff.init({liffId:LIFF_ID});
@@ -146,35 +134,26 @@ function toggleDetail(id){
     document.getElementById('my-name').innerText = data.myNick || '-';
     if(data.myAvatar) document.getElementById('my-avatar').src = data.myAvatar;
 
-    const me = data.list.find(u => u.isMe);
+    // แสดงเฉพาะข้อมูลของตัวเอง ไม่แสดง ranking หรือข้อมูลของผู้อื่น
+    const me = (data.list || []).find(u => u.isMe);
     document.getElementById('my-score').innerText = (me ? me.score : 0) + ' pts';
 
-    document.getElementById('list-area').innerHTML = data.list.map((u,i) => `
-      <div class="rank-item ${u.isMe?'me-highlight':''}">
-        <div class="rank-head" onclick="toggleDetail('detail-${i}')">
-          <div class="rank-left">
-            <div class="rank-num">#${u.rank}</div>
-            <img class="rank-avatar" src="${u.avatarUrl||''}" onerror="this.style.visibility='hidden'">
-            <div>
-              <div class="rank-name">${u.name}</div>
-              ${u.nick ? `<div style="font-size:11px;color:#94a3b8">${u.nick}</div>` : ''}
-            </div>
-          </div>
-          <div class="rank-score">${u.score} pts</div>
-        </div>
-        <div class="rank-detail" id="detail-${i}">
+    if(me){
+      document.getElementById('my-detail-area').innerHTML = `
+        <div class="detail-card">
+          <div class="detail-title">รายละเอียดคะแนนของฉัน</div>
           <div class="detail-row">
             <span>Collaboration</span>
-            <span class="badge">${u.collab.detail.map(d=>`<span class="dot ${d.on?'on':''}"></span>`).join('')}</span>
-            <b>${u.collab.score}/${u.collab.max}</b>
+            <span class="badge">${me.collab.detail.map(d=>`<span class="dot ${d.on?'on':''}"></span>`).join('')}</span>
+            <b>${me.collab.score}/${me.collab.max}</b>
           </div>
           <div class="detail-row">
             <span>Ownership</span>
-            <span class="badge">${u.owner.detail.map(d=>`<span class="dot ${d.on?'on':''}"></span>`).join('')}</span>
-            <b>${u.owner.score}/${u.owner.max}</b>
+            <span class="badge">${me.owner.detail.map(d=>`<span class="dot ${d.on?'on':''}"></span>`).join('')}</span>
+            <b>${me.owner.score}/${me.owner.max}</b>
           </div>
-        </div>
-      </div>`).join('');
+        </div>`;
+    }
   }catch(err){
     document.getElementById('loading').innerText = 'เกิดข้อผิดพลาด: ' + err.message;
     console.error(err);
